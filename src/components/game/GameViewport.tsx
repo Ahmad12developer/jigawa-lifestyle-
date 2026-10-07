@@ -26,7 +26,7 @@ export const GameViewport: React.FC<GameViewportProps> = ({
 
     // 1. Scene & Orthographic Camera (True Isometric)
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(viewMode === 'home' ? 0x1e293b : 0x0f172a); // Deep night/room sky
+    scene.background = new THREE.Color(viewMode === 'home' ? 0x131a29 : 0x0b1320); // Authentic deep midnight sky matching lagoslife
 
     const aspect = container.clientWidth / container.clientHeight;
     const frustumSize = viewMode === 'home' ? 14 : 26;

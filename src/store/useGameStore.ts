@@ -61,7 +61,7 @@ export const useGameStore = create<GameState>()(
 
       // Navigation & Identity
       currentLocation: 'dutse_secretariat',
-      selectedBackground: null,
+      selectedBackground: 'dutse_civil_servant',
       activeEvent: null,
       logs: INITIAL_LOGS,
       floatingNotices: [],
