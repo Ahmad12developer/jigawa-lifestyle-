@@ -1,21 +1,42 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { useGameStore } from '@/store/useGameStore';
-import { Header } from '@/components/Header';
-import { StatGrid } from '@/components/StatGrid';
-import { CharacterCard } from '@/components/CharacterCard';
-import { ActionPanel } from '@/components/ActionPanel';
-import { LocationMap } from '@/components/LocationMap';
-import { LogFeed } from '@/components/LogFeed';
+import { useSoundFX } from '@/hooks/useSoundFX';
+import { GameHud } from '@/components/game/GameHud';
+import { PhoneModal } from '@/components/game/PhoneModal';
+import { ShopModal } from '@/components/game/ShopModal';
 import { EventModal } from '@/components/EventModal';
+import { CharacterCard } from '@/components/CharacterCard';
 import { Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// Dynamic import with SSR disabled for Three.js WebGL Canvas
+const GameViewport = dynamic(
+  () => import('@/components/game/GameViewport').then((mod) => mod.GameViewport),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="absolute inset-0 bg-[#0f172a] flex flex-col items-center justify-center text-white">
+        <div className="w-12 h-12 rounded-2xl bg-emerald-600 flex items-center justify-center font-black text-xl animate-pulse mb-3">
+          JL
+        </div>
+        <p className="text-sm font-bold text-emerald-400">Loading 3D Jigawa World...</p>
+        <p className="text-xs text-white/50 mt-1">Initializing isometric renderer & shaders</p>
+      </div>
+    ),
+  }
+);
+
 export default function Home() {
   const [mounted, setMounted] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'jobs' | 'travel'>('overview');
-  const { selectedBackground, floatingNotices } = useGameStore();
+  const [viewMode, setViewMode] = useState<'home' | 'map'>('home');
+  const [isPhoneOpen, setIsPhoneOpen] = useState(false);
+  const [isShopOpen, setIsShopOpen] = useState(false);
+
+  const { selectedBackground, floatingNotices, travel, addNotice } = useGameStore();
+  const { playClick, playCash } = useSoundFX();
 
   useEffect(() => {
     setMounted(true);
@@ -23,25 +44,65 @@ export default function Home() {
 
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#0f172a] flex items-center justify-center p-4">
         <div className="text-center">
           <div className="w-12 h-12 rounded-2xl bg-[#064E3B] text-[#F5E6CA] flex items-center justify-center font-black text-xl mx-auto mb-3 shadow-md">
             JL
           </div>
-          <h2 className="text-lg font-bold text-[#064E3B]">Loading Jigawa Lifestyle...</h2>
-          <p className="text-xs text-[#1C1917]/50 mt-1">Preparing local markets and trade routes.</p>
+          <h2 className="text-base font-bold text-emerald-400">Loading Jigawa Lifestyle...</h2>
+          <p className="text-xs text-white/50 mt-1">Preparing local markets and trade routes.</p>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-[#FAF7F2] text-[#1C1917] flex flex-col font-sans">
-      {/* 1. Header Bar */}
-      <Header />
+  // 1. Initial State: Background selection before entering the 3D world
+  if (!selectedBackground) {
+    return (
+      <div className="min-h-screen bg-[#0f172a] text-[#FAF7F2] flex items-center justify-center p-4 sm:p-6 font-sans">
+        <div className="max-w-4xl w-full">
+          <div className="text-center mb-6">
+            <span className="text-xs uppercase font-extrabold tracking-widest text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-3 py-1 rounded-full">
+              3D Life Simulation · Jigawa State
+            </span>
+            <h1 className="text-3xl sm:text-4xl font-black text-white mt-3">
+              JIGAWA LIFESTYLE
+            </h1>
+            <p className="text-sm text-white/70 max-w-md mx-auto mt-2">
+              Step into Dutse, Hadejia, Ringim, and Kazaure. Build wealth, preserve Mutunci, and furnish your home.
+            </p>
+          </div>
+          <CharacterCard />
+        </div>
+      </div>
+    );
+  }
 
-      {/* Floating Notices / Micro-Interactions with Framer Motion */}
-      <div className="fixed top-16 right-4 z-50 flex flex-col gap-2 pointer-events-none">
+  // 2. Full-Screen 3D Game World (Matching lagoslife.app)
+  return (
+    <div className="relative w-screen h-screen overflow-hidden bg-black select-none font-sans">
+      {/* 3D Isometric Viewport (Room / City Map) */}
+      <GameViewport
+        viewMode={viewMode}
+        onPinClick={(locationId) => {
+          const res = travel(locationId as any);
+          if (res.success) {
+            playCash();
+            addNotice(`Traveled to new district!`, 'positive');
+          }
+        }}
+      />
+
+      {/* Retro-Modern HUD & Dock Overlay */}
+      <GameHud
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+        openPhone={() => setIsPhoneOpen(true)}
+        openShop={() => setIsShopOpen(true)}
+      />
+
+      {/* Floating Notices / Micro-Interactions */}
+      <div className="fixed top-20 right-4 z-40 flex flex-col gap-2 pointer-events-none">
         <AnimatePresence>
           {floatingNotices.map((n) => (
             <motion.div
@@ -50,12 +111,12 @@ export default function Home() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -15, scale: 0.9 }}
               transition={{ duration: 0.25 }}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold shadow-lg flex items-center gap-2 border pointer-events-auto ${
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold shadow-xl flex items-center gap-2 border pointer-events-auto backdrop-blur-md ${
                 n.type === 'positive'
-                  ? 'bg-[#064E3B] text-white border-[#065F46]'
+                  ? 'bg-emerald-900/90 text-white border-emerald-500/40'
                   : n.type === 'negative'
-                  ? 'bg-rose-700 text-white border-rose-800'
-                  : 'bg-white text-[#1C1917] border-[#E8D0A8]'
+                  ? 'bg-rose-900/90 text-white border-rose-500/40'
+                  : 'bg-gray-900/90 text-white border-white/20'
               }`}
             >
               {n.type === 'positive' ? (
@@ -63,7 +124,7 @@ export default function Home() {
               ) : n.type === 'negative' ? (
                 <AlertCircle className="w-4 h-4 text-rose-300" />
               ) : (
-                <Sparkles className="w-4 h-4 text-[#C2593F]" />
+                <Sparkles className="w-4 h-4 text-amber-300" />
               )}
               <span>{n.text}</span>
             </motion.div>
@@ -71,45 +132,20 @@ export default function Home() {
         </AnimatePresence>
       </div>
 
-      {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-6 space-y-6">
-        {/* If no background chosen, focus exclusively on Character Choice */}
-        {!selectedBackground ? (
-          <CharacterCard />
-        ) : (
-          <>
-            {/* 2. Stat Grid (Top) */}
-            <StatGrid />
+      {/* Phone Smartphone Modal Overlay */}
+      <PhoneModal
+        isOpen={isPhoneOpen}
+        onClose={() => setIsPhoneOpen(false)}
+        onSelectMapLocation={(locId) => {
+          setViewMode('map');
+          setIsPhoneOpen(false);
+        }}
+      />
 
-            {/* Character Info Card */}
-            <CharacterCard />
+      {/* Shop Emporium Modal Overlay */}
+      <ShopModal isOpen={isShopOpen} onClose={() => setIsShopOpen(false)} />
 
-            {/* 3. Main Control Area & Live Event Log */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-              {/* Left / Central Column: Main Control Area */}
-              <div className="lg:col-span-8 space-y-6">
-                {activeTab === 'travel' ? (
-                  <LocationMap />
-                ) : (
-                  <ActionPanel activeTab={activeTab} setActiveTab={setActiveTab} />
-                )}
-              </div>
-
-              {/* Right Column: Live Event Log */}
-              <div className="lg:col-span-4 sticky top-20">
-                <LogFeed />
-              </div>
-            </div>
-          </>
-        )}
-      </main>
-
-      {/* Footer Branding */}
-      <footer className="w-full bg-white border-t border-[#E8D0A8]/60 py-4 px-4 text-center text-xs text-[#1C1917]/50 mt-auto">
-        <p>Jigawa Lifestyle Simulation · Built for high-speed browser play · Dutse, Hadejia, Ringim & Kazaure</p>
-      </footer>
-
-      {/* Event Modal / Game Over Modal */}
+      {/* Random Event Dilemma & Game-Over Modal */}
       <EventModal />
     </div>
   );
