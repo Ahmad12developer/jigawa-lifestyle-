@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useGameStore } from '@/store/useGameStore';
 import { useSoundFX } from '@/hooks/useSoundFX';
-import { X, ShoppingBag, Coffee, Armchair, Sparkles, Check, AlertCircle } from 'lucide-react';
+import { X, ShoppingBag } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface ShopModalProps {
@@ -128,23 +128,71 @@ export const ShopModal: React.FC<ShopModalProps> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm">
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 50,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '1rem',
+        backgroundColor: 'rgba(0, 0, 0, 0.65)',
+        backdropFilter: 'blur(8px)',
+      }}
+    >
       <motion.div
-        initial={{ scale: 0.9, y: 30, opacity: 0 }}
+        initial={{ scale: 0.9, y: 20, opacity: 0 }}
         animate={{ scale: 1, y: 0, opacity: 1 }}
-        exit={{ scale: 0.9, y: 30, opacity: 0 }}
-        className="w-full max-w-xl max-h-[85vh] bg-[#111827] rounded-3xl border border-white/10 shadow-2xl overflow-hidden flex flex-col text-white font-sans"
+        exit={{ scale: 0.9, y: 20, opacity: 0 }}
+        style={{
+          width: '100%',
+          maxWidth: '560px',
+          maxHeight: '86vh',
+          backgroundColor: '#111827',
+          borderRadius: '24px',
+          border: '1px solid rgba(255, 255, 255, 0.12)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          color: '#ffffff',
+          fontFamily: 'sans-serif',
+        }}
       >
         {/* Header */}
-        <div className="p-4 sm:p-5 flex items-center justify-between border-b border-white/10 bg-white/[0.02]">
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
-              <ShoppingBag className="w-5 h-5" />
+        <div
+          style={{
+            padding: '1.25rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'between',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+            backgroundColor: 'rgba(255, 255, 255, 0.02)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1 }}>
+            <div
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '14px',
+                backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                color: '#fbbf24',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <ShoppingBag style={{ width: '20px', height: '20px' }} />
             </div>
             <div>
-              <h2 className="text-base font-black">Jigawa Emporium & Bukka</h2>
-              <p className="text-xs text-white/50">
-                Wallet Balance: <span className="text-emerald-400 font-bold font-mono">₦{naira.toLocaleString()}</span>
+              <h2 style={{ fontSize: '1rem', fontWeight: 900, margin: 0 }}>Jigawa Emporium & Bukka</h2>
+              <p style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.6)', margin: '2px 0 0 0' }}>
+                Wallet Balance:{' '}
+                <span style={{ color: '#34d399', fontWeight: 'bold', fontFamily: 'monospace' }}>
+                  ₦{naira.toLocaleString()}
+                </span>
               </p>
             </div>
           </div>
@@ -153,14 +201,34 @@ export const ShopModal: React.FC<ShopModalProps> = ({ isOpen, onClose }) => {
               playClick();
               onClose();
             }}
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/80 transition"
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '9999px',
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              border: 'none',
+              cursor: 'pointer',
+              color: '#ffffff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'background 0.2s',
+            }}
           >
-            <X className="w-4 h-4" />
+            <X style={{ width: '16px', height: '16px' }} />
           </button>
         </div>
 
         {/* Categories Tab */}
-        <div className="flex gap-2 px-4 sm:px-5 py-3 border-b border-white/5 bg-black/20 overflow-x-auto text-xs">
+        <div
+          style={{
+            display: 'flex',
+            gap: '0.5rem',
+            padding: '0.75rem 1.25rem',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+          }}
+        >
           {(['all', 'food', 'decor', 'wellness'] as const).map((cat) => (
             <button
               key={cat}
@@ -168,11 +236,18 @@ export const ShopModal: React.FC<ShopModalProps> = ({ isOpen, onClose }) => {
                 playClick();
                 setActiveCategory(cat);
               }}
-              className={`px-3 py-1.5 rounded-full capitalize font-semibold transition ${
-                activeCategory === cat
-                  ? 'bg-emerald-500 text-black font-bold shadow-md'
-                  : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
-              }`}
+              style={{
+                padding: '0.35rem 0.85rem',
+                borderRadius: '9999px',
+                textTransform: 'capitalize',
+                fontSize: '0.75rem',
+                fontWeight: activeCategory === cat ? 800 : 600,
+                backgroundColor: activeCategory === cat ? '#10b981' : 'rgba(255, 255, 255, 0.06)',
+                color: activeCategory === cat ? '#000000' : 'rgba(255, 255, 255, 0.7)',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}
             >
               {cat}
             </button>
@@ -180,48 +255,90 @@ export const ShopModal: React.FC<ShopModalProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Product Cards */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '1rem 1.25rem',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '0.75rem',
+          }}
+        >
           {filteredItems.map((item) => {
             const canAfford = naira >= item.price;
             return (
               <div
                 key={item.id}
-                className="p-3.5 rounded-2xl bg-white/[0.04] border border-white/10 hover:border-emerald-500/40 transition flex flex-col justify-between gap-3"
+                style={{
+                  padding: '0.85rem',
+                  borderRadius: '16px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  gap: '0.75rem',
+                }}
               >
                 <div>
-                  <div className="flex items-start justify-between gap-2">
-                    <span className="text-2xl p-1 bg-white/5 rounded-xl">{item.icon}</span>
-                    <span className="text-xs font-mono font-bold text-amber-300">
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span
+                      style={{
+                        fontSize: '1.5rem',
+                        padding: '0.25rem',
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        borderRadius: '10px',
+                      }}
+                    >
+                      {item.icon}
+                    </span>
+                    <span style={{ fontSize: '0.8rem', fontFamily: 'monospace', fontWeight: 800, color: '#fcd34d' }}>
                       ₦{item.price.toLocaleString()}
                     </span>
                   </div>
-                  <h3 className="text-xs font-bold text-white mt-2">{item.name}</h3>
-                  <p className="text-[11px] text-white/60 mt-1 line-clamp-2">
+                  <h3 style={{ fontSize: '0.85rem', fontWeight: 700, margin: '0.5rem 0 0 0' }}>{item.name}</h3>
+                  <p
+                    style={{
+                      fontSize: '0.7rem',
+                      color: 'rgba(255, 255, 255, 0.6)',
+                      margin: '0.25rem 0 0 0',
+                      lineHeight: 1.35,
+                    }}
+                  >
                     {item.description}
                   </p>
                 </div>
 
-                <div className="flex items-center justify-between pt-2 border-t border-white/5">
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold">
-                    {item.effects.energy && (
-                      <span className="text-yellow-400">+{item.effects.energy}⚡</span>
-                    )}
-                    {item.effects.health && (
-                      <span className="text-rose-400">+{item.effects.health}❤️</span>
-                    )}
-                    {item.effects.mutunci && (
-                      <span className="text-purple-400">+{item.effects.mutunci}👑</span>
-                    )}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    paddingTop: '0.5rem',
+                    borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+                  }}
+                >
+                  <div style={{ display: 'flex', gap: '0.35rem', fontSize: '0.65rem', fontWeight: 700 }}>
+                    {item.effects.energy && <span style={{ color: '#facc15' }}>+{item.effects.energy}⚡</span>}
+                    {item.effects.health && <span style={{ color: '#fb7185' }}>+{item.effects.health}❤️</span>}
+                    {item.effects.mutunci && <span style={{ color: '#c084fc' }}>+{item.effects.mutunci}👑</span>}
                   </div>
 
                   <button
                     disabled={!canAfford}
                     onClick={() => buyItem(item)}
-                    className={`px-3 py-1 rounded-xl text-xs font-bold transition ${
-                      canAfford
-                        ? 'bg-[#064E3B] hover:bg-[#047857] text-white shadow-md'
-                        : 'bg-white/10 text-white/30 cursor-not-allowed'
-                    }`}
+                    style={{
+                      padding: '0.35rem 0.85rem',
+                      borderRadius: '10px',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      backgroundColor: canAfford ? '#064e3b' : 'rgba(255, 255, 255, 0.08)',
+                      color: canAfford ? '#ffffff' : 'rgba(255, 255, 255, 0.3)',
+                      border: 'none',
+                      cursor: canAfford ? 'pointer' : 'not-allowed',
+                      transition: 'background 0.2s',
+                    }}
                   >
                     Buy
                   </button>
