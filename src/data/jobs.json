@@ -1,0 +1,122 @@
+[
+  {
+    "id": "pos_agent",
+    "title": "Mobile POS & Money Transfer Agent",
+    "locationId": "fud_campus",
+    "energyCost": 20,
+    "timeHours": 3,
+    "payoutNaira": 12000,
+    "mutunciChange": 1,
+    "description": "Process cash withdrawals and transfers for students and nearby traders."
+  },
+  {
+    "id": "campus_logistics",
+    "title": "Campus Courier & Delivery",
+    "locationId": "fud_campus",
+    "energyCost": 30,
+    "timeHours": 4,
+    "payoutNaira": 18000,
+    "mutunciChange": 0,
+    "description": "Deliver printouts, snacks, and packages across university hostel blocks."
+  },
+  {
+    "id": "freelance_graphics",
+    "title": "Digital Flyer & Tech Freelancing",
+    "locationId": "fud_campus",
+    "energyCost": 25,
+    "timeHours": 5,
+    "payoutNaira": 28000,
+    "mutunciChange": 2,
+    "description": "Design event banners and manage social pages for local business outlets."
+  },
+  {
+    "id": "admin_assistant",
+    "title": "Junior Registry Assistant",
+    "locationId": "dutse_secretariat",
+    "energyCost": 25,
+    "timeHours": 6,
+    "payoutNaira": 35000,
+    "mutunciChange": 3,
+    "description": "Sort state ministry memos, organize files, and handle daily administrative routines."
+  },
+  {
+    "id": "protocol_officer",
+    "title": "State Event Protocol Assistant",
+    "locationId": "dutse_secretariat",
+    "energyCost": 35,
+    "timeHours": 5,
+    "payoutNaira": 50000,
+    "mutunciChange": 5,
+    "description": "Coordinate seating arrangements and reception logistics for official delegation visits."
+  },
+  {
+    "id": "grain_trader",
+    "title": "Sesame & Rice Bulk Buyer",
+    "locationId": "hadejia_market",
+    "energyCost": 40,
+    "timeHours": 6,
+    "payoutNaira": 65000,
+    "mutunciChange": 2,
+    "description": "Negotiate directly with local farm cooperatives and resell grain bags to regional distributors."
+  },
+  {
+    "id": "livestock_broker",
+    "title": "Cattle & Sheep Market Agent",
+    "locationId": "hadejia_market",
+    "energyCost": 45,
+    "timeHours": 5,
+    "payoutNaira": 80000,
+    "mutunciChange": 1,
+    "description": "Mediate sales between livestock rearers and merchant buyers arriving from interstate trade routes."
+  },
+  {
+    "id": "cargo_loading",
+    "title": "Market Haulage Assistant",
+    "locationId": "hadejia_market",
+    "energyCost": 50,
+    "timeHours": 4,
+    "payoutNaira": 22000,
+    "mutunciChange": 0,
+    "description": "Help load agricultural produce onto outbound transit trucks."
+  },
+  {
+    "id": "cultural_guide",
+    "title": "Palace Heritage Tour Facilitator",
+    "locationId": "ringim_palace",
+    "energyCost": 20,
+    "timeHours": 3,
+    "payoutNaira": 25000,
+    "mutunciChange": 6,
+    "description": "Guide visiting delegations and guests through traditional historical landmarks."
+  },
+  {
+    "id": "durbar_organizer",
+    "title": "Festival Logistics Assistant",
+    "locationId": "ringim_palace",
+    "energyCost": 40,
+    "timeHours": 6,
+    "payoutNaira": 70000,
+    "mutunciChange": 8,
+    "description": "Help manage equestrian gear, ceremonial logistics, and guest seating during festive cultural events."
+  },
+  {
+    "id": "irrigation_tech",
+    "title": "Smart Irrigation Technician",
+    "locationId": "kazaure_agro_tech",
+    "energyCost": 30,
+    "timeHours": 5,
+    "payoutNaira": 45000,
+    "mutunciChange": 3,
+    "description": "Maintain automated solar pump systems and water channels for local crop farms."
+  },
+  {
+    "id": "solar_installer",
+    "title": "Commercial Solar Panel Installer",
+    "locationId": "kazaure_agro_tech",
+    "energyCost": 40,
+    "timeHours": 5,
+    "payoutNaira": 55000,
+    "mutunciChange": 2,
+    "description": "Set up solar inverter systems for local cold-storage facilities and shops."
+  }
+]

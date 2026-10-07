@@ -1,0 +1,54 @@
+[
+  {
+    "id": "agro_entrepreneur",
+    "title": "Agro-Entrepreneur",
+    "description": "Rooted in Hadejia's agricultural heartland. You start with high grain reserves and trade potential, but liquid cash is tied up in seasonal harvest cycles.",
+    "startingStats": {
+      "naira": 150000,
+      "mutunci": 60,
+      "energy": 100,
+      "health": 100
+    },
+    "perks": "15% higher payout on agricultural trading and market jobs.",
+    "homeLocation": "hadejia_market"
+  },
+  {
+    "id": "dutse_civil_servant",
+    "title": "Dutse Civil Servant",
+    "description": "Based at the State Secretariat in Dutse. Enjoys a respectable social standing and steady routine, though monthly wage growth is modest.",
+    "startingStats": {
+      "naira": 250000,
+      "mutunci": 75,
+      "energy": 90,
+      "health": 100
+    },
+    "perks": "Gains +5 Mutunci automatically every 7 in-game days.",
+    "homeLocation": "dutse_secretariat"
+  },
+  {
+    "id": "tech_pos_hustler",
+    "title": "Tech & POS Hustler",
+    "description": "Operating near FUD campus and commercial hubs. Fast-moving, resourceful, and always on the move, but needs to work hard to earn community elder respect.",
+    "startingStats": {
+      "naira": 80000,
+      "mutunci": 35,
+      "energy": 100,
+      "health": 100
+    },
+    "perks": "Energy drains 10% slower while performing urban and tech hustles.",
+    "homeLocation": "fud_campus"
+  },
+  {
+    "id": "royal_heritage",
+    "title": "Royal & Elite Heritage",
+    "description": "Descended from historic lineages with deep roots in local affairs. Starts with substantial wealth and maximum social standing, but faces heavy community expectations.",
+    "startingStats": {
+      "naira": 850000,
+      "mutunci": 90,
+      "energy": 80,
+      "health": 100
+    },
+    "perks": "Double Mutunci loss on unethical actions; unlocks exclusive high-society events.",
+    "homeLocation": "ringim_palace"
+  }
+]

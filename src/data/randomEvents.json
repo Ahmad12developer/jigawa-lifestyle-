@@ -1,0 +1,174 @@
+[
+  {
+    "id": "event-sesame-spike",
+    "title": "Sesame Harvest Price Spike",
+    "hausaTitle": "Tashin Farashin Ridi",
+    "description": "Exporters from Kano and Lagos arrive in Hadejia with cash-loaded trucks, triggering a 40% surge in raw sesame grain prices.",
+    "contextLocation": "hadejia_market",
+    "choiceA": {
+      "text": "Liquidate stored bags immediately to lock in cash profits",
+      "consequence": "You pocket a substantial profit immediately.",
+      "statChanges": {
+        "naira": 45000,
+        "energy": -10,
+        "mutunci": 5
+      }
+    },
+    "choiceB": {
+      "text": "Hold inventory and negotiate with international consortium",
+      "consequence": "Prices fluctuate, but commercial elders respect your trade nerve.",
+      "statChanges": {
+        "naira": 18000,
+        "mutunci": 12,
+        "energy": -15
+      }
+    }
+  },
+  {
+    "id": "event-wedding-fatiha",
+    "title": "Wedding Fatiha Contribution",
+    "hausaTitle": "Gudunmawar Dauren Aure",
+    "description": "An influential community elder invites you to a prominent wedding fatiha ceremony at Dutse Central Mosque.",
+    "contextLocation": "dutse_secretariat",
+    "choiceA": {
+      "text": "Donate generous cash gift (₦35,000) & present traditional fabric",
+      "consequence": "Your generosity is announced to applause; your Mutunci reaches new heights.",
+      "statChanges": {
+        "naira": -35000,
+        "mutunci": 18,
+        "energy": -5
+      }
+    },
+    "choiceB": {
+      "text": "Offer humble prayer, modest gift of ₦5,000, and assist with logistics",
+      "consequence": "You protect your savings while fulfilling minimal social obligations.",
+      "statChanges": {
+        "naira": -5000,
+        "mutunci": -4,
+        "energy": -12
+      }
+    }
+  },
+  {
+    "id": "event-harmattan-storm",
+    "title": "Harmattan Dust Storm",
+    "hausaTitle": "Buguwar Kakar Hunturu",
+    "description": "A biting Saharan haze engulfs the state. The sun turns silver-white and powdery dust stings the eyes and throat.",
+    "choiceA": {
+      "text": "Stay indoors, purchase hot ginger tea (shayi) & rest",
+      "consequence": "You preserve your stamina and breathe easy.",
+      "statChanges": {
+        "naira": -2500,
+        "energy": 25,
+        "health": 5
+      }
+    },
+    "choiceB": {
+      "text": "Wrap turban tightly and keep hustling through the dry haze",
+      "consequence": "You earn extra as others hide, but the dry dust takes a toll on your respiratory health.",
+      "statChanges": {
+        "naira": 14000,
+        "energy": -30,
+        "health": -15
+      }
+    }
+  },
+  {
+    "id": "event-kazaure-grant",
+    "title": "Kazaure Innovation Hub Micro-Grant",
+    "hausaTitle": "Tallafin Fasahar Zamani",
+    "description": "The Innovation Institute in Kazaure announces a prototype grant for automated agro-irrigation and solar projects.",
+    "contextLocation": "kazaure_agro_tech",
+    "choiceA": {
+      "text": "Spend 40 Energy drafting a detailed irrigation tech proposal",
+      "consequence": "Your proposal is shortlisted! You win the initial phase grant stipend.",
+      "statChanges": {
+        "naira": 75000,
+        "energy": -40,
+        "mutunci": 10
+      }
+    },
+    "choiceB": {
+      "text": "Pass on the paperwork and focus on immediate daily business",
+      "consequence": "You keep your stamina intact, but miss out on grant funding.",
+      "statChanges": {
+        "energy": 10,
+        "mutunci": -2
+      }
+    }
+  },
+  {
+    "id": "event-pos-network-failure",
+    "title": "POS Terminal Network Failure",
+    "hausaTitle": "Matsalar Hanyar Sadarwa",
+    "description": "A Friday afternoon telecom blackout strikes campus gates right as students line up for weekend cash transfers.",
+    "contextLocation": "fud_campus",
+    "choiceA": {
+      "text": "Switch to costly satellite backup sim and charge slight convenience fee",
+      "consequence": "You save the day for desperate students and rake in brisk commission.",
+      "statChanges": {
+        "naira": 22000,
+        "energy": -15,
+        "mutunci": 4
+      }
+    },
+    "choiceB": {
+      "text": "Power down machine politely and share cold water sachets with stranded folks",
+      "consequence": "Zero money earned, but your empathy wins deep student loyalty.",
+      "statChanges": {
+        "naira": -1500,
+        "mutunci": 15,
+        "energy": 5
+      }
+    }
+  },
+  {
+    "id": "event-durbar-prep",
+    "title": "Sallah Durbar Regal Preparation",
+    "hausaTitle": "Shirye-shiryen Hawan Sallah",
+    "description": "Ringim and Dutse Emirates commence preparations for Hawan Daushe. The town is alive with Kakaki trumpets and caparisoned horses.",
+    "contextLocation": "ringim_palace",
+    "choiceA": {
+      "text": "Sponsor embroidered saddlecloths for family royal horsemen",
+      "consequence": "Crowds chant your praise as the horsemen gallop past the palace gates.",
+      "statChanges": {
+        "naira": -40000,
+        "mutunci": 25,
+        "energy": -10
+      }
+    },
+    "choiceB": {
+      "text": "Set up a street concession selling chilled Hibiscus (Zobo) and Massa",
+      "consequence": "You make massive festival sales catering to tourist spectators.",
+      "statChanges": {
+        "naira": 32000,
+        "energy": -25,
+        "mutunci": 2
+      }
+    }
+  },
+  {
+    "id": "event-fura-delicacy",
+    "title": "Fura da Nono Street Blessing",
+    "hausaTitle": "Kaskon Fura da Nono",
+    "description": "You stop by an authentic milk vendor for a bowl of freshly mashed fura and cool curd milk.",
+    "choiceA": {
+      "text": "Enjoy a royal double serving with crushed ice and ginger (₦1,500)",
+      "consequence": "Invigorating refreshment! Your energy and vitality soar.",
+      "statChanges": {
+        "naira": -1500,
+        "energy": 35,
+        "health": 10
+      }
+    },
+    "choiceB": {
+      "text": "Buy a single bowl and pay for the weary traveller sitting next to you",
+      "consequence": "The traveller prays heartfelt blessings upon your endeavors.",
+      "statChanges": {
+        "naira": -2500,
+        "energy": 25,
+        "mutunci": 8
+      }
+    }
+  }
+]

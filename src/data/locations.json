@@ -1,0 +1,47 @@
+[
+  {
+    "id": "dutse_secretariat",
+    "name": "Dutse State Secretariat",
+    "zone": "Dutse Municipal",
+    "description": "The administrative heart of Jigawa State. Government offices, civil service hubs, and formal meeting spaces.",
+    "travelCost": 1500,
+    "unlockedByDefault": true,
+    "availableJobIds": ["admin_assistant", "protocol_officer"]
+  },
+  {
+    "id": "hadejia_market",
+    "name": "Hadejia Grain & Livestock Market",
+    "zone": "Hadejia River Basin",
+    "description": "A bustling commerce hub famous for sesame, rice, fish, and cattle trading across northern transport corridors.",
+    "travelCost": 3000,
+    "unlockedByDefault": true,
+    "availableJobIds": ["grain_trader", "livestock_broker", "cargo_loading"]
+  },
+  {
+    "id": "fud_campus",
+    "name": "Federal University Dutse (FUD) Hub",
+    "zone": "Dutse South",
+    "description": "Vibrant student population, mobile money agents, fast-food spots, and informal tech services.",
+    "travelCost": 1000,
+    "unlockedByDefault": true,
+    "availableJobIds": ["pos_agent", "campus_logistics", "freelance_graphics"]
+  },
+  {
+    "id": "ringim_palace",
+    "name": "Ringim Historic & Cultural District",
+    "zone": "Ringim",
+    "description": "Rich in tradition, community gatherings, civic councils, and traditional crafts.",
+    "travelCost": 2500,
+    "unlockedByDefault": true,
+    "availableJobIds": ["cultural_guide", "durbar_organizer"]
+  },
+  {
+    "id": "kazaure_agro_tech",
+    "name": "Kazaure Innovation & Farming Hub",
+    "zone": "Kazaure",
+    "description": "A growing modern center blending dam irrigation projects, technology initiatives, and processing plants.",
+    "travelCost": 3500,
+    "unlockedByDefault": true,
+    "availableJobIds": ["irrigation_tech", "solar_installer"]
+  }
+]
