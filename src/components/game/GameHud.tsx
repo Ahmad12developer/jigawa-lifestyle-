@@ -12,15 +12,10 @@ import {
   Moon,
   Volume2,
   VolumeX,
-  Coins,
   Sparkles,
   Briefcase,
   Eye,
   EyeOff,
-  Flame,
-  Zap,
-  MessageCircle,
-  Heart,
   Plus,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -46,7 +41,6 @@ export const GameHud: React.FC<GameHudProps> = ({
     day,
     hour,
     season,
-    selectedBackground,
   } = useGameStore();
 
   const { playClick } = useSoundFX();

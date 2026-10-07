@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useHydration } from '@/hooks/useHydration';
 import { useGameStore } from '@/store/useGameStore';
 import { useSoundFX } from '@/hooks/useSoundFX';
 import { GameHud } from '@/components/game/GameHud';
@@ -31,20 +32,16 @@ const GameViewport = dynamic(
 );
 
 export default function Home() {
-  const [mounted, setMounted] = useState(false);
+  const isHydrated = useHydration();
   const [viewMode, setViewMode] = useState<'home' | 'map'>('home');
   const [isPhoneOpen, setIsPhoneOpen] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(false);
   const [selectedPinId, setSelectedPinId] = useState<string | null>(null);
 
-  const { selectedBackground, floatingNotices, travel, addNotice } = useGameStore();
-  const { playClick, playCash } = useSoundFX();
+  const { selectedBackground, floatingNotices } = useGameStore();
+  const { playClick } = useSoundFX();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
+  if (!isHydrated) {
     return (
       <div className="min-h-screen bg-[#0c121e] flex items-center justify-center p-4">
         <div className="text-center">

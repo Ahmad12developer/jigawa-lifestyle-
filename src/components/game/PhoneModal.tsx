@@ -12,17 +12,13 @@ import {
   Navigation,
   Bed,
   Utensils,
-  Sun,
   Battery,
   Clock,
-  ArrowRight,
-  TrendingUp,
-  MapPin,
   ChevronRight,
   Sparkles,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { GameLocation, Job, LocationId } from '@/types/game';
+import type { GameLocation, Job } from '@/types/game';
 
 interface PhoneModalProps {
   isOpen: boolean;
@@ -45,7 +41,6 @@ export const PhoneModal: React.FC<PhoneModalProps> = ({
     health,
     day,
     hour,
-    season,
     currentLocation,
     performJob,
     travel,

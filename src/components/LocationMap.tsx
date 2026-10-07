@@ -5,7 +5,7 @@ import { useGameStore } from '@/store/useGameStore';
 import { useSoundFX } from '@/hooks/useSoundFX';
 import locationsData from '@/data/locations.json';
 import jobsData from '@/data/jobs.json';
-import { MapPin, Navigation, Coins, Check, ArrowRight, Briefcase } from 'lucide-react';
+import { Navigation, Coins, Check, ArrowRight, Briefcase } from 'lucide-react';
 import type { LocationId } from '@/types/game';
 import { motion } from 'framer-motion';
 

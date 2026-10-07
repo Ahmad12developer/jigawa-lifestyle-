@@ -10,7 +10,7 @@ export interface MapPinData {
   iconText: string;
 }
 
-export function buildIsometricMap(scene: THREE.Scene, onSelectLocation: (id: string) => void) {
+export function buildIsometricMap(scene: THREE.Scene) {
   const group = new THREE.Group();
 
   // Terrain Base: 36 x 36 Semi-Arid Sahel & Sudan Savanna
@@ -298,6 +298,12 @@ export function buildIsometricMap(scene: THREE.Scene, onSelectLocation: (id: str
   bus.position.set(3, 0.65, 0.5);
   bus.castShadow = true;
   group.add(bus);
+
+  // Peugeot 504 Commuter Wagon
+  const wagon = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.7, 0.9), carMatGreen);
+  wagon.position.set(-6, 0.45, -0.6);
+  wagon.castShadow = true;
+  group.add(wagon);
 
   // Keke NAPEP Tricycle near Dutse turnoff
   const kekeMat = new THREE.MeshStandardMaterial({ color: 0x16a34a });

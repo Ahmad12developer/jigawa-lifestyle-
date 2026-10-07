@@ -49,7 +49,7 @@ export const GameViewport: React.FC<GameViewportProps> = ({
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
@@ -86,7 +86,7 @@ export const GameViewport: React.FC<GameViewportProps> = ({
       avatar.position.copy(avatarPos.current);
       scene.add(avatar);
     } else {
-      mapData = buildIsometricMap(scene, (id) => onPinClick?.(id));
+      mapData = buildIsometricMap(scene);
     }
 
     // 5. Click & Raycasting for Movement & Pin Clicks

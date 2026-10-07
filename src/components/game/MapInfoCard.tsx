@@ -7,11 +7,9 @@ import locationsDataRaw from '@/data/locations.json';
 import jobsDataRaw from '@/data/jobs.json';
 import {
   MapPin,
-  Compass,
   ArrowRight,
   TrendingUp,
   Briefcase,
-  Coins,
   Building2,
   GraduationCap,
   Wheat,

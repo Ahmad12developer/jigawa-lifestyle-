@@ -1,3 +1,8 @@
+/**
+ * JIGAWA LIFESTYLE — CORE DOMAIN TYPE SYSTEM
+ * Foundations for Player, Economy, Mutunci, Locations, Gigs, Events, Skills, and Relationships.
+ */
+
 export type Season = 'Dry' | 'Harmattan' | 'Rainy';
 
 export type BackgroundId =
@@ -92,6 +97,33 @@ export interface FloatingNotice {
   type: 'positive' | 'negative' | 'neutral';
 }
 
+// --- EXTENSIBILITY FOUNDATIONS FOR PILLARS 2, 3, 4 (Social Capital, Relationships & Skills) ---
+
+export type RelationshipTier = 'stranger' | 'acquaintance' | 'friend' | 'business_partner' | 'mentor' | 'rival';
+
+export interface NPCRelationship {
+  npcId: string;
+  name: string;
+  role: string;
+  locationId: LocationId;
+  trust: number;        // 0 - 100
+  mutunciRespect: number; // 0 - 100
+  tier: RelationshipTier;
+  lastInteractionDay?: number;
+}
+
+export type SkillCategory = 'business' | 'agriculture' | 'technology' | 'social';
+
+export interface PlayerSkill {
+  id: string;
+  name: string;
+  category: SkillCategory;
+  level: number; // 1 - 10
+  xp: number;
+}
+
+// --- CENTRAL GAME STATE INTERFACE ---
+
 export interface GameState {
   // Primary Player Stats
   naira: number;
@@ -104,18 +136,22 @@ export interface GameState {
   hour: number;    // 0 - 23
   season: Season;
 
-  // Navigation & Character
+  // Navigation & Character Identity
   currentLocation: LocationId;
   selectedBackground: BackgroundId | null;
   activeEvent: RandomEvent | null;
   logs: GameLog[];
   floatingNotices: FloatingNotice[];
 
+  // Extensibility Reservoirs (Prepared for Phase 2+)
+  relationships: Record<string, NPCRelationship>;
+  skills: Record<string, PlayerSkill>;
+
   // Game Status
   isGameOver: boolean;
   gameOverReason: string | null;
 
-  // Actions
+  // Core Game Actions
   chooseBackground: (pathId: BackgroundId) => void;
   performJob: (job: string | Job) => { success: boolean; message: string };
   rest: () => void;

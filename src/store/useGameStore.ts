@@ -13,6 +13,8 @@ import type {
   Job,
 } from '@/types/game';
 
+import { GAME_CONFIG } from '@/config/gameConfig';
+
 import backgroundsRaw from '@/data/backgrounds.json';
 import locationsRaw from '@/data/locations.json';
 import jobsRaw from '@/data/jobs.json';
@@ -24,7 +26,7 @@ const jobsData = jobsRaw as Job[];
 const randomEventsData = randomEventsRaw as RandomEvent[];
 
 function calculateSeason(day: number): Season {
-  const cycle = day % 30;
+  const cycle = ((day - 1) % GAME_CONFIG.TIME.SEASON_CYCLE_DAYS) + 1;
   if (cycle >= 1 && cycle <= 10) return 'Harmattan';
   if (cycle >= 11 && cycle <= 20) return 'Dry';
   return 'Rainy';
@@ -37,10 +39,10 @@ function clamp(value: number, min: number, max: number): number {
 const INITIAL_LOGS: GameLog[] = [
   {
     id: 'log-init-1',
-    day: 1,
-    hour: 8,
+    day: GAME_CONFIG.TIME.START_DAY,
+    hour: GAME_CONFIG.TIME.START_HOUR,
     season: 'Harmattan',
-    message: 'Sannu da zuwa! Welcome to Jigawa State. Choose your origin background to begin your lifestyle journey.',
+    message: 'Sannu da zuwa! Welcome to Jigawa State. Build your wealth, preserve Mutunci, and make your mark across the savannah.',
     type: 'info',
   },
 ];
@@ -48,15 +50,15 @@ const INITIAL_LOGS: GameLog[] = [
 export const useGameStore = create<GameState>()(
   persist(
     (set, get) => ({
-      // Primary Stats
+      // Primary Player Stats
       naira: 150000,
       mutunci: 60,
-      energy: 100,
-      health: 100,
+      energy: GAME_CONFIG.STATS.MAX_ENERGY,
+      health: GAME_CONFIG.STATS.MAX_HEALTH,
 
       // Calendar & Time
-      day: 1,
-      hour: 8,
+      day: GAME_CONFIG.TIME.START_DAY,
+      hour: GAME_CONFIG.TIME.START_HOUR,
       season: 'Harmattan',
 
       // Navigation & Identity
@@ -65,6 +67,10 @@ export const useGameStore = create<GameState>()(
       activeEvent: null,
       logs: INITIAL_LOGS,
       floatingNotices: [],
+
+      // Extended Pillars (Prepared for Phase 2+)
+      relationships: {},
+      skills: {},
 
       // Game status
       isGameOver: false,
@@ -113,72 +119,81 @@ export const useGameStore = create<GameState>()(
         set({
           selectedBackground: pathId,
           naira: bg.startingStats.naira,
-          mutunci: bg.startingStats.mutunci,
-          energy: bg.startingStats.energy,
-          health: bg.startingStats.health,
+          mutunci: clamp(bg.startingStats.mutunci, GAME_CONFIG.STATS.MIN_MUTUNCI, GAME_CONFIG.STATS.MAX_MUTUNCI),
+          energy: clamp(bg.startingStats.energy, GAME_CONFIG.STATS.MIN_ENERGY, GAME_CONFIG.STATS.MAX_ENERGY),
+          health: clamp(bg.startingStats.health, GAME_CONFIG.STATS.MIN_HEALTH, GAME_CONFIG.STATS.MAX_HEALTH),
           currentLocation: bg.homeLocation,
-          day: 1,
-          hour: 8,
+          day: GAME_CONFIG.TIME.START_DAY,
+          hour: GAME_CONFIG.TIME.START_HOUR,
           season: 'Harmattan',
           isGameOver: false,
           gameOverReason: null,
-          logs: [
-            {
-              id: 'log-start-' + Date.now(),
-              day: 1,
-              hour: 8,
-              season: 'Harmattan',
-              message: `Origin Selected: ${bg.title}. Began in ${bg.homeLocation.replace('_', ' ').toUpperCase()} with ₦${bg.startingStats.naira.toLocaleString()} and Mutunci: ${bg.startingStats.mutunci}. Perk: ${bg.perks}`,
-              type: 'info',
-            },
-          ],
         });
 
-        get().addNotice(`Path activated: ${bg.title}`, 'positive');
+        get().addLog({
+          message: `Embarking on life path: ${bg.title}. ${bg.perks}`,
+          type: 'info',
+          nairaChange: bg.startingStats.naira,
+          mutunciChange: bg.startingStats.mutunci,
+        });
+
+        get().addNotice(`Path Chosen: ${bg.title}`, 'positive');
       },
 
-      performJob: (jobArg: string | Job) => {
+      performJob: (jobInput: string | Job) => {
         const state = get();
         if (state.isGameOver) {
-          return { success: false, message: 'Game Over. Please restart or borrow from a micro-finance agent.' };
+          return { success: false, message: 'Game over! Settle distress debts first.' };
         }
 
-        const jobId = typeof jobArg === 'string' ? jobArg : jobArg.id;
-        const job = jobsData.find((j) => j.id === jobId) || (typeof jobArg === 'object' ? jobArg : null);
+        const job =
+          typeof jobInput === 'string'
+            ? jobsData.find((j) => j.id === jobInput)
+            : jobInput;
+
         if (!job) {
-          return { success: false, message: 'Job not found.' };
+          return { success: false, message: 'Invalid or unlisted occupation in this district.' };
+        }
+
+        // Location Check
+        if (job.locationId !== state.currentLocation) {
+          const locName = locationsData.find((l) => l.id === job.locationId)?.name || job.locationId;
+          return {
+            success: false,
+            message: `This gig is located in ${locName}. You must travel there first!`,
+          };
         }
 
         // Perk: Tech & POS Hustler energy drain 10% slower on FUD campus jobs
         let energyCost = job.energyCost;
         if (state.selectedBackground === 'tech_pos_hustler' && job.locationId === 'fud_campus') {
-          energyCost = Math.round(energyCost * 0.9);
+          energyCost = Math.round(energyCost * GAME_CONFIG.PERKS.TECH_ENERGY_COST_FACTOR);
         }
 
         if (state.energy < energyCost) {
           get().addNotice('Not enough Energy! Rest or visit a Bukka.', 'negative');
           return {
             success: false,
-            message: `Too exhausted! You need ${energyCost} Energy, but currently have ${state.energy}.`,
+            message: `Too exhausted! You need ${energyCost} Energy, but currently have ${state.energy}%.`,
           };
         }
 
         // Perk: Agro-Entrepreneur +15% payout on agricultural / market jobs
         let payout = job.payoutNaira;
         if (state.selectedBackground === 'agro_entrepreneur' && job.locationId === 'hadejia_market') {
-          payout = Math.round(payout * 1.15);
+          payout = Math.round(payout * (1 + GAME_CONFIG.PERKS.AGRO_MARKET_PAYOUT_BONUS));
         }
 
-        const newEnergy = clamp(state.energy - energyCost, 0, 100);
-        const newMutunci = clamp(state.mutunci + (job.mutunciChange || 0), 0, 100);
-        const newNaira = state.naira + payout;
+        const newEnergy = clamp(state.energy - energyCost, GAME_CONFIG.STATS.MIN_ENERGY, GAME_CONFIG.STATS.MAX_ENERGY);
+        const newMutunci = clamp(state.mutunci + (job.mutunciChange || 0), GAME_CONFIG.STATS.MIN_MUTUNCI, GAME_CONFIG.STATS.MAX_MUTUNCI);
+        const newNaira = Math.max(0, state.naira + payout);
 
         // Advance hours
         let newHour = state.hour + job.timeHours;
         let newDay = state.day;
-        if (newHour >= 24) {
-          newDay += Math.floor(newHour / 24);
-          newHour = newHour % 24;
+        if (newHour >= GAME_CONFIG.TIME.HOURS_PER_DAY) {
+          newDay += Math.floor(newHour / GAME_CONFIG.TIME.HOURS_PER_DAY);
+          newHour = newHour % GAME_CONFIG.TIME.HOURS_PER_DAY;
         }
 
         const newSeason = calculateSeason(newDay);
@@ -202,8 +217,8 @@ export const useGameStore = create<GameState>()(
 
         get().addNotice(`+₦${payout.toLocaleString()} | -${energyCost} Energy`, 'positive');
 
-        // 15% chance of triggering random regional event
-        if (Math.random() <= 0.15) {
+        // Chance of triggering random regional event
+        if (Math.random() <= GAME_CONFIG.EVENTS.DEFAULT_JOB_EVENT_CHANCE) {
           get().triggerRandomEvent();
         }
 
@@ -217,23 +232,26 @@ export const useGameStore = create<GameState>()(
         const nextDay = state.day + 1;
         const newSeason = calculateSeason(nextDay);
 
-        // Lodging upkeep: Costs ₦1,500 if player has money
-        const restCost = state.naira >= 1500 ? 1500 : 0;
-        const newNaira = state.naira - restCost;
+        // Lodging upkeep: Costs configured lodging fee if player has money
+        const restCost = state.naira >= GAME_CONFIG.UPKEEP.REST_LODGING_COST ? GAME_CONFIG.UPKEEP.REST_LODGING_COST : 0;
+        const newNaira = Math.max(0, state.naira - restCost);
 
         // Perk: Dutse Civil Servant gains +5 Mutunci automatically every 7 days
         let mutunciBonus = 0;
-        if (state.selectedBackground === 'dutse_civil_servant' && nextDay % 7 === 0) {
-          mutunciBonus = 5;
+        if (
+          state.selectedBackground === 'dutse_civil_servant' &&
+          nextDay % GAME_CONFIG.PERKS.CIVIL_SERVANT_MUTUNCI_INTERVAL_DAYS === 0
+        ) {
+          mutunciBonus = GAME_CONFIG.PERKS.CIVIL_SERVANT_MUTUNCI_BONUS;
         }
 
-        const restoredEnergy = 100;
-        const restoredHealth = clamp(state.health + 20, 0, 100);
-        const newMutunci = clamp(state.mutunci + mutunciBonus, 0, 100);
+        const restoredEnergy = GAME_CONFIG.STATS.MAX_ENERGY;
+        const restoredHealth = clamp(state.health + GAME_CONFIG.UPKEEP.REST_HEALTH_RESTORE, GAME_CONFIG.STATS.MIN_HEALTH, GAME_CONFIG.STATS.MAX_HEALTH);
+        const newMutunci = clamp(state.mutunci + mutunciBonus, GAME_CONFIG.STATS.MIN_MUTUNCI, GAME_CONFIG.STATS.MAX_MUTUNCI);
 
         set({
           day: nextDay,
-          hour: 6, // Morning wake up at 6:00 AM
+          hour: GAME_CONFIG.TIME.WAKE_UP_HOUR, // Morning wake up at 6:00 AM
           energy: restoredEnergy,
           health: restoredHealth,
           mutunci: newMutunci,
@@ -242,141 +260,128 @@ export const useGameStore = create<GameState>()(
         });
 
         get().addLog({
-          message: `Rested overnight. Woke up refreshed at 6:00 AM on Day ${nextDay}. Energy restored to 100%, +20 Health${restCost > 0 ? ` (-₦${restCost.toLocaleString()} lodging/room)` : ''}.${mutunciBonus ? ' Civil service tenure reputation bonus: +5 Mutunci!' : ''}`,
+          message: `Rested overnight. Woke up refreshed at 6:00 AM on Day ${nextDay}. Energy restored to 100%, +${GAME_CONFIG.UPKEEP.REST_HEALTH_RESTORE} Health${restCost > 0 ? ` (-₦${restCost.toLocaleString()} lodging/room)` : ''}.${mutunciBonus ? ' Civil service tenure reputation bonus: +5 Mutunci!' : ''}`,
           type: 'rest',
-          energyChange: 100 - state.energy,
+          energyChange: restoredEnergy - state.energy,
           nairaChange: restCost > 0 ? -restCost : undefined,
           mutunciChange: mutunciBonus || undefined,
         });
 
-        get().addNotice(`Day ${nextDay} begun! Energy (100%) & Health (+20)`, 'positive');
+        get().addNotice(`Day ${nextDay}: Fully Rested!`, 'positive');
       },
 
       eatBukka: () => {
         const state = get();
-        const cost = 2000;
-        if (state.naira < cost) {
-          get().addNotice('Cannot afford Bukka meal!', 'negative');
-          return { success: false, message: 'Cannot afford a meal at the Bukka.' };
+        if (state.isGameOver) return { success: false, message: 'Game over! Settle distress debts first.' };
+
+        const mealCost = GAME_CONFIG.UPKEEP.BUKKA_MEAL_COST;
+        if (state.naira < mealCost) {
+          get().addNotice(`Not enough Naira for Bukka meal (Costs ₦${mealCost.toLocaleString()})`, 'negative');
+          return { success: false, message: `Need ₦${mealCost.toLocaleString()} for a proper meal.` };
         }
 
-        const newNaira = state.naira - cost;
-        const newEnergy = clamp(state.energy + 25, 0, 100);
-        const newHealth = clamp(state.health + 8, 0, 100);
-        const newHour = (state.hour + 1) % 24;
+        const newNaira = state.naira - mealCost;
+        const newHealth = clamp(state.health + GAME_CONFIG.UPKEEP.BUKKA_HEALTH_RESTORE, GAME_CONFIG.STATS.MIN_HEALTH, GAME_CONFIG.STATS.MAX_HEALTH);
+        const newEnergy = clamp(state.energy + GAME_CONFIG.UPKEEP.BUKKA_ENERGY_RESTORE, GAME_CONFIG.STATS.MIN_ENERGY, GAME_CONFIG.STATS.MAX_ENERGY);
 
         set({
           naira: newNaira,
-          energy: newEnergy,
           health: newHealth,
-          hour: newHour,
+          energy: newEnergy,
         });
 
         get().addLog({
-          message: `Enjoyed Tuwon Shinkafa & Miyar Kuka at the Bukka (-₦${cost.toLocaleString()}, +25 Energy, +8 Health).`,
+          message: `Ate hot Tuwo & Miyan Kuka at local bukka (-₦${mealCost.toLocaleString()}, +${GAME_CONFIG.UPKEEP.BUKKA_HEALTH_RESTORE} Health, +${GAME_CONFIG.UPKEEP.BUKKA_ENERGY_RESTORE} Energy).`,
           type: 'lifestyle',
-          nairaChange: -cost,
-          energyChange: 25,
+          nairaChange: -mealCost,
+          energyChange: GAME_CONFIG.UPKEEP.BUKKA_ENERGY_RESTORE,
         });
 
-        get().addNotice('+25 Energy | -₦2,000', 'neutral');
-        return { success: true, message: 'Warm meal enjoyed at local Bukka.' };
+        get().addNotice(`+${GAME_CONFIG.UPKEEP.BUKKA_HEALTH_RESTORE} Health | -₦${mealCost.toLocaleString()}`, 'positive');
+        return { success: true, message: 'Ate hot Tuwo at the local Bukka!' };
       },
 
       pray: () => {
         const state = get();
-        if (state.energy < 5) {
-          get().addNotice('Too weak to stand for prayer!', 'negative');
-          return { success: false, message: 'Too exhausted to stand for prayer.' };
-        }
+        if (state.isGameOver) return { success: false, message: 'Game over! Settle distress debts first.' };
 
-        const newMutunci = clamp(state.mutunci + 3, 0, 100);
-        const newEnergy = clamp(state.energy - 5, 0, 100);
-        const newHour = (state.hour + 1) % 24;
+        const newMutunci = clamp(state.mutunci + GAME_CONFIG.UPKEEP.PRAYER_MUTUNCI_BONUS, GAME_CONFIG.STATS.MIN_MUTUNCI, GAME_CONFIG.STATS.MAX_MUTUNCI);
 
-        set({
-          mutunci: newMutunci,
-          energy: newEnergy,
-          hour: newHour,
-        });
+        set({ mutunci: newMutunci });
 
         get().addLog({
-          message: 'Performed daily prayer at community mosque (+3 Mutunci, -5 Energy).',
+          message: `Offered prayer & community reflection (+${GAME_CONFIG.UPKEEP.PRAYER_MUTUNCI_BONUS} Mutunci).`,
           type: 'lifestyle',
-          mutunciChange: 3,
-          energyChange: -5,
+          mutunciChange: GAME_CONFIG.UPKEEP.PRAYER_MUTUNCI_BONUS,
         });
 
-        get().addNotice('+3 Mutunci | Inner Peace', 'positive');
-        return { success: true, message: 'Spirit refreshed.' };
+        get().addNotice(`+${GAME_CONFIG.UPKEEP.PRAYER_MUTUNCI_BONUS} Mutunci (Social Respect)`, 'positive');
+        return { success: true, message: 'Prayed and greeted community members.' };
       },
 
-      travel: (locArg: LocationId | GameLocation) => {
+      travel: (locInput: LocationId | GameLocation) => {
         const state = get();
-        const locationId = typeof locArg === 'string' ? locArg : locArg.id;
+        if (state.isGameOver) return { success: false, message: 'Game over! Settle distress debts first.' };
 
-        if (state.currentLocation === locationId) {
-          return { success: false, message: 'Already at this location.' };
+        const locId = typeof locInput === 'string' ? locInput : locInput.id;
+        const target = locationsData.find((l) => l.id === locId);
+
+        if (!target) {
+          return { success: false, message: 'Target destination not found on the Jigawa transit chart.' };
         }
 
-        const targetLoc = locationsData.find((l) => l.id === locationId) || (typeof locArg === 'object' ? locArg : null);
-        if (!targetLoc) return { success: false, message: 'Invalid destination.' };
+        if (state.currentLocation === target.id) {
+          return { success: false, message: `You are already in ${target.name}.` };
+        }
 
-        if (state.naira < targetLoc.travelCost) {
-          get().addNotice('Insufficient fare for commercial vehicle!', 'negative');
+        if (state.naira < target.travelCost) {
+          get().addNotice(`Insufficient fare! Needs ₦${target.travelCost.toLocaleString()}`, 'negative');
           return {
             success: false,
-            message: `Travel to ${targetLoc.name} costs ₦${targetLoc.travelCost.toLocaleString()}.`,
+            message: `Cannot afford road transit to ${target.name}. Fare is ₦${target.travelCost.toLocaleString()}, but you have ₦${state.naira.toLocaleString()}.`,
           };
         }
 
-        const newNaira = state.naira - targetLoc.travelCost;
-        const newEnergy = clamp(state.energy - 12, 0, 100);
+        // Travel time and energy consumption
+        const travelTimeHours = 2;
+        const travelEnergyCost = 10;
 
-        let newHour = state.hour + 2;
+        let newHour = state.hour + travelTimeHours;
         let newDay = state.day;
-        if (newHour >= 24) {
-          newDay += Math.floor(newHour / 24);
-          newHour = newHour % 24;
+        if (newHour >= GAME_CONFIG.TIME.HOURS_PER_DAY) {
+          newDay += Math.floor(newHour / GAME_CONFIG.TIME.HOURS_PER_DAY);
+          newHour = newHour % GAME_CONFIG.TIME.HOURS_PER_DAY;
         }
 
+        const newNaira = state.naira - target.travelCost;
+        const newEnergy = clamp(state.energy - travelEnergyCost, GAME_CONFIG.STATS.MIN_ENERGY, GAME_CONFIG.STATS.MAX_ENERGY);
+        const newSeason = calculateSeason(newDay);
+
         set({
-          currentLocation: locationId,
+          currentLocation: target.id,
           naira: newNaira,
           energy: newEnergy,
           hour: newHour,
           day: newDay,
-          season: calculateSeason(newDay),
+          season: newSeason,
         });
 
         get().addLog({
-          message: `Boarded commercial transport to ${targetLoc.name} (${targetLoc.zone}) for ₦${targetLoc.travelCost.toLocaleString()} (-12 Energy, +2 hrs).`,
+          message: `Traveled via commercial transport to ${target.name} (${target.zone}). Fare: -₦${target.travelCost.toLocaleString()}, -${travelEnergyCost} Energy, +${travelTimeHours} hrs.`,
           type: 'travel',
-          nairaChange: -targetLoc.travelCost,
-          energyChange: -12,
+          nairaChange: -target.travelCost,
+          energyChange: -travelEnergyCost,
         });
 
-        get().addNotice(`Arrived at ${targetLoc.name}!`, 'neutral');
-
-        if (Math.random() <= 0.15) {
-          get().triggerRandomEvent();
-        }
-
-        return { success: true, message: `Safely arrived at ${targetLoc.name}.` };
+        get().addNotice(`Arrived: ${target.name}`, 'positive');
+        return { success: true, message: `Arrived in ${target.name}!` };
       },
 
-      triggerRandomEvent: (presetEvent?: RandomEvent) => {
-        const state = get();
-        if (state.activeEvent) return;
-
-        let selected: RandomEvent;
-        if (presetEvent) {
-          selected = presetEvent;
-        } else {
-          const candidates = randomEventsData.filter(
-            (e) => !e.contextLocation || e.contextLocation === state.currentLocation
-          );
-          const pool = candidates.length > 0 ? candidates : randomEventsData;
+      triggerRandomEvent: (forcedEvent?: RandomEvent) => {
+        let selected = forcedEvent;
+        if (!selected) {
+          const pool = randomEventsData;
+          if (pool.length === 0) return;
           const index = Math.floor(Math.random() * pool.length);
           selected = pool[index];
         }
@@ -390,17 +395,18 @@ export const useGameStore = create<GameState>()(
         if (!event) return;
 
         const choice = choiceKey === 'A' ? event.choiceA : event.choiceB;
-        let { naira = 0, mutunci = 0, energy = 0, health = 0 } = choice.statChanges;
+        const { naira = 0, energy = 0, health = 0 } = choice.statChanges;
+        let { mutunci = 0 } = choice.statChanges;
 
         // Perk: Royal Heritage double Mutunci penalty for negative choices
         if (state.selectedBackground === 'royal_heritage' && mutunci < 0) {
-          mutunci = mutunci * 2;
+          mutunci = mutunci * GAME_CONFIG.PERKS.ROYAL_MUTUNCI_PENALTY_MULTIPLIER;
         }
 
-        const newNaira = state.naira + naira;
-        const newMutunci = clamp(state.mutunci + mutunci, 0, 100);
-        const newEnergy = clamp(state.energy + energy, 0, 100);
-        const newHealth = clamp(state.health + health, 0, 100);
+        const newNaira = Math.max(0, state.naira + naira);
+        const newMutunci = clamp(state.mutunci + mutunci, GAME_CONFIG.STATS.MIN_MUTUNCI, GAME_CONFIG.STATS.MAX_MUTUNCI);
+        const newEnergy = clamp(state.energy + energy, GAME_CONFIG.STATS.MIN_ENERGY, GAME_CONFIG.STATS.MAX_ENERGY);
+        const newHealth = clamp(state.health + health, GAME_CONFIG.STATS.MIN_HEALTH, GAME_CONFIG.STATS.MAX_HEALTH);
 
         set({
           naira: newNaira,
@@ -418,33 +424,23 @@ export const useGameStore = create<GameState>()(
           energyChange: energy || undefined,
         });
 
-        const noticeSummary = [
-          naira ? `${naira > 0 ? '+' : ''}₦${naira.toLocaleString()}` : '',
-          mutunci ? `${mutunci > 0 ? '+' : ''}${mutunci} Mutunci` : '',
-          energy ? `${energy > 0 ? '+' : ''}${energy} Energy` : '',
-        ]
-          .filter(Boolean)
-          .join(' | ');
+        get().addNotice(`Event Resolved: "${choice.text}"`, 'neutral');
 
-        if (noticeSummary) {
-          get().addNotice(noticeSummary, naira >= 0 ? 'positive' : 'negative');
-        }
-
-        if (newHealth <= 0) {
+        // Check Bankruptcy / Critical Exhaustion
+        if (newHealth <= 0 || (newNaira <= 0 && newEnergy <= 0)) {
           set({
             isGameOver: true,
-            gameOverReason: 'Your Health dropped to zero due to severe illness or exhaustion.',
+            gameOverReason:
+              newHealth <= 0
+                ? 'Fatal health collapse due to untreated illness and severe fatigue in the Harmattan dust.'
+                : 'Complete economic insolvency: ₦0 cash and 0% energy remaining. Unable to hustle or eat.',
           });
-        } else if (newNaira < -100000) {
-          set({
-            isGameOver: true,
-            gameOverReason: 'Your debts exceeded -₦100,000 without collateral. Bankruptcy declared in Jigawa.',
-          });
+          get().addNotice('Game Over! Settle distress debts to restart.', 'negative');
         }
       },
 
-      handleEventChoice: (choiceKey: 'A' | 'B') => {
-        get().resolveEvent(choiceKey);
+      handleEventChoice: (choice: 'A' | 'B') => {
+        get().resolveEvent(choice);
       },
 
       dismissEvent: () => {
@@ -453,21 +449,21 @@ export const useGameStore = create<GameState>()(
 
       borrowLoan: () => {
         const state = get();
-        const loanAmount = 75000;
+        const loanAmount = GAME_CONFIG.DISTRESS.MICROFINANCE_LOAN_AMOUNT;
         set({
           naira: state.naira + loanAmount,
-          mutunci: clamp(state.mutunci - 15, 0, 100),
-          health: 80,
-          energy: 90,
+          mutunci: clamp(state.mutunci - GAME_CONFIG.DISTRESS.LOAN_MUTUNCI_PENALTY, GAME_CONFIG.STATS.MIN_MUTUNCI, GAME_CONFIG.STATS.MAX_MUTUNCI),
+          health: GAME_CONFIG.DISTRESS.RECOVERY_HEALTH,
+          energy: GAME_CONFIG.DISTRESS.RECOVERY_ENERGY,
           isGameOver: false,
           gameOverReason: null,
         });
 
         get().addLog({
-          message: `Secured emergency micro-finance loan of ₦${loanAmount.toLocaleString()} (-15 Mutunci for taking distress debt). Restored to active life!`,
+          message: `Secured emergency micro-finance loan of ₦${loanAmount.toLocaleString()} (-${GAME_CONFIG.DISTRESS.LOAN_MUTUNCI_PENALTY} Mutunci for taking distress debt). Restored to active life!`,
           type: 'warning',
           nairaChange: loanAmount,
-          mutunciChange: -15,
+          mutunciChange: -GAME_CONFIG.DISTRESS.LOAN_MUTUNCI_PENALTY,
         });
 
         get().addNotice(`Loan Granted: +₦${loanAmount.toLocaleString()}`, 'neutral');
@@ -477,23 +473,44 @@ export const useGameStore = create<GameState>()(
         set({
           naira: 150000,
           mutunci: 60,
-          energy: 100,
-          health: 100,
-          day: 1,
-          hour: 8,
+          energy: GAME_CONFIG.STATS.MAX_ENERGY,
+          health: GAME_CONFIG.STATS.MAX_HEALTH,
+          day: GAME_CONFIG.TIME.START_DAY,
+          hour: GAME_CONFIG.TIME.START_HOUR,
           season: 'Harmattan',
           currentLocation: 'dutse_secretariat',
-          selectedBackground: null,
+          selectedBackground: 'dutse_civil_servant',
           activeEvent: null,
           logs: INITIAL_LOGS,
           floatingNotices: [],
+          relationships: {},
+          skills: {},
           isGameOver: false,
           gameOverReason: null,
         });
+        get().addNotice('Game Reset to New Life!', 'neutral');
       },
     }),
     {
-      name: 'jigawa-lifestyle-save-v1',
+      name: GAME_CONFIG.SAVE.STORAGE_KEY,
+      version: GAME_CONFIG.SAVE.VERSION,
+      // Partialize: Isolate persistent game domain from ephemeral UI state
+      partialize: (state) => ({
+        naira: state.naira,
+        mutunci: state.mutunci,
+        energy: state.energy,
+        health: state.health,
+        day: state.day,
+        hour: state.hour,
+        season: state.season,
+        currentLocation: state.currentLocation,
+        selectedBackground: state.selectedBackground,
+        logs: state.logs,
+        relationships: state.relationships,
+        skills: state.skills,
+        isGameOver: state.isGameOver,
+        gameOverReason: state.gameOverReason,
+      }),
     }
   )
 );
