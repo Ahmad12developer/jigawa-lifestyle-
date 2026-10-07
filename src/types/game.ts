@@ -32,11 +32,14 @@ export type LocationId =
 export interface GameLocation {
   id: LocationId;
   name: string;
+  hausaName?: string;
   zone: string;
   description: string;
   travelCost: number;
   unlockedByDefault: boolean;
   availableJobIds: string[];
+  economicSpecialty?: string;
+  coordinates?: [number, number, number];
 }
 
 export interface Job {

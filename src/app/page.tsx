@@ -7,6 +7,7 @@ import { useSoundFX } from '@/hooks/useSoundFX';
 import { GameHud } from '@/components/game/GameHud';
 import { PhoneModal } from '@/components/game/PhoneModal';
 import { ShopModal } from '@/components/game/ShopModal';
+import { MapInfoCard } from '@/components/game/MapInfoCard';
 import { EventModal } from '@/components/EventModal';
 import { CharacterCard } from '@/components/CharacterCard';
 import { Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
@@ -18,7 +19,7 @@ const GameViewport = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="absolute inset-0 bg-[#0f172a] flex flex-col items-center justify-center text-white">
+      <div className="absolute inset-0 bg-[#0c121e] flex flex-col items-center justify-center text-white">
         <div className="w-12 h-12 rounded-2xl bg-emerald-600 flex items-center justify-center font-black text-xl animate-pulse mb-3">
           JL
         </div>
@@ -34,6 +35,7 @@ export default function Home() {
   const [viewMode, setViewMode] = useState<'home' | 'map'>('home');
   const [isPhoneOpen, setIsPhoneOpen] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(false);
+  const [selectedPinId, setSelectedPinId] = useState<string | null>(null);
 
   const { selectedBackground, floatingNotices, travel, addNotice } = useGameStore();
   const { playClick, playCash } = useSoundFX();
@@ -44,7 +46,7 @@ export default function Home() {
 
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-[#0f172a] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#0c121e] flex items-center justify-center p-4">
         <div className="text-center">
           <div className="w-12 h-12 rounded-2xl bg-[#064E3B] text-[#F5E6CA] flex items-center justify-center font-black text-xl mx-auto mb-3 shadow-md">
             JL
@@ -56,10 +58,10 @@ export default function Home() {
     );
   }
 
-  // 1. Initial State: Background selection before entering the 3D world
+  // 1. Initial State: Background selection fallback if ever reset
   if (!selectedBackground) {
     return (
-      <div className="min-h-screen bg-[#0f172a] text-[#FAF7F2] flex items-center justify-center p-4 sm:p-6 font-sans">
+      <div className="min-h-screen bg-[#0c121e] text-[#FAF7F2] flex items-center justify-center p-4 sm:p-6 font-sans">
         <div className="max-w-4xl w-full">
           <div className="text-center mb-6">
             <span className="text-xs uppercase font-extrabold tracking-widest text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-3 py-1 rounded-full">
@@ -85,21 +87,32 @@ export default function Home() {
       <GameViewport
         viewMode={viewMode}
         onPinClick={(locationId) => {
-          const res = travel(locationId as any);
-          if (res.success) {
-            playCash();
-            addNotice(`Traveled to new district!`, 'positive');
-          }
+          setSelectedPinId(locationId);
+          playClick();
         }}
       />
 
       {/* Retro-Modern HUD & Dock Overlay */}
       <GameHud
         viewMode={viewMode}
-        setViewMode={setViewMode}
+        setViewMode={(mode) => {
+          setViewMode(mode);
+          if (mode === 'home') setSelectedPinId(null);
+        }}
         openPhone={() => setIsPhoneOpen(true)}
         openShop={() => setIsShopOpen(true)}
       />
+
+      {/* Interactive 3D Map Pin Details Card */}
+      {viewMode === 'map' && (
+        <MapInfoCard
+          selectedPinId={selectedPinId}
+          onClose={() => setSelectedPinId(null)}
+          onOpenJobsForLocation={() => {
+            setIsPhoneOpen(true);
+          }}
+        />
+      )}
 
       {/* Floating Notices / Micro-Interactions */}
       <div className="fixed top-20 right-4 z-40 flex flex-col gap-2 pointer-events-none">
@@ -138,6 +151,7 @@ export default function Home() {
         onClose={() => setIsPhoneOpen(false)}
         onSelectMapLocation={(locId) => {
           setViewMode('map');
+          setSelectedPinId(locId);
           setIsPhoneOpen(false);
         }}
       />

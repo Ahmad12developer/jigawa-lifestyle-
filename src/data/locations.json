@@ -2,46 +2,61 @@
   {
     "id": "dutse_secretariat",
     "name": "Dutse State Secretariat",
-    "zone": "Dutse Municipal",
-    "description": "The administrative heart of Jigawa State. Government offices, civil service hubs, and formal meeting spaces.",
+    "hausaName": "Babban Birnin Dutse",
+    "zone": "Dutse Municipal (Rocky Citadel)",
+    "description": "The administrative heart of Jigawa State nestled under towering granite inselbergs. Home to government ministries, policy drafting, civil service councils, and official protocol.",
     "travelCost": 1500,
     "unlockedByDefault": true,
-    "availableJobIds": ["admin_assistant", "protocol_officer"]
-  },
-  {
-    "id": "hadejia_market",
-    "name": "Hadejia Grain & Livestock Market",
-    "zone": "Hadejia River Basin",
-    "description": "A bustling commerce hub famous for sesame, rice, fish, and cattle trading across northern transport corridors.",
-    "travelCost": 3000,
-    "unlockedByDefault": true,
-    "availableJobIds": ["grain_trader", "livestock_broker", "cargo_loading"]
+    "availableJobIds": ["admin_assistant", "protocol_officer"],
+    "economicSpecialty": "Government Administration, Contracts & Diplomatic Networking",
+    "coordinates": [-2, 3.8, 8]
   },
   {
     "id": "fud_campus",
     "name": "Federal University Dutse (FUD) Hub",
-    "zone": "Dutse South",
-    "description": "Vibrant student population, mobile money agents, fast-food spots, and informal tech services.",
+    "hausaName": "Jami'ar Tarayya ta Dutse",
+    "zone": "Dutse South (Student Avenue)",
+    "description": "Vibrant campus avenue alive with students, mobile POS agents, cafeterias, crypto exchangers, and informal tech freelancers.",
     "travelCost": 1000,
     "unlockedByDefault": true,
-    "availableJobIds": ["pos_agent", "campus_logistics", "freelance_graphics"]
+    "availableJobIds": ["pos_agent", "campus_logistics", "freelance_graphics"],
+    "economicSpecialty": "Fintech / POS Micro-cash, Graphic Design & Quick Student Services",
+    "coordinates": [10, 3.8, 8]
+  },
+  {
+    "id": "hadejia_market",
+    "name": "Hadejia Grain & River Market",
+    "hausaName": "Kasuwar Hatsi ta Hadejia",
+    "zone": "Hadejia River Basin (Wetlands)",
+    "description": "The international grain, sesame, cattle, and smoked river fish wholesale epicenter. Connecting transit trade corridors between Kano, Chad, and Niger Republic.",
+    "travelCost": 3000,
+    "unlockedByDefault": true,
+    "availableJobIds": ["grain_trader", "livestock_broker", "cargo_loading"],
+    "economicSpecialty": "Sesame & Grain Trading, Smoked River Fish Wholesale & Livestock Auctions",
+    "coordinates": [11, 4.2, -11]
   },
   {
     "id": "ringim_palace",
-    "name": "Ringim Historic & Cultural District",
-    "zone": "Ringim",
-    "description": "Rich in tradition, community gatherings, civic councils, and traditional crafts.",
+    "name": "Ringim Historic District & Palace",
+    "hausaName": "Masarautar Ringim",
+    "zone": "Ringim Emirate Center",
+    "description": "Steeped in traditional prestige and community honor. Historic palace gates, Durbar equestrian ceremonies, leather craftsmen, and elder civic assemblies.",
     "travelCost": 2500,
     "unlockedByDefault": true,
-    "availableJobIds": ["cultural_guide", "durbar_organizer"]
+    "availableJobIds": ["cultural_guide", "durbar_organizer"],
+    "economicSpecialty": "Mutunci Cultural Diplomacy, Durbar Equestrian Pageantry & Traditional Crafts",
+    "coordinates": [-11, 4.0, 4]
   },
   {
     "id": "kazaure_agro_tech",
-    "name": "Kazaure Innovation & Farming Hub",
-    "zone": "Kazaure",
-    "description": "A growing modern center blending dam irrigation projects, technology initiatives, and processing plants.",
+    "name": "Kazaure Innovation & Dam Hub",
+    "hausaName": "Cibiyar Fasaha da Noma Kazaure",
+    "zone": "Kazaure Dam & Tech Corridor",
+    "description": "A pioneering hub blending modern automated dam irrigation, extensive date palm processing, solar panel arrays, and agro-tech innovations.",
     "travelCost": 3500,
     "unlockedByDefault": true,
-    "availableJobIds": ["irrigation_tech", "solar_installer"]
+    "availableJobIds": ["irrigation_tech", "solar_installer"],
+    "economicSpecialty": "Dam Irrigation Engineering, Solar Power Maintenance & Date Farming",
+    "coordinates": [-12, 3.8, -13]
   }
 ]
