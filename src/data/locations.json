@@ -1,62 +1,62 @@
 [
   {
     "id": "dutse_secretariat",
-    "name": "Dutse State Secretariat",
-    "hausaName": "Babban Birnin Dutse",
-    "zone": "Dutse Municipal (Rocky Citadel)",
-    "description": "The administrative heart of Jigawa State nestled under towering granite inselbergs. Home to government ministries, policy drafting, civil service councils, and official protocol.",
+    "name": "Dutse State Secretariat & Civic Complex",
+    "hausaName": "Babban Sakatariyar Jihar Jigawa",
+    "zone": "Kiyawa Road Civic District",
+    "description": "The administrative citadel of Jigawa State along Kiyawa Road. Home to government ministries, civil service commissions, executive council chambers, and official state protocol.",
     "travelCost": 1500,
     "unlockedByDefault": true,
     "availableJobIds": ["admin_assistant", "protocol_officer"],
     "economicSpecialty": "Government Administration, Contracts & Diplomatic Networking",
-    "coordinates": [-2, 3.8, 8]
+    "coordinates": [10, 4.2, 8]
   },
   {
     "id": "fud_campus",
-    "name": "Federal University Dutse (FUD) Hub",
+    "name": "Federal University Dutse (FUD)",
     "hausaName": "Jami'ar Tarayya ta Dutse",
-    "zone": "Dutse South (Student Avenue)",
-    "description": "Vibrant campus avenue alive with students, mobile POS agents, cafeterias, crypto exchangers, and informal tech freelancers.",
+    "zone": "South Campus Corridor (Ibrahim Aliyu Way)",
+    "description": "Vibrant federal university campus bustling with undergraduate students, academic lecture halls, tech innovation labs, mobile POS agents, and lively student cafeterias.",
     "travelCost": 1000,
     "unlockedByDefault": true,
     "availableJobIds": ["pos_agent", "campus_logistics", "freelance_graphics"],
     "economicSpecialty": "Fintech / POS Micro-cash, Graphic Design & Quick Student Services",
-    "coordinates": [10, 3.8, 8]
+    "coordinates": [2, 4.2, 14]
   },
   {
     "id": "hadejia_market",
-    "name": "Hadejia Grain & River Market",
-    "hausaName": "Kasuwar Hatsi ta Hadejia",
-    "zone": "Hadejia River Basin (Wetlands)",
-    "description": "The international grain, sesame, cattle, and smoked river fish wholesale epicenter. Connecting transit trade corridors between Kano, Chad, and Niger Republic.",
-    "travelCost": 3000,
+    "name": "Kasuwar Dutse (Ultra-Modern Market & Grain Depot)",
+    "hausaName": "Babban Kasuwar Dutse da Ma'ajiyar Hatsi",
+    "zone": "Takur Commercial & Market Sector",
+    "description": "The beating commercial heart of Dutse. Vibrant market stalls overflowing with sesame, sorted rice, dried fish, textiles, spices, and busy mobile money POS operators.",
+    "travelCost": 2000,
     "unlockedByDefault": true,
     "availableJobIds": ["grain_trader", "livestock_broker", "cargo_loading"],
     "economicSpecialty": "Sesame & Grain Trading, Smoked River Fish Wholesale & Livestock Auctions",
-    "coordinates": [11, 4.2, -11]
+    "coordinates": [-10, 4.2, 9]
   },
   {
     "id": "ringim_palace",
-    "name": "Ringim Historic District & Palace",
-    "hausaName": "Masarautar Ringim",
-    "zone": "Ringim Emirate Center",
-    "description": "Steeped in traditional prestige and community honor. Historic palace gates, Durbar equestrian ceremonies, leather craftsmen, and elder civic assemblies.",
+    "name": "Fadar Sarkin Dutse (Emir's Palace & Garu Citadel)",
+    "hausaName": "Fadar Mai Martaba Sarkin Dutse (Garu)",
+    "zone": "Garu Ancient Royal Quarter",
+    "description": "Historic royal seat of the Emir of Dutse nestled at the base of the granite hills. Celebrated for ornate Hausa Tubali architecture, Durbar horse pageantry, and council elders.",
     "travelCost": 2500,
     "unlockedByDefault": true,
     "availableJobIds": ["cultural_guide", "durbar_organizer"],
     "economicSpecialty": "Mutunci Cultural Diplomacy, Durbar Equestrian Pageantry & Traditional Crafts",
-    "coordinates": [-11, 4.0, 4]
+    "coordinates": [-11, 4.4, -8]
   },
   {
     "id": "kazaure_agro_tech",
-    "name": "Kazaure Innovation & Dam Hub",
-    "hausaName": "Cibiyar Fasaha da Noma Kazaure",
-    "zone": "Kazaure Dam & Tech Corridor",
-    "description": "A pioneering hub blending modern automated dam irrigation, extensive date palm processing, solar panel arrays, and agro-tech innovations.",
-    "travelCost": 3500,
+    "name": "Dutse Rock Summit & Innovation Hub",
+    "hausaName": "Dutsen Dutse da Cibiyar Fasahar Sadarwa",
+    "zone": "Dutse Granite Inselbergs & Tech Corridor",
+    "description": "The towering granite inselberg overlooking Dutse, crowned by telecom relay towers, hiking lookouts, solar power arrays, and the Jigawa ICT Innovation Hub.",
+    "travelCost": 3000,
     "unlockedByDefault": true,
     "availableJobIds": ["irrigation_tech", "solar_installer"],
     "economicSpecialty": "Dam Irrigation Engineering, Solar Power Maintenance & Date Farming",
-    "coordinates": [-12, 3.8, -13]
+    "coordinates": [2, 6.2, -12]
   }
 ]

@@ -19,10 +19,10 @@ export const LocationMap: React.FC = () => {
         <div>
           <h3 className="text-base font-bold text-[#064E3B] flex items-center gap-2">
             <Navigation className="w-5 h-5 text-[#C2593F]" />
-            <span>Jigawa State Transit & Commercial Map</span>
+            <span>Dutse Capital City Transit & Commercial Map</span>
           </h3>
           <p className="text-xs text-[#1C1917]/70 mt-0.5">
-            Board regional commercial transport along the state highway network. Travel consumes fare and advances time.
+            Board commercial Keke NAPEP tricycles and transit buses across Dutse city corridors. From the historic Garu Palace to Takur Roundabout and FUD campus.
           </p>
         </div>
       </div>
