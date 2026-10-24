@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import * as THREE from 'three';
 import { useGameStore } from '@/store/useGameStore';
 import { useSoundFX } from '@/hooks/useSoundFX';
-import { X, Sparkles, Check, User, Crown, Shirt, Footprints } from 'lucide-react';
+import { X, Sparkles, Check, User, Crown, Shirt, Footprints, RotateCw } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { createModularAvatar } from './ModularAvatar';
 import type {
   AvatarCustomization,
   GenderType,
@@ -43,6 +45,68 @@ const HEADWEAR_COLORS = [
   { id: '#334155', label: 'Charcoal Slate', hex: '#334155' },
 ];
 
+const AvatarPreviewCanvas: React.FC<{ draft: AvatarCustomization }> = ({ draft }) => {
+  const mountRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const mount = mountRef.current;
+    if (!mount) return;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0c121e);
+
+    const camera = new THREE.PerspectiveCamera(34, mount.clientWidth / mount.clientHeight, 0.1, 100);
+    camera.position.set(0, 1.35, 3.8);
+    camera.lookAt(0, 1.1, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(mount.clientWidth, mount.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    mount.innerHTML = '';
+    mount.appendChild(renderer.domElement);
+
+    const ambientLight = new THREE.AmbientLight(0xfffbeb, 1.6);
+    scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0xffeedd, 2.4);
+    dirLight.position.set(6, 12, 8);
+    scene.add(dirLight);
+
+    const avatar = createModularAvatar(draft);
+    scene.add(avatar);
+
+    let animId: number;
+    const clock = new THREE.Clock();
+
+    const animate = () => {
+      animId = requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      const time = clock.getElapsedTime();
+      avatar.rotation.y = time * 0.45; // Smooth slow showcase spin
+      avatar.userData?.update?.(delta, time, false);
+      renderer.render(scene, camera);
+    };
+
+    animate();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      renderer.dispose();
+      mount.innerHTML = '';
+    };
+  }, [draft]);
+
+  return (
+    <div className="relative w-full h-44 rounded-2xl overflow-hidden border border-emerald-500/30 bg-[#080d17] shadow-inner flex items-center justify-center">
+      <div ref={mountRef} className="w-full h-full" />
+      <div className="absolute top-2 right-2 flex items-center gap-1 text-[10px] text-white/50 bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-sm pointer-events-none">
+        <RotateCw className="w-3 h-3 text-emerald-400 animate-spin" />
+        <span>Live 3D Preview</span>
+      </div>
+    </div>
+  );
+};
+
 export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
   isOpen,
   onClose,
@@ -67,7 +131,7 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
         initial={{ scale: 0.92, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.92, opacity: 0, y: 20 }}
-        className="relative w-full max-w-lg bg-[#0c121e] border-2 border-emerald-500/30 rounded-3xl shadow-2xl flex flex-col text-white overflow-hidden max-h-[90vh]"
+        className="relative w-full max-w-lg bg-[#0c121e] border-2 border-emerald-500/30 rounded-3xl shadow-2xl flex flex-col text-white overflow-hidden max-h-[92vh]"
       >
         {/* Header */}
         <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between bg-gradient-to-r from-[#064E3B]/40 to-transparent">
@@ -90,27 +154,22 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
           </button>
         </div>
 
-        {/* Live Outfit Badge & Preview Summary */}
-        <div className="px-5 py-3 bg-[#111827]/90 border-b border-white/5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div
-              className="w-10 h-10 rounded-2xl flex items-center justify-center text-xl shadow border border-white/20"
-              style={{ backgroundColor: draft.attireColor }}
-            >
-              {draft.gender === 'female' ? '🧕🏽' : '👳🏽‍♂️'}
-            </div>
+        {/* 3D Human Character Preview Section */}
+        <div className="p-4 bg-[#111827]/90 border-b border-white/5 space-y-2">
+          <AvatarPreviewCanvas draft={draft} />
+          <div className="flex items-center justify-between text-xs px-1">
             <div>
-              <span className="block text-xs font-bold text-emerald-400 capitalize">
+              <span className="block font-bold text-emerald-400 capitalize text-xs">
                 {draft.attire.replace('_', ' ')}
               </span>
               <span className="block text-[10px] text-white/50 capitalize">
                 Head: {draft.headwear.replace('_', ' ')} · Shoes: {draft.footwear.replace('_', ' ')}
               </span>
             </div>
+            <span className="text-[10px] bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">
+              Interactive View
+            </span>
           </div>
-          <span className="text-[10px] bg-emerald-500/20 text-emerald-300 font-bold px-2 py-1 rounded-full border border-emerald-500/30">
-            Preview Active
-          </span>
         </div>
 
         {/* Category Tabs */}

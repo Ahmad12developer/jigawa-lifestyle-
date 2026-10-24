@@ -173,9 +173,13 @@ export const GameHud: React.FC<GameHudProps> = ({
             </div>
 
             {/* Central Alert Pill */}
-            <div className="bg-[#1f2937]/90 text-amber-300 text-[11px] font-bold px-3 py-1 rounded-full border border-amber-500/30 flex items-center gap-1.5 shadow-md">
-              <span>🌾</span>
-              <span>Sahel Trade Season · Sesame & Rice prices high in Dutse</span>
+            <div className="bg-[#1f2937]/90 text-amber-300 text-[11px] font-bold px-3.5 py-1 rounded-full border border-amber-500/30 flex items-center gap-1.5 shadow-md">
+              <span>{viewMode === 'map' ? '🗺️' : '🌾'}</span>
+              <span>
+                {viewMode === 'map'
+                  ? '3D Regional Map · Hover or click pins to inspect districts, market rates & travel'
+                  : 'Sahel Trade Season · Sesame & Rice wholesale demand surging in Dutse'}
+              </span>
             </div>
           </motion.div>
         )}

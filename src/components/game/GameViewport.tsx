@@ -20,19 +20,26 @@ export const GameViewport: React.FC<GameViewportProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const avatarPos = useRef(new THREE.Vector3(0, 0, 1.5));
   const targetPos = useRef(new THREE.Vector3(0, 0, 1.5));
+  const cameraTarget = useRef(new THREE.Vector3(0, 0, 0));
 
-  const { avatar: avatarCustom, housingTier, ownedFurnishings, equippedVehicle } = useGameStore();
+  const {
+    avatar: avatarCustom,
+    housingTier,
+    ownedFurnishings,
+    equippedVehicle,
+    season,
+  } = useGameStore();
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // 1. Scene & Orthographic Camera (True Isometric)
+    // 1. Scene & Orthographic Camera (True Isometric Projection)
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(viewMode === 'home' ? 0x131a29 : 0x0b1320); // Authentic deep midnight sky matching lagoslife
+    scene.background = new THREE.Color(viewMode === 'home' ? 0x131a29 : 0x090f1a);
 
     const aspect = container.clientWidth / container.clientHeight;
-    const frustumSize = viewMode === 'home' ? 14 : 26;
+    const frustumSize = viewMode === 'home' ? 14 : 28;
 
     const camera = new THREE.OrthographicCamera(
       (-frustumSize * aspect) / 2,
@@ -43,11 +50,12 @@ export const GameViewport: React.FC<GameViewportProps> = ({
       1000
     );
 
-    // Classic 45° Isometric angle
-    camera.position.set(20, 20, 20);
+    // Initial 45° Isometric Camera View
+    const cameraOffset = new THREE.Vector3(20, 20, 20);
+    camera.position.copy(cameraOffset);
     camera.lookAt(0, 0, 0);
 
-    // 2. WebGL Renderer
+    // 2. WebGL High-Performance Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -56,31 +64,37 @@ export const GameViewport: React.FC<GameViewportProps> = ({
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
-    // 3. Lighting
-    const ambientLight = new THREE.AmbientLight(0xfffbeb, viewMode === 'home' ? 1.4 : 1.1);
+    // 3. Lighting Architecture (Calibrated Warmth & Atmosphere)
+    const ambientLight = new THREE.AmbientLight(
+      0xfffbeb,
+      viewMode === 'home' ? 1.45 : season === 'Harmattan' ? 1.3 : 1.15
+    );
     scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0xffeedd, 2.2);
-    dirLight.position.set(12, 22, 14);
+    const dirLight = new THREE.DirectionalLight(
+      season === 'Harmattan' ? 0xfcd34d : 0xfff7ed,
+      viewMode === 'home' ? 2.2 : 2.4
+    );
+    dirLight.position.set(14, 24, 16);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 2048;
     dirLight.shadow.mapSize.height = 2048;
-    dirLight.shadow.camera.left = -16;
-    dirLight.shadow.camera.right = 16;
-    dirLight.shadow.camera.top = 16;
-    dirLight.shadow.camera.bottom = -16;
-    dirLight.shadow.bias = -0.0005;
+    dirLight.shadow.camera.left = -20;
+    dirLight.shadow.camera.right = 20;
+    dirLight.shadow.camera.top = 20;
+    dirLight.shadow.camera.bottom = -20;
+    dirLight.shadow.bias = -0.0004;
     scene.add(dirLight);
 
-    // Warm Room Lamp Light
+    // Warm Room Lamp Light (Home mode)
     if (viewMode === 'home') {
-      const roomLamp = new THREE.PointLight(0xf59e0b, 1.8, 12);
-      roomLamp.position.set(0, 4, 0);
+      const roomLamp = new THREE.PointLight(0xf59e0b, 1.9, 14);
+      roomLamp.position.set(0, 4.2, 0);
       scene.add(roomLamp);
     }
 
     // 4. Build Active 3D World Scene
-    let avatar: THREE.Group | null = null;
+    let avatar: any = null;
     let mapData: ReturnType<typeof buildIsometricMap> | null = null;
 
     if (viewMode === 'home') {
@@ -93,10 +107,10 @@ export const GameViewport: React.FC<GameViewportProps> = ({
       avatar.position.copy(avatarPos.current);
       scene.add(avatar);
     } else {
-      mapData = buildIsometricMap(scene);
+      mapData = buildIsometricMap(scene, season);
     }
 
-    // 5. Click & Raycasting for Movement & Pin Clicks
+    // 5. Click & Raycasting for Movement, Avatar Interaction & Pin Clicks
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
@@ -108,13 +122,20 @@ export const GameViewport: React.FC<GameViewportProps> = ({
       raycaster.setFromCamera(mouse, camera);
 
       if (viewMode === 'home' && avatar) {
-        // Floor plane raycast
+        // Check if clicking directly on avatar for interactive greeting
+        const avatarHits = raycaster.intersectObjects(avatar.children, true);
+        if (avatarHits.length > 0) {
+          avatar.userData?.triggerGreeting?.();
+          return;
+        }
+
+        // Floor plane raycast for movement
         const floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
         const intersectPoint = new THREE.Vector3();
         if (raycaster.ray.intersectPlane(floorPlane, intersectPoint)) {
-          // Clamp to room bounds
-          intersectPoint.x = Math.max(-5, Math.min(5, intersectPoint.x));
-          intersectPoint.z = Math.max(-5, Math.min(5, intersectPoint.z));
+          // Clamp to room interior bounds
+          intersectPoint.x = Math.max(-5.2, Math.min(5.2, intersectPoint.x));
+          intersectPoint.z = Math.max(-5.2, Math.min(5.2, intersectPoint.z));
           targetPos.current.copy(intersectPoint);
           onAvatarMove?.([intersectPoint.x, intersectPoint.z]);
         }
@@ -127,6 +148,12 @@ export const GameViewport: React.FC<GameViewportProps> = ({
             if (current.name.startsWith('pin_')) {
               const locationId = current.name.replace('pin_', '');
               onPinClick?.(locationId);
+
+              // Smoothly glide camera target towards clicked landmark
+              const foundPin = mapData.pins.find((p) => p.id === locationId);
+              if (foundPin) {
+                cameraTarget.current.set(foundPin.position[0], 0, foundPin.position[2]);
+              }
               return;
             }
             current = current.parent;
@@ -135,9 +162,37 @@ export const GameViewport: React.FC<GameViewportProps> = ({
       }
     };
 
-    renderer.domElement.addEventListener('click', handleClick);
+    // Hover detection for 3D map pins
+    const handlePointerMove = (e: MouseEvent) => {
+      if (viewMode !== 'map' || !mapData) return;
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
 
-    // 6. Camera Drag / Pan
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(mapData.group.children, true);
+
+      let foundPinId: string | null = null;
+      for (const hit of intersects) {
+        let current: THREE.Object3D | null = hit.object;
+        while (current && current !== mapData.group) {
+          if (current.name.startsWith('pin_')) {
+            foundPinId = current.name.replace('pin_', '');
+            break;
+          }
+          current = current.parent;
+        }
+        if (foundPinId) break;
+      }
+
+      mapData.hoverPin(foundPinId);
+      renderer.domElement.style.cursor = foundPinId ? 'pointer' : 'grab';
+    };
+
+    renderer.domElement.addEventListener('click', handleClick);
+    renderer.domElement.addEventListener('mousemove', handlePointerMove);
+
+    // 6. Camera Drag / Pan (Right Click or Shift+Drag)
     let isDragging = false;
     let prevMouse = { x: 0, y: 0 };
 
@@ -145,26 +200,28 @@ export const GameViewport: React.FC<GameViewportProps> = ({
       if (e.button === 2 || e.shiftKey) {
         isDragging = true;
         prevMouse = { x: e.clientX, y: e.clientY };
+        renderer.domElement.style.cursor = 'grabbing';
       }
     };
 
     const handleMouseMove = (e: MouseEvent) => {
       if (!isDragging) return;
-      const dx = (e.clientX - prevMouse.x) * 0.02;
-      const dy = (e.clientY - prevMouse.y) * 0.02;
-      camera.position.x -= dx;
-      camera.position.z += dy;
+      const dx = (e.clientX - prevMouse.x) * 0.025;
+      const dy = (e.clientY - prevMouse.y) * 0.025;
+      cameraTarget.current.x -= dx;
+      cameraTarget.current.z += dy;
       prevMouse = { x: e.clientX, y: e.clientY };
     };
 
     const handleMouseUp = () => {
       isDragging = false;
+      renderer.domElement.style.cursor = 'grab';
     };
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
       const zoomFactor = e.deltaY * 0.001;
-      camera.zoom = Math.max(0.6, Math.min(2.5, camera.zoom - zoomFactor));
+      camera.zoom = Math.max(0.55, Math.min(2.8, camera.zoom - zoomFactor));
       camera.updateProjectionMatrix();
     };
 
@@ -173,31 +230,48 @@ export const GameViewport: React.FC<GameViewportProps> = ({
     window.addEventListener('mouseup', handleMouseUp);
     renderer.domElement.addEventListener('wheel', handleWheel, { passive: false });
 
-    // 7. Render Loop
+    // 7. High-Performance Render Loop with Real-Time Avatar & Map Animation
     let animationId: number;
     const clock = new THREE.Clock();
 
     const animate = () => {
       animationId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      const delta = Math.min(clock.getDelta(), 0.1);
+      const elapsedTime = clock.getElapsedTime();
 
-      // Smooth Avatar Walk
+      // (A) Smooth Avatar Walk & Humanoid Animation Loop
       if (avatar && viewMode === 'home') {
         const dist = avatar.position.distanceTo(targetPos.current);
-        if (dist > 0.05) {
+        const isMoving = dist > 0.05;
+
+        if (isMoving) {
           const moveDir = targetPos.current.clone().sub(avatar.position).normalize();
-          avatar.position.addScaledVector(moveDir, Math.min(dist, delta * 3.5));
+          avatar.position.addScaledVector(moveDir, Math.min(dist, delta * 3.6));
 
-          // Rotate avatar towards target
-          const angle = Math.atan2(moveDir.x, moveDir.z);
-          avatar.rotation.y = angle;
+          // Smoothly rotate avatar towards movement direction
+          const targetAngle = Math.atan2(moveDir.x, moveDir.z);
+          avatar.rotation.y = THREE.MathUtils.lerp(avatar.rotation.y, targetAngle, 0.25);
 
-          // Gentle walking bob
-          avatar.position.y = Math.abs(Math.sin(clock.getElapsedTime() * 12)) * 0.08;
+          // Natural walking vertical bounce
+          avatar.position.y = Math.abs(Math.sin(elapsedTime * 12)) * 0.08;
         } else {
           avatar.position.y = 0;
         }
+
         avatarPos.current.copy(avatar.position);
+
+        // Invoke modular humanoid animation (breathing, blinking, weight shift, greeting gesture)
+        avatar.userData?.update?.(delta, elapsedTime, isMoving);
+      }
+
+      // (B) 3D Map Real-Time Animation Loop (Traffic, Weather Particles, Beacon, Boats)
+      if (mapData && viewMode === 'map') {
+        mapData.update(delta, elapsedTime);
+
+        // Smooth camera lerp to target position
+        camera.position.x = THREE.MathUtils.lerp(camera.position.x, 20 + cameraTarget.current.x, 0.08);
+        camera.position.z = THREE.MathUtils.lerp(camera.position.z, 20 + cameraTarget.current.z, 0.08);
+        camera.lookAt(cameraTarget.current.x, 0, cameraTarget.current.z);
       }
 
       renderer.render(scene, camera);
@@ -205,7 +279,7 @@ export const GameViewport: React.FC<GameViewportProps> = ({
 
     animate();
 
-    // Resize Handler
+    // Responsive Canvas Resize Handler
     const handleResize = () => {
       if (!container) return;
       const newAspect = container.clientWidth / container.clientHeight;
@@ -223,6 +297,7 @@ export const GameViewport: React.FC<GameViewportProps> = ({
       cancelAnimationFrame(animationId);
       window.removeEventListener('resize', handleResize);
       renderer.domElement.removeEventListener('click', handleClick);
+      renderer.domElement.removeEventListener('mousemove', handlePointerMove);
       renderer.domElement.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
@@ -230,7 +305,7 @@ export const GameViewport: React.FC<GameViewportProps> = ({
       renderer.dispose();
       container.innerHTML = '';
     };
-  }, [viewMode, onPinClick, onAvatarMove, avatarCustom, housingTier, ownedFurnishings, equippedVehicle]);
+  }, [viewMode, onPinClick, onAvatarMove, avatarCustom, housingTier, ownedFurnishings, equippedVehicle, season]);
 
   return (
     <div
