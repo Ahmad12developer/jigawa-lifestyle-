@@ -746,6 +746,10 @@ export const useGameStore = create<GameState>()(
         return { success: true, message: 'Housing upgraded.' };
       },
 
+      dismissEvent: () => {
+        set({ activeEvent: null });
+      },
+
       borrowLoan: () => {
         const state = get();
         const loanAmount = GAME_CONFIG.DISTRESS.MICROFINANCE_LOAN_AMOUNT;
