@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useGameStore } from '@/store/useGameStore';
 import { useSoundFX } from '@/hooks/useSoundFX';
-import { X, ShoppingBag } from 'lucide-react';
+import { X, ShoppingBag, Check, Zap, Truck, Sparkles, Utensils, Home } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface ShopModalProps {
@@ -14,7 +14,7 @@ interface ShopModalProps {
 interface ShopItem {
   id: string;
   name: string;
-  category: 'food' | 'decor' | 'wellness';
+  category: 'food' | 'decor' | 'tech' | 'vehicles';
   price: number;
   description: string;
   icon: string;
@@ -26,21 +26,22 @@ interface ShopItem {
 }
 
 const SHOP_ITEMS: ShopItem[] = [
+  // --- FOOD & NOURISHMENT ---
   {
     id: 'fura_da_nono',
-    name: 'Fura da Nono (Chilled)',
+    name: 'Fura da Nono (Chilled Bowl)',
     category: 'food',
-    price: 1200,
-    description: 'Refreshing millet balls crushed with thick curdled milk. Revitalizing in the dry heat.',
+    price: 850,
+    description: 'Refreshing pounded millet spheres crushed into cold curdled cow milk. Immediate thirst and hunger relief.',
     icon: '🥛',
-    effects: { energy: 25, health: 10 },
+    effects: { energy: 25, health: 15 },
   },
   {
     id: 'kilishi_pack',
     name: 'Spicy Beef Kilishi Pack',
     category: 'food',
-    price: 3500,
-    description: 'Crispy sun-dried spiced beef cuts from Hadejia meat masters. Pure energy boost.',
+    price: 2500,
+    description: 'Thin sun-dried beef wafers infused with pepper, ginger, and peanut paste from Hadejia butchers.',
     icon: '🥩',
     effects: { energy: 35, health: 5 },
   },
@@ -48,52 +49,85 @@ const SHOP_ITEMS: ShopItem[] = [
     id: 'tuwo_miyan_kuka',
     name: 'Tuwo Shinkafa & Miyan Kuka',
     category: 'food',
-    price: 2000,
-    description: 'Steaming pounded rice with baobab leaf soup. Traditional, hearty, and satisfying.',
+    price: 1500,
+    description: 'Hearty northern pounded rice paired with baobab leaf soup and tender beef chunks.',
     icon: '🍲',
-    effects: { energy: 40, health: 15 },
+    effects: { energy: 45, health: 20 },
   },
   {
-    id: 'persian_rug',
-    name: 'Emirate Floor Rug',
-    category: 'decor',
-    price: 25000,
-    description: 'Handwoven patterned rug for your isometric bedroom floor. Elevates home prestige.',
-    icon: '🧶',
-    effects: { mutunci: 8 },
-  },
-  {
-    id: 'rechargeable_fan',
-    name: 'Solar Rechargeable Fan',
-    category: 'decor',
-    price: 38000,
-    description: 'High-speed standing fan that stays spinning even when Dutse NEPA goes off.',
-    icon: '🌀',
-    effects: { mutunci: 5, health: 10 },
+    id: 'masa_taushe',
+    name: 'Hot Masa & Miyan Taushe',
+    category: 'food',
+    price: 1200,
+    description: 'Golden fermented rice cakes served with spiced pumpkin and groundnut vegetable soup.',
+    icon: '🥞',
+    effects: { energy: 30, health: 10, mutunci: 2 },
   },
   {
     id: 'zobo_drink',
     name: 'Zobo & Ginger Pitcher',
-    category: 'wellness',
-    price: 800,
-    description: 'Chilled hibiscus brew spiked with fresh ginger and cloves.',
+    category: 'food',
+    price: 600,
+    description: 'Tart hibiscus flower iced infusion steeped with cloves and hot northern ginger.',
     icon: '🧃',
-    effects: { energy: 15, health: 10 },
+    effects: { energy: 15, health: 15 },
+  },
+
+  // --- HOME FURNISHINGS (3D ROOM) ---
+  {
+    id: 'persian_rug',
+    name: 'Emirate Woven Floor Rug',
+    category: 'decor',
+    price: 45000,
+    description: 'Handcrafted crimson and gold geometric floor carpet. Renders directly in your 3D bedroom.',
+    icon: '🧶',
+    effects: { mutunci: 12 },
   },
   {
-    id: 'moringa_tea',
-    name: 'Organic Jigawa Moringa Blend',
-    category: 'wellness',
-    price: 4500,
-    description: 'Potent miracle tree leaves picked along Hadejia valley farms.',
-    icon: '🍵',
-    effects: { health: 30 },
+    id: 'rechargeable_fan',
+    name: 'Solar Rechargeable Standing Fan',
+    category: 'decor',
+    price: 32000,
+    description: 'High-speed standing fan that keeps air moving even during Dutse power cuts. Renders in 3D.',
+    icon: '🌀',
+    effects: { mutunci: 6, health: 10 },
+  },
+
+  // --- TECH & ENERGY ---
+  {
+    id: 'solar_inverter',
+    name: 'Hybrid Solar Inverter Unit',
+    category: 'tech',
+    price: 165000,
+    description: 'Wall-mounted lithium solar inverter. Provides continuous electricity for home tech gigs. Renders in 3D.',
+    icon: '⚡',
+    effects: { mutunci: 18, health: 10 },
+  },
+
+  // --- MOBILITY & COMMERCE VEHICLES ---
+  {
+    id: 'bajaj_motorcycle',
+    name: 'Bajaj Boxer 150cc Motorcycle',
+    category: 'vehicles',
+    price: 380000,
+    description: 'Reliable two-wheeler equipped with side cargo panniers. Boosts commodity capacity to 25 units and cuts travel fatigue. Renders in courtyard!',
+    icon: '🏍️',
+    effects: { mutunci: 15 },
+  },
+  {
+    id: 'toyota_pickup',
+    name: 'Toyota Hilux Commercial Pickup',
+    category: 'vehicles',
+    price: 2400000,
+    description: 'Heavy-duty savannah transporter with 100-bag commodity capacity. The ultimate grain trader vehicle.',
+    icon: '🛻',
+    effects: { mutunci: 35 },
   },
 ];
 
 export const ShopModal: React.FC<ShopModalProps> = ({ isOpen, onClose }) => {
-  const [activeCategory, setActiveCategory] = useState<'all' | 'food' | 'decor' | 'wellness'>('all');
-  const { naira, addNotice, addLog } = useGameStore();
+  const [activeCategory, setActiveCategory] = useState<'all' | 'food' | 'decor' | 'tech' | 'vehicles'>('all');
+  const { naira, ownedFurnishings, equippedVehicle, buyShopItem } = useGameStore();
   const { playCash, playClick, playWarning } = useSoundFX();
 
   if (!isOpen) return null;
@@ -103,244 +137,152 @@ export const ShopModal: React.FC<ShopModalProps> = ({ isOpen, onClose }) => {
       ? SHOP_ITEMS
       : SHOP_ITEMS.filter((item) => item.category === activeCategory);
 
-  const buyItem = (item: ShopItem) => {
-    if (naira < item.price) {
+  const handleBuy = (item: ShopItem) => {
+    const res = buyShopItem(item);
+    if (res.success) {
+      playCash();
+    } else {
       playWarning();
-      addNotice('Not enough Naira in wallet!', 'negative');
-      return;
     }
+  };
 
-    useGameStore.setState((state) => ({
-      naira: state.naira - item.price,
-      energy: Math.min(100, state.energy + (item.effects.energy || 0)),
-      health: Math.min(100, state.health + (item.effects.health || 0)),
-      mutunci: Math.min(100, state.mutunci + (item.effects.mutunci || 0)),
-    }));
-
-    playCash();
-    addNotice(`Purchased ${item.name}!`, 'positive');
-    addLog({
-      message: `Purchased ${item.name} for ₦${item.price.toLocaleString()}.`,
-      type: 'lifestyle',
-      nairaChange: -item.price,
-      energyChange: item.effects.energy,
-    });
+  const isItemOwned = (item: ShopItem) => {
+    if (item.category === 'vehicles') {
+      return equippedVehicle === item.id;
+    }
+    if (item.category === 'decor' || item.category === 'tech') {
+      return ownedFurnishings.includes(item.id);
+    }
+    return false;
   };
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 50,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '1rem',
-        backgroundColor: 'rgba(0, 0, 0, 0.65)',
-        backdropFilter: 'blur(8px)',
-      }}
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-md font-sans">
       <motion.div
         initial={{ scale: 0.9, y: 20, opacity: 0 }}
-        animate={{ scale: 1, y: 0, opacity: 1 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.9, y: 20, opacity: 0 }}
-        style={{
-          width: '100%',
-          maxWidth: '560px',
-          maxHeight: '86vh',
-          backgroundColor: '#111827',
-          borderRadius: '24px',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)',
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-          color: '#ffffff',
-          fontFamily: 'sans-serif',
-        }}
+        className="relative w-full max-w-xl bg-[#0c121e] border-2 border-amber-500/30 rounded-3xl shadow-2xl flex flex-col text-white overflow-hidden max-h-[90vh]"
       >
         {/* Header */}
-        <div
-          style={{
-            padding: '1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'between',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-            backgroundColor: 'rgba(255, 255, 255, 0.02)',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1 }}>
-            <div
-              style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '14px',
-                backgroundColor: 'rgba(245, 158, 11, 0.2)',
-                color: '#fbbf24',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <ShoppingBag style={{ width: '20px', height: '20px' }} />
+        <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between bg-gradient-to-r from-amber-950/40 via-[#064E3B]/30 to-transparent">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-300 flex items-center justify-center">
+              <ShoppingBag className="w-5 h-5" />
             </div>
             <div>
-              <h2 style={{ fontSize: '1rem', fontWeight: 900, margin: 0 }}>Jigawa Emporium & Bukka</h2>
-              <p style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.6)', margin: '2px 0 0 0' }}>
+              <h2 className="text-base font-black text-white">JIGAWA EMPORIUM & SUK</h2>
+              <p className="text-xs text-white/60">
                 Wallet Balance:{' '}
-                <span style={{ color: '#34d399', fontWeight: 'bold', fontFamily: 'monospace' }}>
+                <span className="text-emerald-400 font-mono font-bold">
                   ₦{naira.toLocaleString()}
                 </span>
               </p>
             </div>
           </div>
           <button
-            onClick={() => {
-              playClick();
-              onClose();
-            }}
-            style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '9999px',
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
-              border: 'none',
-              cursor: 'pointer',
-              color: '#ffffff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'background 0.2s',
-            }}
+            onClick={onClose}
+            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/70 transition"
           >
-            <X style={{ width: '16px', height: '16px' }} />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Categories Tab */}
-        <div
-          style={{
-            display: 'flex',
-            gap: '0.5rem',
-            padding: '0.75rem 1.25rem',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-            backgroundColor: 'rgba(0, 0, 0, 0.2)',
-          }}
-        >
-          {(['all', 'food', 'decor', 'wellness'] as const).map((cat) => (
+        {/* Category Tabs */}
+        <div className="flex border-b border-white/10 text-xs font-bold bg-black/30 overflow-x-auto">
+          {[
+            { id: 'all', label: 'All Items' },
+            { id: 'food', label: 'Food & Bukka' },
+            { id: 'decor', label: 'Furnishings' },
+            { id: 'tech', label: 'Solar & Tech' },
+            { id: 'vehicles', label: 'Transport' },
+          ].map((tab) => (
             <button
-              key={cat}
+              key={tab.id}
               onClick={() => {
                 playClick();
-                setActiveCategory(cat);
+                setActiveCategory(tab.id as any);
               }}
-              style={{
-                padding: '0.35rem 0.85rem',
-                borderRadius: '9999px',
-                textTransform: 'capitalize',
-                fontSize: '0.75rem',
-                fontWeight: activeCategory === cat ? 800 : 600,
-                backgroundColor: activeCategory === cat ? '#10b981' : 'rgba(255, 255, 255, 0.06)',
-                color: activeCategory === cat ? '#000000' : 'rgba(255, 255, 255, 0.7)',
-                border: 'none',
-                cursor: 'pointer',
-                transition: 'all 0.15s',
-              }}
+              className={`py-3 px-4 border-b-2 whitespace-nowrap transition ${
+                activeCategory === tab.id
+                  ? 'border-amber-400 text-amber-300 bg-amber-950/20'
+                  : 'border-transparent text-white/60 hover:text-white'
+              }`}
             >
-              {cat}
+              {tab.label}
             </button>
           ))}
         </div>
 
-        {/* Product Cards */}
-        <div
-          style={{
-            flex: 1,
-            overflowY: 'auto',
-            padding: '1rem 1.25rem',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-            gap: '0.75rem',
-          }}
-        >
+        {/* Catalog Items List */}
+        <div className="p-4 sm:p-5 overflow-y-auto space-y-3 flex-1">
           {filteredItems.map((item) => {
+            const owned = isItemOwned(item);
             const canAfford = naira >= item.price;
+
             return (
               <div
                 key={item.id}
-                style={{
-                  padding: '0.85rem',
-                  borderRadius: '16px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  gap: '0.75rem',
-                }}
+                className={`p-3.5 sm:p-4 rounded-2xl border flex items-center justify-between gap-3 transition ${
+                  owned
+                    ? 'bg-[#151e2e]/60 border-white/5 opacity-75'
+                    : 'bg-[#151e2e] border-white/10 hover:border-amber-500/40'
+                }`}
               >
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span
-                      style={{
-                        fontSize: '1.5rem',
-                        padding: '0.25rem',
-                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                        borderRadius: '10px',
-                      }}
-                    >
-                      {item.icon}
-                    </span>
-                    <span style={{ fontSize: '0.8rem', fontFamily: 'monospace', fontWeight: 800, color: '#fcd34d' }}>
-                      ₦{item.price.toLocaleString()}
-                    </span>
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-black/40 border border-white/10 flex items-center justify-center text-2xl shrink-0">
+                    {item.icon}
                   </div>
-                  <h3 style={{ fontSize: '0.85rem', fontWeight: 700, margin: '0.5rem 0 0 0' }}>{item.name}</h3>
-                  <p
-                    style={{
-                      fontSize: '0.7rem',
-                      color: 'rgba(255, 255, 255, 0.6)',
-                      margin: '0.25rem 0 0 0',
-                      lineHeight: 1.35,
-                    }}
-                  >
-                    {item.description}
-                  </p>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-xs sm:text-sm font-bold text-white">{item.name}</h3>
+                      {owned && (
+                        <span className="text-[10px] bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded-full border border-emerald-500/30 flex items-center gap-1">
+                          <Check className="w-3 h-3" /> Owned
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-white/50 max-w-sm mt-0.5 leading-snug">
+                      {item.description}
+                    </p>
+                    {/* Stat Badges */}
+                    <div className="flex items-center gap-2 mt-1.5 text-[10px] font-bold">
+                      {item.effects.energy && (
+                        <span className="text-yellow-400 bg-yellow-400/10 px-1.5 py-0.5 rounded">
+                          +{item.effects.energy} Energy
+                        </span>
+                      )}
+                      {item.effects.health && (
+                        <span className="text-rose-400 bg-rose-400/10 px-1.5 py-0.5 rounded">
+                          +{item.effects.health} Health
+                        </span>
+                      )}
+                      {item.effects.mutunci && (
+                        <span className="text-purple-300 bg-purple-400/10 px-1.5 py-0.5 rounded">
+                          +{item.effects.mutunci} Mutunci
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    paddingTop: '0.5rem',
-                    borderTop: '1px solid rgba(255, 255, 255, 0.06)',
-                  }}
-                >
-                  <div style={{ display: 'flex', gap: '0.35rem', fontSize: '0.65rem', fontWeight: 700 }}>
-                    {item.effects.energy && <span style={{ color: '#facc15' }}>+{item.effects.energy}⚡</span>}
-                    {item.effects.health && <span style={{ color: '#fb7185' }}>+{item.effects.health}❤️</span>}
-                    {item.effects.mutunci && <span style={{ color: '#c084fc' }}>+{item.effects.mutunci}👑</span>}
-                  </div>
-
+                {/* Price & Buy Action */}
+                <div className="text-right shrink-0">
+                  <span className="block text-xs sm:text-sm font-mono font-bold text-emerald-300 mb-1">
+                    ₦{item.price.toLocaleString()}
+                  </span>
                   <button
-                    disabled={!canAfford}
-                    onClick={() => buyItem(item)}
-                    style={{
-                      padding: '0.35rem 0.85rem',
-                      borderRadius: '10px',
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      backgroundColor: canAfford ? '#064e3b' : 'rgba(255, 255, 255, 0.08)',
-                      color: canAfford ? '#ffffff' : 'rgba(255, 255, 255, 0.3)',
-                      border: 'none',
-                      cursor: canAfford ? 'pointer' : 'not-allowed',
-                      transition: 'background 0.2s',
-                    }}
+                    onClick={() => handleBuy(item)}
+                    disabled={owned || !canAfford}
+                    className={`px-3 py-1.5 rounded-xl font-bold text-xs transition ${
+                      owned
+                        ? 'bg-white/10 text-white/40 cursor-not-allowed'
+                        : canAfford
+                        ? 'bg-amber-500 hover:bg-amber-400 text-black shadow-md'
+                        : 'bg-white/10 text-white/30 cursor-not-allowed'
+                    }`}
                   >
-                    Buy
+                    {owned ? 'In Room' : canAfford ? 'Buy' : 'Need Cash'}
                   </button>
                 </div>
               </div>

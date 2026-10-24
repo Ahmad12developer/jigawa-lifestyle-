@@ -58,9 +58,153 @@ export interface Job {
   description: string;
 }
 
+// --- CHARACTER CUSTOMIZATION DOMAIN MODEL ---
+
+export type GenderType = 'male' | 'female';
+export type AttireType = 'babban_riga' | 'kaftan' | 'jalabiya' | 'tech_hoodie' | 'ankara_gown';
+export type HeadwearType = 'zanna_bukar' | 'damanga' | 'rawani_turban' | 'hijab_gyale' | 'none';
+export type FootwearType = 'kano_sandals' | 'babouche' | 'sneakers';
+
+export interface AvatarCustomization {
+  gender: GenderType;
+  skinTone: string; // hex color e.g. '#5a3825'
+  attire: AttireType;
+  attireColor: string; // hex color
+  headwear: HeadwearType;
+  headwearColor: string; // hex color
+  footwear: FootwearType;
+}
+
+// --- HOUSING & REAL ESTATE TIERS ---
+
+export type HousingTier = 'student_room' | 'town_flat' | 'savanna_villa';
+
+export interface HousingDetails {
+  tier: HousingTier;
+  title: string;
+  hausaTitle: string;
+  description: string;
+  upgradeCost: number;
+  weeklyRent: number;
+  locationId: LocationId;
+  prestigeBonus: number;
+}
+
+// --- REGIONAL COMMODITY ARBITRAGE SYSTEM ---
+
+export type CommodityId =
+  | 'sesame_grain'
+  | 'sorted_rice'
+  | 'smoked_fish'
+  | 'sahel_livestock'
+  | 'kazaure_dates';
+
+export interface Commodity {
+  id: CommodityId;
+  name: string;
+  hausaName: string;
+  unit: string; // e.g. 'bag', 'carton', 'head'
+  basePrice: number;
+  baseLocation: LocationId;
+  description: string;
+  icon: string;
+}
+
+export type VehicleId = 'none' | 'bajaj_motorcycle' | 'toyota_pickup';
+
+export interface Vehicle {
+  id: VehicleId;
+  name: string;
+  price: number;
+  cargoCapacity: number; // Max total commodity units
+  travelDiscount: number; // 0 - 1 factor
+  description: string;
+  icon: string;
+}
+
+// --- EMIRATE PRESTIGE & ROYAL TITLES ---
+
+export interface EmirateTitle {
+  id: string;
+  title: string;
+  hausaTitle: string;
+  minMutunci: number;
+  minNaira: number;
+  badge: string;
+  perks: string;
+}
+
+// --- PHASE 2: DYNAMIC LIFE EVENT ENGINE DOMAIN MODEL ---
+
+export type EventCategory =
+  | 'economic'
+  | 'social'
+  | 'family'
+  | 'career'
+  | 'weather'
+  | 'market'
+  | 'travel'
+  | 'community'
+  | 'opportunity'
+  | 'risk'
+  | 'cultural';
+
+export type EventTrigger =
+  | 'afterJob'
+  | 'afterTravel'
+  | 'afterRest'
+  | 'startOfDay'
+  | 'endOfDay'
+  | 'manual';
+
+export interface EventConditions {
+  locationId?: LocationId;
+  background?: BackgroundId;
+  season?: Season;
+  minDay?: number;
+  maxDay?: number;
+  minNaira?: number;
+  maxNaira?: number;
+  minMutunci?: number;
+  maxMutunci?: number;
+  minEnergy?: number;
+  minHealth?: number;
+}
+
+export type RequirementType =
+  | 'minNaira'
+  | 'minMutunci'
+  | 'minEnergy'
+  | 'minHealth'
+  | 'location'
+  | 'background';
+
+export interface EventRequirement {
+  type: RequirementType;
+  value: number | string;
+  description?: string;
+}
+
+export interface EventEffects {
+  naira?: number;
+  mutunci?: number;
+  energy?: number;
+  health?: number;
+  message?: string;
+  followUpEvents?: string[];
+}
+
 export interface EventChoice {
-  text: string;
+  id: string;
+  label: string;
+  description?: string;
   consequence: string;
+  requirements?: EventRequirement[];
+  effects: EventEffects;
+  followUpEvents?: string[];
+
+  // Backward compatibility with legacy UI components
+  text: string;
   statChanges: {
     naira?: number;
     mutunci?: number;
@@ -69,14 +213,46 @@ export interface EventChoice {
   };
 }
 
-export interface RandomEvent {
+export interface GameEvent {
   id: string;
   title: string;
   hausaTitle?: string;
   description: string;
+  category: EventCategory;
+  triggers: EventTrigger[];
+  weight: number;
+  cooldownDays?: number;
+  conditions?: EventConditions;
+  choices: EventChoice[];
+
+  // Backward compatibility with legacy code
   contextLocation?: LocationId;
   choiceA: EventChoice;
   choiceB: EventChoice;
+}
+
+export type RandomEvent = GameEvent;
+
+export interface EventHistoryEntry {
+  id: string;
+  eventId: string;
+  eventTitle: string;
+  choiceId: string;
+  choiceLabel: string;
+  day: number;
+  hour: number;
+  season: Season;
+  locationId: LocationId;
+  effectsApplied: EventEffects;
+  timestamp: number;
+}
+
+export interface EventResolution {
+  eventId: string;
+  choiceId: string;
+  effectsApplied: EventEffects;
+  success: boolean;
+  message: string;
 }
 
 export interface GameLog {
@@ -139,7 +315,17 @@ export interface GameState {
   // Navigation & Character Identity
   currentLocation: LocationId;
   selectedBackground: BackgroundId | null;
-  activeEvent: RandomEvent | null;
+  // Character Customization & Identity
+  avatar: AvatarCustomization;
+  housingTier: HousingTier;
+  ownedFurnishings: string[];
+  equippedVehicle: VehicleId;
+  commoditiesInventory: Record<CommodityId, number>;
+
+  // Phase 2: Event Engine State
+  activeEvent: GameEvent | null;
+  eventHistory: EventHistoryEntry[];
+  eventCooldowns: Record<string, number>; // eventId -> day until which it is on cooldown
   logs: GameLog[];
   floatingNotices: FloatingNotice[];
 
@@ -153,14 +339,23 @@ export interface GameState {
 
   // Core Game Actions
   chooseBackground: (pathId: BackgroundId) => void;
+  setAvatarCustomization: (updates: Partial<AvatarCustomization>) => void;
   performJob: (job: string | Job) => { success: boolean; message: string };
   rest: () => void;
   eatBukka: () => { success: boolean; message: string };
   pray: () => { success: boolean; message: string };
   travel: (location: LocationId | GameLocation) => { success: boolean; message: string };
-  triggerRandomEvent: (event?: RandomEvent) => void;
-  resolveEvent: (choice: 'A' | 'B') => void;
+  buyCommodity: (commodityId: CommodityId, quantity: number) => { success: boolean; message: string };
+  sellCommodity: (commodityId: CommodityId, quantity: number) => { success: boolean; message: string };
+  getCommodityMarketPrice: (commodityId: CommodityId, locationId: LocationId) => number;
+  buyShopItem: (item: { id: string; name: string; price: number; category: string; effects?: any }) => { success: boolean; message: string };
+  upgradeHousing: (tier: HousingTier) => { success: boolean; message: string };
+  getEmirateTitle: () => EmirateTitle;
+  triggerRandomEvent: (event?: GameEvent) => void;
+  evaluateTrigger: (trigger: EventTrigger) => GameEvent | null;
+  resolveEvent: (choice: 'A' | 'B' | string) => EventResolution | null;
   handleEventChoice: (choice: 'A' | 'B') => void;
+  canSelectEventChoice: (choice: EventChoice) => boolean;
   dismissEvent: () => void;
   addLog: (log: Omit<GameLog, 'id' | 'day' | 'hour' | 'season'>) => void;
   addNotice: (text: string, type?: 'positive' | 'negative' | 'neutral') => void;

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { useGameStore } from '@/store/useGameStore';
 import { buildIsometricRoom, createAvatar } from './IsometricRoom';
 import { buildIsometricMap } from './IsometricMap';
 
@@ -19,6 +20,8 @@ export const GameViewport: React.FC<GameViewportProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const avatarPos = useRef(new THREE.Vector3(0, 0, 1.5));
   const targetPos = useRef(new THREE.Vector3(0, 0, 1.5));
+
+  const { avatar: avatarCustom, housingTier, ownedFurnishings, equippedVehicle } = useGameStore();
 
   useEffect(() => {
     const container = containerRef.current;
@@ -81,8 +84,12 @@ export const GameViewport: React.FC<GameViewportProps> = ({
     let mapData: ReturnType<typeof buildIsometricMap> | null = null;
 
     if (viewMode === 'home') {
-      buildIsometricRoom(scene);
-      avatar = createAvatar();
+      buildIsometricRoom(scene, {
+        ownedFurnishings,
+        housingTier,
+        vehicle: equippedVehicle,
+      });
+      avatar = createAvatar(avatarCustom);
       avatar.position.copy(avatarPos.current);
       scene.add(avatar);
     } else {
@@ -223,7 +230,7 @@ export const GameViewport: React.FC<GameViewportProps> = ({
       renderer.dispose();
       container.innerHTML = '';
     };
-  }, [viewMode, onPinClick, onAvatarMove]);
+  }, [viewMode, onPinClick, onAvatarMove, avatarCustom, housingTier, ownedFurnishings, equippedVehicle]);
 
   return (
     <div

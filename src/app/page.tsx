@@ -9,6 +9,9 @@ import { GameHud } from '@/components/game/GameHud';
 import { PhoneModal } from '@/components/game/PhoneModal';
 import { ShopModal } from '@/components/game/ShopModal';
 import { MapInfoCard } from '@/components/game/MapInfoCard';
+import { AvatarCustomizerModal } from '@/components/game/AvatarCustomizerModal';
+import { MarketExchangeModal } from '@/components/game/MarketExchangeModal';
+import { StatusCardModal } from '@/components/game/StatusCardModal';
 import { EventModal } from '@/components/EventModal';
 import { CharacterCard } from '@/components/CharacterCard';
 import { Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
@@ -36,6 +39,9 @@ export default function Home() {
   const [viewMode, setViewMode] = useState<'home' | 'map'>('home');
   const [isPhoneOpen, setIsPhoneOpen] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(false);
+  const [isWardrobeOpen, setIsWardrobeOpen] = useState(false);
+  const [isExchangeOpen, setIsExchangeOpen] = useState(false);
+  const [isStatusCardOpen, setIsStatusCardOpen] = useState(false);
   const [selectedPinId, setSelectedPinId] = useState<string | null>(null);
 
   const { selectedBackground, floatingNotices } = useGameStore();
@@ -98,6 +104,9 @@ export default function Home() {
         }}
         openPhone={() => setIsPhoneOpen(true)}
         openShop={() => setIsShopOpen(true)}
+        openWardrobe={() => setIsWardrobeOpen(true)}
+        openExchange={() => setIsExchangeOpen(true)}
+        openStatusCard={() => setIsStatusCardOpen(true)}
       />
 
       {/* Interactive 3D Map Pin Details Card */}
@@ -155,6 +164,28 @@ export default function Home() {
 
       {/* Shop Emporium Modal Overlay */}
       <ShopModal isOpen={isShopOpen} onClose={() => setIsShopOpen(false)} />
+
+      {/* Avatar Style & Wardrobe Customizer Modal */}
+      <AvatarCustomizerModal
+        isOpen={isWardrobeOpen}
+        onClose={() => setIsWardrobeOpen(false)}
+      />
+
+      {/* Commodity Regional Exchange Modal */}
+      <MarketExchangeModal
+        isOpen={isExchangeOpen}
+        onClose={() => setIsExchangeOpen(false)}
+        onOpenShopForVehicle={() => {
+          setIsExchangeOpen(false);
+          setIsShopOpen(true);
+        }}
+      />
+
+      {/* Viral 1-Click Status Card Modal */}
+      <StatusCardModal
+        isOpen={isStatusCardOpen}
+        onClose={() => setIsStatusCardOpen(false)}
+      />
 
       {/* Random Event Dilemma & Game-Over Modal */}
       <EventModal />

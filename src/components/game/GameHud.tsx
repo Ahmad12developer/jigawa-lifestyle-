@@ -17,6 +17,10 @@ import {
   Eye,
   EyeOff,
   Plus,
+  Shirt,
+  TrendingUp,
+  Crown,
+  Share2,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -25,6 +29,9 @@ interface GameHudProps {
   setViewMode: (mode: 'home' | 'map') => void;
   openPhone: () => void;
   openShop: () => void;
+  openWardrobe: () => void;
+  openExchange: () => void;
+  openStatusCard: () => void;
 }
 
 export const GameHud: React.FC<GameHudProps> = ({
@@ -32,6 +39,9 @@ export const GameHud: React.FC<GameHudProps> = ({
   setViewMode,
   openPhone,
   openShop,
+  openWardrobe,
+  openExchange,
+  openStatusCard,
 }) => {
   const {
     naira,
@@ -41,6 +51,8 @@ export const GameHud: React.FC<GameHudProps> = ({
     day,
     hour,
     season,
+    avatar,
+    getEmirateTitle,
   } = useGameStore();
 
   const { playClick } = useSoundFX();
@@ -51,6 +63,9 @@ export const GameHud: React.FC<GameHudProps> = ({
   const hour12 = hour % 12 || 12;
   const ampm = hour >= 12 ? 'PM' : 'AM';
   const timeString = `${hour12}:00 ${ampm}`;
+
+  // Emirate Title
+  const title = getEmirateTitle();
 
   // Mood state
   const moodText =
@@ -70,7 +85,7 @@ export const GameHud: React.FC<GameHudProps> = ({
             className="flex flex-col items-center gap-2 pointer-events-auto w-full"
           >
             {/* Top Status Capsule */}
-            <div className="flex flex-wrap items-center justify-between gap-3 bg-[#111827]/90 text-white backdrop-blur-md px-4 py-2 rounded-full border border-white/10 shadow-xl max-w-4xl w-full">
+            <div className="flex flex-wrap items-center justify-between gap-2.5 bg-[#111827]/90 text-white backdrop-blur-md px-4 py-2 rounded-full border border-white/10 shadow-xl max-w-4xl w-full">
               {/* Day & Time */}
               <div className="flex items-center gap-2 text-xs sm:text-sm font-medium">
                 {hour >= 6 && hour < 18 ? (
@@ -83,20 +98,38 @@ export const GameHud: React.FC<GameHudProps> = ({
                 <span className="text-xs text-[#F5E6CA] hidden sm:inline">{season}</span>
               </div>
 
+              {/* Emirate Title Pill */}
+              <button
+                onClick={() => {
+                  playClick();
+                  openStatusCard();
+                }}
+                className="flex items-center gap-1.5 text-xs bg-amber-500/15 border border-amber-500/30 text-amber-300 px-3 py-1 rounded-full font-bold hover:bg-amber-500/25 transition shadow-sm"
+                title="View Status & Prestige Card"
+              >
+                <span>{title.badge}</span>
+                <span className="truncate max-w-[140px] sm:max-w-none">{title.title}</span>
+              </button>
+
               {/* Mood indicator */}
-              <div className="flex items-center gap-1.5 text-xs bg-white/10 px-2.5 py-1 rounded-full">
+              <div className="hidden sm:flex items-center gap-1.5 text-xs bg-white/10 px-2.5 py-1 rounded-full">
                 <span>{moodEmoji}</span>
                 <span className="font-semibold text-white/90">{moodText}</span>
               </div>
 
-              {/* Online counter */}
-              <div className="hidden md:flex items-center gap-1.5 text-xs text-white/70">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>135k online</span>
-              </div>
-
-              {/* Sound & Wallet */}
+              {/* Sound, Status Share & Wallet */}
               <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    playClick();
+                    openStatusCard();
+                  }}
+                  className="p-1.5 rounded-full hover:bg-amber-500/20 text-amber-300 transition"
+                  title="Share Status Card"
+                >
+                  <Share2 className="w-4 h-4" />
+                </button>
+
                 <button
                   onClick={() => {
                     setSoundOn(!soundOn);
@@ -112,9 +145,12 @@ export const GameHud: React.FC<GameHudProps> = ({
                 <div className="flex items-center gap-1.5 bg-[#064E3B] text-emerald-100 font-mono font-bold text-xs sm:text-sm px-3 py-1.5 rounded-full border border-emerald-500/40 shadow-inner">
                   <span>₦{naira.toLocaleString()}</span>
                   <button
-                    onClick={openShop}
+                    onClick={() => {
+                      playClick();
+                      openShop();
+                    }}
                     className="w-4 h-4 rounded-full bg-emerald-500 text-[#064E3B] flex items-center justify-center hover:scale-110 transition ml-0.5"
-                    title="Add Funds / Shop"
+                    title="Emporium Shop"
                   >
                     <Plus className="w-3 h-3 stroke-[3]" />
                   </button>
@@ -122,16 +158,16 @@ export const GameHud: React.FC<GameHudProps> = ({
               </div>
             </div>
 
-            {/* Central Alert Pill (like "💡 NEPA took light" in lagoslife) */}
+            {/* Central Alert Pill */}
             <div className="bg-[#1f2937]/90 text-amber-300 text-[11px] font-bold px-3 py-1 rounded-full border border-amber-500/30 flex items-center gap-1.5 shadow-md">
-              <span>💡</span>
-              <span>NEPA took light · Dutse rock generator running</span>
+              <span>🌾</span>
+              <span>Sahel Trade Season · Sesame & Rice prices high in Dutse</span>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* 2. LEFT SIDE QUESTS / BADGES */}
+      {/* 2. LEFT SIDE FAST ACTIONS */}
       <div className="flex flex-col gap-2.5 items-start mt-2 pointer-events-auto">
         <AnimatePresence>
           {!cleanScreen && (
@@ -141,32 +177,62 @@ export const GameHud: React.FC<GameHudProps> = ({
               exit={{ opacity: 0, x: -20 }}
               className="space-y-2"
             >
-              {/* Quest 1 */}
+              {/* Action 1: Commodity Arbitrage Exchange */}
               <button
-                onClick={openPhone}
-                className="flex items-center gap-2.5 bg-[#111827]/85 text-white backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/10 hover:border-emerald-500/50 shadow-lg text-left transition group"
+                onClick={() => {
+                  playClick();
+                  openExchange();
+                }}
+                className="flex items-center gap-2.5 bg-[#111827]/90 text-white backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/10 hover:border-emerald-500/50 shadow-lg text-left transition group"
               >
                 <div className="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
-                  <Briefcase className="w-4 h-4" />
+                  <TrendingUp className="w-4 h-4" />
                 </div>
                 <div>
                   <span className="block text-xs font-bold text-emerald-400 group-hover:underline">
-                    Find a Hustle
+                    Commodity Trade
                   </span>
-                  <span className="block text-[10px] text-white/60">Open Phone → Jobs</span>
+                  <span className="block text-[10px] text-white/60">Wholesale Arbitrage</span>
                 </div>
               </button>
 
-              {/* Quest 2 */}
-              <div className="flex items-center gap-2.5 bg-[#111827]/85 text-white backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/10 shadow-lg text-left">
+              {/* Action 2: Wardrobe & Styles */}
+              <button
+                onClick={() => {
+                  playClick();
+                  openWardrobe();
+                }}
+                className="flex items-center gap-2.5 bg-[#111827]/90 text-white backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/10 hover:border-blue-500/50 shadow-lg text-left transition group"
+              >
                 <div className="w-7 h-7 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
-                  <Sparkles className="w-4 h-4" />
+                  <Shirt className="w-4 h-4" />
                 </div>
                 <div>
-                  <span className="block text-xs font-bold text-blue-300">Daily Harvest Hunt</span>
-                  <span className="block text-[10px] text-white/60">Sesame bags found · Next ₦3,000</span>
+                  <span className="block text-xs font-bold text-blue-300 group-hover:underline">
+                    Style & Wardrobe
+                  </span>
+                  <span className="block text-[10px] text-white/60">Kaftans, Caps & Robes</span>
                 </div>
-              </div>
+              </button>
+
+              {/* Action 3: Status & Prestige Card */}
+              <button
+                onClick={() => {
+                  playClick();
+                  openStatusCard();
+                }}
+                className="flex items-center gap-2.5 bg-[#111827]/90 text-white backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/10 hover:border-amber-500/50 shadow-lg text-left transition group"
+              >
+                <div className="w-7 h-7 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0">
+                  <Crown className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="block text-xs font-bold text-amber-300 group-hover:underline">
+                    Status Card
+                  </span>
+                  <span className="block text-[10px] text-white/60">Brag on X / WhatsApp</span>
+                </div>
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
@@ -183,17 +249,25 @@ export const GameHud: React.FC<GameHudProps> = ({
 
       {/* 3. BOTTOM AREA: CHARACTER STATUS & FLOATING NAV DOCK */}
       <div className="flex flex-col sm:flex-row items-end sm:items-center justify-between gap-4 pointer-events-auto w-full">
-        {/* Bottom Left Character Avatar & Needs (exactly like lagoslife bottom-left) */}
+        {/* Bottom Left Character Avatar & Needs */}
         <div className="flex items-center gap-3 bg-[#111827]/90 text-white backdrop-blur-md p-2.5 rounded-3xl border border-white/10 shadow-2xl">
-          {/* Circular Portrait */}
-          <div className="w-12 h-12 rounded-full bg-amber-700 border-2 border-amber-400 flex items-center justify-center text-xl shadow-inner font-bold text-white shrink-0">
-            👳🏽‍♂️
-          </div>
+          {/* Circular Portrait with Click to Customize */}
+          <button
+            onClick={() => {
+              playClick();
+              openWardrobe();
+            }}
+            className="w-12 h-12 rounded-full border-2 border-amber-400 flex items-center justify-center text-xl shadow-inner font-bold text-white shrink-0 hover:scale-105 transition"
+            style={{ backgroundColor: avatar.attireColor }}
+            title="Click to Customize Style"
+          >
+            {avatar.gender === 'female' ? '🧕🏽' : '👳🏽‍♂️'}
+          </button>
 
           {/* 4 Needs Bars */}
           <div className="flex flex-col gap-1.5 pr-2">
             {/* Hunger */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2" title="Hunger">
               <span className="text-[10px]">🍲</span>
               <div className="w-16 h-1.5 bg-white/20 rounded-full overflow-hidden">
                 <div className="h-full bg-amber-500 rounded-full" style={{ width: '85%' }} />
@@ -201,7 +275,7 @@ export const GameHud: React.FC<GameHudProps> = ({
             </div>
 
             {/* Energy */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2" title={`Energy: ${energy}%`}>
               <span className="text-[10px]">⚡</span>
               <div className="w-16 h-1.5 bg-white/20 rounded-full overflow-hidden">
                 <div
@@ -212,7 +286,7 @@ export const GameHud: React.FC<GameHudProps> = ({
             </div>
 
             {/* Mood / Mutunci */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2" title={`Mutunci (Honor): ${mutunci}/100`}>
               <span className="text-[10px]">💬</span>
               <div className="w-16 h-1.5 bg-white/20 rounded-full overflow-hidden">
                 <div
@@ -223,7 +297,7 @@ export const GameHud: React.FC<GameHudProps> = ({
             </div>
 
             {/* Health */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2" title={`Health: ${health}%`}>
               <span className="text-[10px]">❤️</span>
               <div className="w-16 h-1.5 bg-white/20 rounded-full overflow-hidden">
                 <div
@@ -235,7 +309,7 @@ export const GameHud: React.FC<GameHudProps> = ({
           </div>
         </div>
 
-        {/* Floating Centered Nav Dock (Home, Buy, Map, Phone) */}
+        {/* Floating Centered Nav Dock */}
         <div className="mx-auto flex items-center gap-1 bg-[#111827]/95 text-white backdrop-blur-lg p-1.5 rounded-full border border-white/15 shadow-2xl">
           {/* Home */}
           <button
@@ -243,7 +317,7 @@ export const GameHud: React.FC<GameHudProps> = ({
               playClick();
               setViewMode('home');
             }}
-            className={`flex flex-col items-center justify-center w-14 h-12 rounded-full transition ${
+            className={`flex flex-col items-center justify-center w-13 sm:w-14 h-12 rounded-full transition ${
               viewMode === 'home'
                 ? 'bg-white/20 text-white font-bold'
                 : 'text-white/60 hover:text-white hover:bg-white/10'
@@ -253,13 +327,39 @@ export const GameHud: React.FC<GameHudProps> = ({
             <span className="text-[10px] mt-0.5">Home</span>
           </button>
 
-          {/* Buy */}
+          {/* Trade (Commodity Arbitrage) */}
+          <button
+            onClick={() => {
+              playClick();
+              openExchange();
+            }}
+            className="flex flex-col items-center justify-center w-13 sm:w-14 h-12 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition"
+            title="Commodity Exchange"
+          >
+            <TrendingUp className="w-4 h-4 text-emerald-400" />
+            <span className="text-[10px] mt-0.5">Trade</span>
+          </button>
+
+          {/* Style (Wardrobe) */}
+          <button
+            onClick={() => {
+              playClick();
+              openWardrobe();
+            }}
+            className="flex flex-col items-center justify-center w-13 sm:w-14 h-12 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition"
+            title="Wardrobe Customizer"
+          >
+            <Shirt className="w-4 h-4 text-blue-400" />
+            <span className="text-[10px] mt-0.5">Style</span>
+          </button>
+
+          {/* Buy (Shop) */}
           <button
             onClick={() => {
               playClick();
               openShop();
             }}
-            className="flex flex-col items-center justify-center w-14 h-12 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition"
+            className="flex flex-col items-center justify-center w-13 sm:w-14 h-12 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition"
           >
             <ShoppingBag className="w-4 h-4" />
             <span className="text-[10px] mt-0.5">Buy</span>
@@ -271,7 +371,7 @@ export const GameHud: React.FC<GameHudProps> = ({
               playClick();
               setViewMode('map');
             }}
-            className={`flex flex-col items-center justify-center w-14 h-12 rounded-full transition ${
+            className={`flex flex-col items-center justify-center w-13 sm:w-14 h-12 rounded-full transition ${
               viewMode === 'map'
                 ? 'bg-white/20 text-white font-bold'
                 : 'text-white/60 hover:text-white hover:bg-white/10'
@@ -287,7 +387,7 @@ export const GameHud: React.FC<GameHudProps> = ({
               playClick();
               openPhone();
             }}
-            className="flex flex-col items-center justify-center w-14 h-12 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition"
+            className="flex flex-col items-center justify-center w-13 sm:w-14 h-12 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition"
           >
             <Smartphone className="w-4 h-4" />
             <span className="text-[10px] mt-0.5">Phone</span>

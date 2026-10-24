@@ -1,7 +1,16 @@
 import * as THREE from 'three';
+import { createModularAvatar } from './ModularAvatar';
+import type { AvatarCustomization } from '@/types/game';
 
-export function buildIsometricRoom(scene: THREE.Scene) {
+export interface RoomOptions {
+  ownedFurnishings?: string[];
+  housingTier?: string;
+  vehicle?: string;
+}
+
+export function buildIsometricRoom(scene: THREE.Scene, options: RoomOptions = {}) {
   const group = new THREE.Group();
+  const furnishings = options.ownedFurnishings || [];
 
   // 0. Circular Island Ground Base (Matching lagoslife aesthetic)
   const islandGeo = new THREE.CylinderGeometry(11.5, 12, 1.2, 48);
@@ -323,76 +332,116 @@ export function buildIsometricRoom(scene: THREE.Scene) {
     new THREE.BoxGeometry(0.5, 0.5, 0.05),
     new THREE.MeshStandardMaterial({ color: 0x1d4ed8 })
   );
-  pPlate.position.set(3.8, 1.7, 4.8);
-  group.add(pPlate);
+  // --- DYNAMIC PURCHASED FURNISHINGS & VEHICLES ---
+  if (furnishings.includes('persian_rug')) {
+    // Rich handwoven patterned Northern floor rug
+    const rug = new THREE.Mesh(
+      new THREE.BoxGeometry(3.6, 0.02, 2.6),
+      new THREE.MeshStandardMaterial({ color: 0x991b1b, roughness: 0.9 })
+    );
+    rug.position.set(-0.2, 0.015, -0.2);
+    rug.receiveShadow = true;
+    group.add(rug);
+
+    // Gold border trim
+    const trim = new THREE.Mesh(
+      new THREE.BoxGeometry(3.7, 0.022, 2.7),
+      new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.8 })
+    );
+    trim.position.set(-0.2, 0.01, -0.2);
+    group.add(trim);
+  }
+
+  if (furnishings.includes('rechargeable_fan')) {
+    // Standing Solar Rechargeable Fan
+    const fanPost = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.04, 0.05, 2.2, 12),
+      new THREE.MeshStandardMaterial({ color: 0xd4d4d8, metalness: 0.3 })
+    );
+    fanPost.position.set(-2.8, 1.1, -1.8);
+    group.add(fanPost);
+
+    const fanHead = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.42, 0.42, 0.12, 16),
+      new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.4 })
+    );
+    fanHead.rotation.x = Math.PI / 2;
+    fanHead.position.set(-2.8, 2.1, -1.8);
+    group.add(fanHead);
+  }
+
+  if (furnishings.includes('solar_inverter')) {
+    // Wall-mounted Hybrid Solar Inverter
+    const inverter = new THREE.Mesh(
+      new THREE.BoxGeometry(0.9, 1.4, 0.25),
+      new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.5, roughness: 0.3 })
+    );
+    inverter.position.set(-floorSize / 2 + 0.2, 3.4, 3.2);
+    group.add(inverter);
+
+    // Green status light
+    const led = new THREE.Mesh(
+      new THREE.SphereGeometry(0.04, 8, 8),
+      new THREE.MeshBasicMaterial({ color: 0x22c55e })
+    );
+    led.position.set(-floorSize / 2 + 0.34, 3.7, 3.2);
+    group.add(led);
+  }
+
+  if (options.vehicle === 'bajaj_motorcycle') {
+    // Parked Bajaj Boxer Motorcycle in foreground courtyard
+    const bikeGroup = new THREE.Group();
+    // Frame
+    const bikeFrame = new THREE.Mesh(
+      new THREE.BoxGeometry(1.6, 0.4, 0.3),
+      new THREE.MeshStandardMaterial({ color: 0xdc2626, metalness: 0.4 })
+    );
+    bikeFrame.position.set(0, 0.6, 0);
+    bikeGroup.add(bikeFrame);
+
+    // Wheels
+    [-0.7, 0.7].forEach((wx) => {
+      const wheel = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.35, 0.35, 0.12, 16),
+        new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.9 })
+      );
+      wheel.rotation.z = Math.PI / 2;
+      wheel.position.set(wx, 0.35, 0);
+      bikeGroup.add(wheel);
+    });
+
+    // Handlebar
+    const bar = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.03, 0.03, 0.6, 8),
+      new THREE.MeshStandardMaterial({ color: 0x64748b })
+    );
+    bar.rotation.x = Math.PI / 2;
+    bar.position.set(-0.55, 0.95, 0);
+    bikeGroup.add(bar);
+
+    bikeGroup.position.set(1.4, 0, 4.4);
+    bikeGroup.rotation.y = -0.4;
+    group.add(bikeGroup);
+  }
 
   scene.add(group);
   return group;
 }
 
-// 3D Avatar Creation with Realistic Proportions & Natural Color Palette
-export function createAvatar(): THREE.Group {
-  const avatar = new THREE.Group();
-
-  // Torso / Top (Classic polo / tunic in natural sky-blue tone)
-  const shirtMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.7 });
-  const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.35, 0.9, 14), shirtMat);
-  torso.position.y = 1.05;
-  torso.castShadow = true;
-  avatar.add(torso);
-
-  // Dark Pants
-  const pantsMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.8 });
-  const legL = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.6, 0.18), pantsMat);
-  legL.position.set(-0.13, 0.35, 0);
-  legL.castShadow = true;
-  avatar.add(legL);
-
-  const legR = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.6, 0.18), pantsMat);
-  legR.position.set(0.13, 0.35, 0);
-  legR.castShadow = true;
-  avatar.add(legR);
-
-  // White Kicks
-  const shoeMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
-  const shoeL = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.12, 0.3), shoeMat);
-  shoeL.position.set(-0.13, 0.06, 0.05);
-  avatar.add(shoeL);
-
-  const shoeR = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.12, 0.3), shoeMat);
-  shoeR.position.set(0.13, 0.06, 0.05);
-  avatar.add(shoeR);
-
-  // Head with Natural Skin Tone
-  const skinMat = new THREE.MeshStandardMaterial({ color: 0x5a3825, roughness: 0.6 });
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.24, 16, 16), skinMat);
-  head.position.y = 1.7;
-  head.castShadow = true;
-  avatar.add(head);
-
-  // Hair / Dark Crop
-  const hairMat = new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.9 });
-  const hair = new THREE.Mesh(new THREE.SphereGeometry(0.25, 12, 12), hairMat);
-  hair.position.set(0, 1.78, -0.04);
-  hair.scale.set(1.0, 0.7, 1.0);
-  avatar.add(hair);
-
-  // Golden Floating Crown / Indicator (Signature of LagosLife)
-  const crownGeo = new THREE.TorusGeometry(0.18, 0.035, 8, 16);
-  const crownMat = new THREE.MeshBasicMaterial({ color: 0xfbbf24 });
-  const crown = new THREE.Mesh(crownGeo, crownMat);
-  crown.rotation.x = Math.PI / 2;
-  crown.position.y = 2.15;
-  avatar.add(crown);
-
-  // Ground Shadow Disc
-  const shadowGeo = new THREE.RingGeometry(0.1, 0.45, 16);
-  const shadowMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.35 });
-  const shadow = new THREE.Mesh(shadowGeo, shadowMat);
-  shadow.rotation.x = -Math.PI / 2;
-  shadow.position.y = 0.01;
-  avatar.add(shadow);
-
-  avatar.position.set(0, 0, 1.5);
-  return avatar;
+// 3D Avatar Creation with Realistic Proportions & Natural Cultural Attire
+export function createAvatar(custom?: AvatarCustomization): THREE.Group {
+  if (custom) {
+    return createModularAvatar(custom);
+  }
+  // Default Northern Style Kaftan & Zanna Bukar Cap
+  return createModularAvatar({
+    gender: 'male',
+    skinTone: '#5a3825',
+    attire: 'kaftan',
+    attireColor: '#0284c7',
+    headwear: 'zanna_bukar',
+    headwearColor: '#f1f5f9',
+    footwear: 'kano_sandals',
+  });
 }
+

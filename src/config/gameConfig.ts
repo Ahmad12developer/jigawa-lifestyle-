@@ -52,9 +52,18 @@ export const GAME_CONFIG = {
     RECOVERY_ENERGY: 90,
   },
 
-  // Event Engine Probabilities
+  // Event Engine Probabilities & Balancing
   EVENTS: {
-    DEFAULT_JOB_EVENT_CHANCE: 0.15, // 15% chance after working a gig
+    TRIGGER_CHANCES: {
+      afterJob: 0.25, // 25% chance after working a gig
+      afterTravel: 0.35, // 35% chance after regional road travel
+      afterRest: 0.20, // 20% chance upon waking up
+      startOfDay: 0.30, // 30% chance of morning life event
+      endOfDay: 0.15, // 15% chance of evening situation
+      manual: 1.0, // 100% for forced/manual triggers
+    },
+    DEFAULT_COOLDOWN_DAYS: 3, // Minimum days before same event can recur
+    DEFAULT_WEIGHT: 50,
   },
 
   // Persistence Versioning
