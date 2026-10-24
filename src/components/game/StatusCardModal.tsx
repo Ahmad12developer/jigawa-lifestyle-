@@ -80,13 +80,13 @@ Can you out-hustle me in the Sahel? Play browser-free! #JigawaLifestyle #LagosLi
   const handleShareX = () => {
     playClick();
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
-    window.open(url, '_blank');
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   const handleShareWhatsApp = () => {
     playClick();
     const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
-    window.open(url, '_blank');
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   return (

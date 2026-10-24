@@ -814,6 +814,158 @@ export const useGameStore = create<GameState>()(
         });
         get().addNotice('Game Reset to New Life!', 'neutral');
       },
+
+      purgeAllData: () => {
+        if (typeof window !== 'undefined') {
+          try {
+            window.localStorage.removeItem(GAME_CONFIG.SAVE.STORAGE_KEY);
+            window.localStorage.clear();
+          } catch (e) {
+            console.error('Failed to clear localStorage:', e);
+          }
+        }
+        get().resetGame();
+        get().addNotice('All local data purged under NDPR / GDPR compliance.', 'neutral');
+      },
+
+      exportSaveData: () => {
+        const state = get();
+        const exportPayload = {
+          version: GAME_CONFIG.SAVE.VERSION,
+          exportedAt: new Date().toISOString(),
+          compliance: 'NDPA-2023-GDPR-Data-Portability',
+          data: {
+            naira: state.naira,
+            mutunci: state.mutunci,
+            energy: state.energy,
+            health: state.health,
+            day: state.day,
+            hour: state.hour,
+            season: state.season,
+            currentLocation: state.currentLocation,
+            selectedBackground: state.selectedBackground,
+            avatar: state.avatar,
+            housingTier: state.housingTier,
+            ownedFurnishings: state.ownedFurnishings,
+            equippedVehicle: state.equippedVehicle,
+            commoditiesInventory: state.commoditiesInventory,
+            eventHistory: state.eventHistory,
+            eventCooldowns: state.eventCooldowns,
+            relationships: state.relationships,
+            skills: state.skills,
+          },
+        };
+        return JSON.stringify(exportPayload, null, 2);
+      },
+
+      importSaveData: (jsonStr: string) => {
+        try {
+          if (!jsonStr || typeof jsonStr !== 'string') {
+            return { success: false, message: 'Invalid payload: empty or non-string file.' };
+          }
+          if (jsonStr.length > 500_000) {
+            return { success: false, message: 'Payload too large: exceeds safe size limit (500KB).' };
+          }
+
+          const parsed = JSON.parse(jsonStr);
+          if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+            return { success: false, message: 'Invalid format: save file must be a JSON object.' };
+          }
+
+          // Unwrap container if exported via exportSaveData
+          const data = parsed.data && typeof parsed.data === 'object' ? parsed.data : parsed;
+
+          // Prevent prototype pollution
+          const forbiddenKeys = ['__proto__', 'constructor', 'prototype'];
+          for (const key of Object.keys(data)) {
+            if (forbiddenKeys.includes(key)) {
+              return { success: false, message: 'Security validation failed: forbidden object properties detected.' };
+            }
+          }
+
+          // Defensive sanitization of all fields
+          const safeNaira = typeof data.naira === 'number' && Number.isFinite(data.naira)
+            ? Math.max(0, Math.min(10_000_000_000, Math.floor(data.naira)))
+            : get().naira;
+
+          const safeMutunci = typeof data.mutunci === 'number' && Number.isFinite(data.mutunci)
+            ? Math.max(0, Math.min(100, Math.floor(data.mutunci)))
+            : get().mutunci;
+
+          const safeEnergy = typeof data.energy === 'number' && Number.isFinite(data.energy)
+            ? Math.max(0, Math.min(100, Math.floor(data.energy)))
+            : get().energy;
+
+          const safeHealth = typeof data.health === 'number' && Number.isFinite(data.health)
+            ? Math.max(0, Math.min(100, Math.floor(data.health)))
+            : get().health;
+
+          const safeDay = typeof data.day === 'number' && Number.isFinite(data.day)
+            ? Math.max(1, Math.floor(data.day))
+            : get().day;
+
+          const safeHour = typeof data.hour === 'number' && Number.isFinite(data.hour)
+            ? Math.max(0, Math.min(23, Math.floor(data.hour)))
+            : get().hour;
+
+          const safeSeason = ['Harmattan', 'Dry', 'Rainy'].includes(data.season)
+            ? data.season
+            : get().season;
+
+          const safeHousing = ['student_room', 'town_flat', 'savanna_villa'].includes(data.housingTier)
+            ? data.housingTier
+            : get().housingTier;
+
+          const safeVehicle = ['on_foot', 'bajaj_boxer', 'toyota_hilux'].includes(data.equippedVehicle)
+            ? data.equippedVehicle
+            : get().equippedVehicle;
+
+          const safeFurnishings = Array.isArray(data.ownedFurnishings)
+            ? data.ownedFurnishings.filter((f: unknown) => typeof f === 'string').slice(0, 50)
+            : get().ownedFurnishings;
+
+          const safeCommodities: Record<CommodityId, number> = {
+            sesame_grain: 0,
+            sorted_rice: 0,
+            smoked_fish: 0,
+            sahel_livestock: 0,
+            kazaure_dates: 0,
+          };
+          if (data.commoditiesInventory && typeof data.commoditiesInventory === 'object') {
+            const validCommodityKeys: CommodityId[] = ['sesame_grain', 'sorted_rice', 'smoked_fish', 'sahel_livestock', 'kazaure_dates'];
+            for (const key of validCommodityKeys) {
+              const val = data.commoditiesInventory[key];
+              if (typeof val === 'number' && Number.isFinite(val) && val >= 0) {
+                safeCommodities[key] = Math.floor(val);
+              }
+            }
+          }
+
+          set({
+            naira: safeNaira,
+            mutunci: safeMutunci,
+            energy: safeEnergy,
+            health: safeHealth,
+            day: safeDay,
+            hour: safeHour,
+            season: safeSeason,
+            housingTier: safeHousing,
+            equippedVehicle: safeVehicle,
+            ownedFurnishings: safeFurnishings,
+            commoditiesInventory: safeCommodities,
+            avatar: data.avatar && typeof data.avatar === 'object' ? { ...get().avatar, ...data.avatar } : get().avatar,
+            selectedBackground: typeof data.selectedBackground === 'string' ? data.selectedBackground : get().selectedBackground,
+            currentLocation: typeof data.currentLocation === 'string' ? data.currentLocation : get().currentLocation,
+            activeEvent: null,
+          });
+
+          get().addNotice('Save file verified and imported successfully!', 'positive');
+          return { success: true, message: 'Game save successfully loaded and validated.' };
+        } catch (err: unknown) {
+          const errMsg = err instanceof Error ? err.message : 'Invalid JSON content.';
+          return { success: false, message: `Failed to import save: ${errMsg}` };
+        }
+      },
     }),
     {
       name: GAME_CONFIG.SAVE.STORAGE_KEY,
@@ -843,6 +995,23 @@ export const useGameStore = create<GameState>()(
         isGameOver: state.isGameOver,
         gameOverReason: state.gameOverReason,
       }),
+      // Defensive merge: Sanitize against corrupted or tampered local storage values
+      merge: (persistedState: unknown, currentState: GameState): GameState => {
+        if (!persistedState || typeof persistedState !== 'object') {
+          return currentState;
+        }
+        const p = persistedState as Record<string, any>;
+        return {
+          ...currentState,
+          ...p,
+          naira: typeof p.naira === 'number' && Number.isFinite(p.naira) ? Math.max(0, p.naira) : currentState.naira,
+          mutunci: typeof p.mutunci === 'number' && Number.isFinite(p.mutunci) ? Math.max(0, Math.min(100, p.mutunci)) : currentState.mutunci,
+          energy: typeof p.energy === 'number' && Number.isFinite(p.energy) ? Math.max(0, Math.min(100, p.energy)) : currentState.energy,
+          health: typeof p.health === 'number' && Number.isFinite(p.health) ? Math.max(0, Math.min(100, p.health)) : currentState.health,
+          day: typeof p.day === 'number' && Number.isFinite(p.day) ? Math.max(1, p.day) : currentState.day,
+          hour: typeof p.hour === 'number' && Number.isFinite(p.hour) ? Math.max(0, Math.min(23, p.hour)) : currentState.hour,
+        };
+      },
     }
   )
 );

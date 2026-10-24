@@ -12,6 +12,7 @@ import { MapInfoCard } from '@/components/game/MapInfoCard';
 import { AvatarCustomizerModal } from '@/components/game/AvatarCustomizerModal';
 import { MarketExchangeModal } from '@/components/game/MarketExchangeModal';
 import { StatusCardModal } from '@/components/game/StatusCardModal';
+import { DataProtectionModal } from '@/components/game/DataProtectionModal';
 import { EventModal } from '@/components/EventModal';
 import { CharacterCard } from '@/components/CharacterCard';
 import { Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
@@ -42,6 +43,7 @@ export default function Home() {
   const [isWardrobeOpen, setIsWardrobeOpen] = useState(false);
   const [isExchangeOpen, setIsExchangeOpen] = useState(false);
   const [isStatusCardOpen, setIsStatusCardOpen] = useState(false);
+  const [isDataProtectionOpen, setIsDataProtectionOpen] = useState(false);
   const [selectedPinId, setSelectedPinId] = useState<string | null>(null);
 
   const { selectedBackground, floatingNotices } = useGameStore();
@@ -107,6 +109,7 @@ export default function Home() {
         openWardrobe={() => setIsWardrobeOpen(true)}
         openExchange={() => setIsExchangeOpen(true)}
         openStatusCard={() => setIsStatusCardOpen(true)}
+        openDataProtection={() => setIsDataProtectionOpen(true)}
       />
 
       {/* Interactive 3D Map Pin Details Card */}
@@ -160,6 +163,7 @@ export default function Home() {
           setSelectedPinId(locId);
           setIsPhoneOpen(false);
         }}
+        openDataProtection={() => setIsDataProtectionOpen(true)}
       />
 
       {/* Shop Emporium Modal Overlay */}
@@ -185,6 +189,12 @@ export default function Home() {
       <StatusCardModal
         isOpen={isStatusCardOpen}
         onClose={() => setIsStatusCardOpen(false)}
+      />
+
+      {/* Data Protection & Privacy Rights Modal (NDPA / GDPR) */}
+      <DataProtectionModal
+        isOpen={isDataProtectionOpen}
+        onClose={() => setIsDataProtectionOpen(false)}
       />
 
       {/* Random Event Dilemma & Game-Over Modal */}

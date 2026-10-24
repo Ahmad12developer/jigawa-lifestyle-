@@ -16,6 +16,7 @@ import {
   Clock,
   ChevronRight,
   Sparkles,
+  ShieldCheck,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { GameLocation, Job } from '@/types/game';
@@ -24,6 +25,7 @@ interface PhoneModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectMapLocation?: (locId: string) => void;
+  openDataProtection?: () => void;
 }
 
 type PhoneApp = 'home' | 'jobs' | 'wallet' | 'travel' | 'lifestyle';
@@ -32,6 +34,7 @@ export const PhoneModal: React.FC<PhoneModalProps> = ({
   isOpen,
   onClose,
   onSelectMapLocation,
+  openDataProtection,
 }) => {
   const [activeApp, setActiveApp] = useState<PhoneApp>('home');
   const {
@@ -253,6 +256,24 @@ export const PhoneModal: React.FC<PhoneModalProps> = ({
                       </div>
                     </button>
                   </div>
+
+                  <button
+                    onClick={() => {
+                      playClick();
+                      onClose();
+                      openDataProtection?.();
+                    }}
+                    className="w-full mt-2 p-3 rounded-2xl bg-emerald-950/40 hover:bg-emerald-900/60 border border-emerald-500/30 flex items-center justify-between text-xs text-emerald-300 transition"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                      <div className="text-left">
+                        <div className="font-bold text-white text-[11px]">Privacy & Data Protection</div>
+                        <div className="text-[9px] text-emerald-400/80">NDPA 2023 · Export or Purge Data</div>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-emerald-400/70" />
+                  </button>
                 </div>
               </motion.div>
             )}

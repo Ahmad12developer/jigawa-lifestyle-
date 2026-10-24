@@ -362,4 +362,7 @@ export interface GameState {
   removeNotice: (id: string) => void;
   borrowLoan: () => void;
   resetGame: () => void;
+  purgeAllData: () => void;
+  exportSaveData: () => string;
+  importSaveData: (jsonStr: string) => { success: boolean; message: string };
 }

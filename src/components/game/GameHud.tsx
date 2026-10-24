@@ -21,6 +21,7 @@ import {
   TrendingUp,
   Crown,
   Share2,
+  ShieldCheck,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -32,6 +33,7 @@ interface GameHudProps {
   openWardrobe: () => void;
   openExchange: () => void;
   openStatusCard: () => void;
+  openDataProtection: () => void;
 }
 
 export const GameHud: React.FC<GameHudProps> = ({
@@ -42,6 +44,7 @@ export const GameHud: React.FC<GameHudProps> = ({
   openWardrobe,
   openExchange,
   openStatusCard,
+  openDataProtection,
 }) => {
   const {
     naira,
@@ -139,6 +142,17 @@ export const GameHud: React.FC<GameHudProps> = ({
                   title="Toggle Sound"
                 >
                   {soundOn ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                </button>
+
+                <button
+                  onClick={() => {
+                    playClick();
+                    openDataProtection();
+                  }}
+                  className="p-1.5 rounded-full hover:bg-emerald-500/20 text-emerald-400 transition"
+                  title="Data Protection & Privacy Policy (NDPA / GDPR)"
+                >
+                  <ShieldCheck className="w-4 h-4" />
                 </button>
 
                 {/* Money Pill */}
