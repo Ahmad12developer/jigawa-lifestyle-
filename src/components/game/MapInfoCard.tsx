@@ -15,6 +15,7 @@ import {
   Wheat,
   Crown,
   Lightbulb,
+  Sparkles,
 } from 'lucide-react';
 import type { GameLocation, Job } from '@/types/game';
 
@@ -22,6 +23,7 @@ interface MapInfoCardProps {
   selectedPinId: string | null;
   onClose: () => void;
   onOpenJobsForLocation: (locId: string) => void;
+  onOpenActivities?: (locId: string) => void;
 }
 
 const LOCATION_ICONS: Record<string, React.ReactNode> = {
@@ -36,6 +38,7 @@ export const MapInfoCard: React.FC<MapInfoCardProps> = ({
   selectedPinId,
   onClose,
   onOpenJobsForLocation,
+  onOpenActivities,
 }) => {
   const { currentLocation, travel, naira } = useGameStore();
   const { playCash, playWarning, playClick } = useSoundFX();
@@ -111,15 +114,26 @@ export const MapInfoCard: React.FC<MapInfoCardProps> = ({
         </div>
 
         {/* Action Button */}
-        <div className="flex items-center gap-2 pt-1">
+        <div className="flex flex-col gap-2 pt-1">
           {isHere ? (
-            <button
-              onClick={() => onOpenJobsForLocation(loc.id)}
-              className="w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg transition flex items-center justify-center gap-2"
-            >
-              <Briefcase className="w-4 h-4" />
-              <span>View Local Hustles in District</span>
-            </button>
+            <div className="flex items-center gap-2">
+              {onOpenActivities && (
+                <button
+                  onClick={() => onOpenActivities(loc.id)}
+                  className="flex-1 py-2.5 px-3 rounded-xl font-bold text-xs bg-amber-500 hover:bg-amber-400 text-black shadow-lg transition flex items-center justify-center gap-1.5"
+                >
+                  <Sparkles className="w-4 h-4 text-black" />
+                  <span>Activities</span>
+                </button>
+              )}
+              <button
+                onClick={() => onOpenJobsForLocation(loc.id)}
+                className="flex-1 py-2.5 px-3 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg transition flex items-center justify-center gap-1.5"
+              >
+                <Briefcase className="w-4 h-4" />
+                <span>Gigs ({locJobs.length})</span>
+              </button>
+            </div>
           ) : (
             <button
               disabled={!canAfford}

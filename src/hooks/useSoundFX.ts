@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react';
 
-// Lightweight Web Audio API synthesizer for retro-simulation micro-interactions
+// High-fidelity Web Audio API synthesizer for retro-simulation micro-interactions
 export function useSoundFX() {
   const playTone = useCallback((freq: number, type: OscillatorType, duration: number, gainValue = 0.1) => {
     if (typeof window === 'undefined') return;
@@ -52,9 +52,19 @@ export function useSoundFX() {
   }, [playTone]);
 
   const playTravel = useCallback(() => {
-    // Bus motor hum / horn
+    // Bus / engine motor hum
     playTone(220, 'sawtooth', 0.15, 0.05);
     setTimeout(() => playTone(330, 'triangle', 0.18, 0.08), 80);
+  }, [playTone]);
+
+  const playKekeHorn = useCallback(() => {
+    // Authentic Nigerian Keke NAPEP dual-tone horn (Peep-Peep!)
+    playTone(880, 'square', 0.09, 0.08);
+    playTone(1100, 'square', 0.09, 0.06);
+    setTimeout(() => {
+      playTone(880, 'square', 0.12, 0.08);
+      playTone(1100, 'square', 0.12, 0.06);
+    }, 110);
   }, [playTone]);
 
   const playEventPopup = useCallback(() => {
@@ -68,12 +78,22 @@ export function useSoundFX() {
     playTone(200, 'sawtooth', 0.25, 0.12);
   }, [playTone]);
 
+  const playSuccess = useCallback(() => {
+    // Celebratory victory fanfare
+    playTone(440, 'triangle', 0.12, 0.1);
+    setTimeout(() => playTone(554.37, 'triangle', 0.12, 0.1), 80);
+    setTimeout(() => playTone(659.25, 'triangle', 0.14, 0.12), 160);
+    setTimeout(() => playTone(880.0, 'triangle', 0.25, 0.14), 240);
+  }, [playTone]);
+
   return {
     playClick,
     playCash,
     playRest,
     playTravel,
+    playKekeHorn,
     playEventPopup,
     playWarning,
+    playSuccess,
   };
 }

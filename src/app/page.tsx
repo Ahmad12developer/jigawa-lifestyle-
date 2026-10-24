@@ -13,6 +13,7 @@ import { AvatarCustomizerModal } from '@/components/game/AvatarCustomizerModal';
 import { MarketExchangeModal } from '@/components/game/MarketExchangeModal';
 import { StatusCardModal } from '@/components/game/StatusCardModal';
 import { DataProtectionModal } from '@/components/game/DataProtectionModal';
+import { DistrictActivityModal } from '@/components/game/DistrictActivityModal';
 import { EventModal } from '@/components/EventModal';
 import { CharacterCard } from '@/components/CharacterCard';
 import { Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
@@ -44,9 +45,10 @@ export default function Home() {
   const [isExchangeOpen, setIsExchangeOpen] = useState(false);
   const [isStatusCardOpen, setIsStatusCardOpen] = useState(false);
   const [isDataProtectionOpen, setIsDataProtectionOpen] = useState(false);
+  const [isDistrictActivityOpen, setIsDistrictActivityOpen] = useState(false);
   const [selectedPinId, setSelectedPinId] = useState<string | null>(null);
 
-  const { selectedBackground, floatingNotices } = useGameStore();
+  const { selectedBackground, floatingNotices, currentLocation, addNotice } = useGameStore();
   const { playClick } = useSoundFX();
 
   if (!isHydrated) {
@@ -95,6 +97,10 @@ export default function Home() {
           setSelectedPinId(locationId);
           playClick();
         }}
+        onAvatarGreet={() => {
+          playClick();
+          addNotice('Assalamu Alaikum! (Peace be upon you)', 'positive');
+        }}
       />
 
       {/* Retro-Modern HUD & Dock Overlay */}
@@ -110,6 +116,7 @@ export default function Home() {
         openExchange={() => setIsExchangeOpen(true)}
         openStatusCard={() => setIsStatusCardOpen(true)}
         openDataProtection={() => setIsDataProtectionOpen(true)}
+        openDistrictActivity={() => setIsDistrictActivityOpen(true)}
       />
 
       {/* Interactive 3D Map Pin Details Card */}
@@ -119,6 +126,9 @@ export default function Home() {
           onClose={() => setSelectedPinId(null)}
           onOpenJobsForLocation={() => {
             setIsPhoneOpen(true);
+          }}
+          onOpenActivities={() => {
+            setIsDistrictActivityOpen(true);
           }}
         />
       )}
@@ -195,6 +205,13 @@ export default function Home() {
       <DataProtectionModal
         isOpen={isDataProtectionOpen}
         onClose={() => setIsDataProtectionOpen(false)}
+      />
+
+      {/* District Landmark Activity Modal */}
+      <DistrictActivityModal
+        locationId={selectedPinId || currentLocation}
+        isOpen={isDistrictActivityOpen}
+        onClose={() => setIsDistrictActivityOpen(false)}
       />
 
       {/* Random Event Dilemma & Game-Over Modal */}

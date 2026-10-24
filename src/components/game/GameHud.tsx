@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { useGameStore } from '@/store/useGameStore';
 import { useSoundFX } from '@/hooks/useSoundFX';
+import { useGameRadio } from '@/hooks/useGameRadio';
+import locationsDataRaw from '@/data/locations.json';
 import {
   Home,
   ShoppingBag,
@@ -10,10 +12,11 @@ import {
   Smartphone,
   Sun,
   Moon,
+  Sunset,
+  Sunrise,
   Volume2,
   VolumeX,
   Sparkles,
-  Briefcase,
   Eye,
   EyeOff,
   Plus,
@@ -22,8 +25,14 @@ import {
   Crown,
   Share2,
   ShieldCheck,
+  Radio,
+  SkipForward,
+  Play,
+  Pause,
+  Compass,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import type { GameLocation } from '@/types/game';
 
 interface GameHudProps {
   viewMode: 'home' | 'map';
@@ -34,6 +43,7 @@ interface GameHudProps {
   openExchange: () => void;
   openStatusCard: () => void;
   openDataProtection: () => void;
+  openDistrictActivity?: () => void;
 }
 
 export const GameHud: React.FC<GameHudProps> = ({
@@ -45,6 +55,7 @@ export const GameHud: React.FC<GameHudProps> = ({
   openExchange,
   openStatusCard,
   openDataProtection,
+  openDistrictActivity,
 }) => {
   const {
     naira,
@@ -55,14 +66,20 @@ export const GameHud: React.FC<GameHudProps> = ({
     hour,
     season,
     avatar,
+    currentLocation,
     getEmirateTitle,
+    addNotice,
   } = useGameStore();
 
-  const { playClick } = useSoundFX();
+  const { playClick, playKekeHorn } = useSoundFX();
+  const radio = useGameRadio();
   const [cleanScreen, setCleanScreen] = useState(false);
   const [soundOn, setSoundOn] = useState(true);
 
-  // Time formatting (e.g., "Day 1 · 09:15 AM")
+  const locations = locationsDataRaw as GameLocation[];
+  const currentLocObj = locations.find((l) => l.id === currentLocation);
+
+  // Time formatting (e.g., "Day 1 · 09:00 AM")
   const hour12 = hour % 12 || 12;
   const ampm = hour >= 12 ? 'PM' : 'AM';
   const timeString = `${hour12}:00 ${ampm}`;
@@ -76,6 +93,21 @@ export const GameHud: React.FC<GameHudProps> = ({
   const moodEmoji =
     mutunci >= 75 ? '😊' : mutunci >= 50 ? '🙂' : mutunci >= 30 ? '😐' : '😟';
 
+  // Time of Day setter
+  const setTimeOfDay = (newHour: number) => {
+    playClick();
+    useGameStore.setState({ hour: newHour });
+    const periodName =
+      newHour === 6 ? 'Dawn (Asuba)' : newHour === 12 ? 'Noon (Azahar)' : newHour === 18 ? 'Sunset (Magariba)' : 'Night (Dare)';
+    addNotice(`Dutse atmosphere set to ${periodName}`, 'neutral');
+  };
+
+  // Keke Horn Action
+  const handleKekeHorn = () => {
+    playKekeHorn();
+    addNotice('🛺 Keke NAPEP: Peep-Peep! (Clear Kiyawa Road)', 'positive');
+  };
+
   return (
     <div className="pointer-events-none absolute inset-0 z-20 flex flex-col justify-between p-3 sm:p-5 select-none font-sans">
       {/* 1. TOP HEADER BAR */}
@@ -88,17 +120,75 @@ export const GameHud: React.FC<GameHudProps> = ({
             className="flex flex-col items-center gap-2 pointer-events-auto w-full"
           >
             {/* Top Status Capsule */}
-            <div className="flex flex-wrap items-center justify-between gap-2.5 bg-[#111827]/90 text-white backdrop-blur-md px-4 py-2 rounded-full border border-white/10 shadow-xl max-w-4xl w-full">
-              {/* Day & Time */}
+            <div className="flex flex-wrap items-center justify-between gap-2.5 bg-[#111827]/95 text-white backdrop-blur-xl px-4 py-2 rounded-full border border-white/15 shadow-2xl max-w-5xl w-full">
+              {/* Day, Time & Time-of-Day Switcher */}
               <div className="flex items-center gap-2 text-xs sm:text-sm font-medium">
-                {hour >= 6 && hour < 18 ? (
+                {hour >= 5 && hour < 8 ? (
+                  <Sunrise className="w-4 h-4 text-orange-400" />
+                ) : hour >= 8 && hour < 17 ? (
                   <Sun className="w-4 h-4 text-amber-400" />
+                ) : hour >= 17 && hour < 20 ? (
+                  <Sunset className="w-4 h-4 text-amber-500" />
                 ) : (
                   <Moon className="w-4 h-4 text-indigo-400" />
                 )}
                 <span>Day {day} · {timeString}</span>
-                <span className="text-white/30 hidden sm:inline">|</span>
-                <span className="text-xs text-[#F5E6CA] hidden sm:inline">{season}</span>
+
+                {/* Quick Time Preset Buttons */}
+                <div className="hidden md:flex items-center gap-1 bg-white/10 px-2 py-0.5 rounded-full text-[10px]">
+                  <button
+                    onClick={() => setTimeOfDay(6)}
+                    className={`px-1.5 py-0.5 rounded ${hour === 6 ? 'bg-orange-500 text-white font-bold' : 'hover:text-amber-300'}`}
+                    title="Dawn / Asuba (6:00 AM)"
+                  >
+                    Dawn
+                  </button>
+                  <button
+                    onClick={() => setTimeOfDay(12)}
+                    className={`px-1.5 py-0.5 rounded ${hour === 12 ? 'bg-amber-500 text-black font-bold' : 'hover:text-amber-300'}`}
+                    title="Noon / Azahar (12:00 PM)"
+                  >
+                    Noon
+                  </button>
+                  <button
+                    onClick={() => setTimeOfDay(18)}
+                    className={`px-1.5 py-0.5 rounded ${hour === 18 ? 'bg-amber-600 text-white font-bold' : 'hover:text-amber-300'}`}
+                    title="Sunset / Magariba (6:00 PM)"
+                  >
+                    Sunset
+                  </button>
+                  <button
+                    onClick={() => setTimeOfDay(21)}
+                    className={`px-1.5 py-0.5 rounded ${hour === 21 ? 'bg-indigo-600 text-white font-bold' : 'hover:text-amber-300'}`}
+                    title="Night / Dare (9:00 PM)"
+                  >
+                    Night
+                  </button>
+                </div>
+              </div>
+
+              {/* Radio Jigawa FM Lofi Player */}
+              <div className="flex items-center gap-2 bg-emerald-950/60 border border-emerald-500/30 px-3 py-1 rounded-full text-xs">
+                <button
+                  onClick={radio.togglePlay}
+                  className="flex items-center gap-1.5 text-emerald-300 font-bold hover:text-emerald-200 transition"
+                  title={radio.isPlaying ? 'Pause Radio Jigawa' : 'Play Radio Jigawa Lofi Beats'}
+                >
+                  <Radio className={`w-3.5 h-3.5 ${radio.isPlaying ? 'animate-pulse text-emerald-400' : ''}`} />
+                  {radio.isPlaying ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+                  <span className="hidden sm:inline truncate max-w-[150px]">
+                    {radio.currentTrack.title}
+                  </span>
+                </button>
+                {radio.isPlaying && (
+                  <button
+                    onClick={radio.nextTrack}
+                    className="p-0.5 text-emerald-400 hover:text-white transition"
+                    title="Next Track"
+                  >
+                    <SkipForward className="w-3 h-3" />
+                  </button>
+                )}
               </div>
 
               {/* Emirate Title Pill */}
@@ -107,30 +197,23 @@ export const GameHud: React.FC<GameHudProps> = ({
                   playClick();
                   openStatusCard();
                 }}
-                className="flex items-center gap-1.5 text-xs bg-amber-500/15 border border-amber-500/30 text-amber-300 px-3 py-1 rounded-full font-bold hover:bg-amber-500/25 transition shadow-sm"
+                className="hidden sm:flex items-center gap-1.5 text-xs bg-amber-500/15 border border-amber-500/30 text-amber-300 px-3 py-1 rounded-full font-bold hover:bg-amber-500/25 transition shadow-sm"
                 title="View Status & Prestige Card"
               >
                 <span>{title.badge}</span>
-                <span className="truncate max-w-[140px] sm:max-w-none">{title.title}</span>
+                <span className="truncate max-w-[130px]">{title.title}</span>
               </button>
 
-              {/* Mood indicator */}
-              <div className="hidden sm:flex items-center gap-1.5 text-xs bg-white/10 px-2.5 py-1 rounded-full">
-                <span>{moodEmoji}</span>
-                <span className="font-semibold text-white/90">{moodText}</span>
-              </div>
-
-              {/* Sound, Status Share & Wallet */}
-              <div className="flex items-center gap-2">
+              {/* Sound, Keke Horn, Privacy & Wallet */}
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                {/* Keke NAPEP Horn Button */}
                 <button
-                  onClick={() => {
-                    playClick();
-                    openStatusCard();
-                  }}
-                  className="p-1.5 rounded-full hover:bg-amber-500/20 text-amber-300 transition"
-                  title="Share Status Card"
+                  onClick={handleKekeHorn}
+                  className="p-1.5 rounded-full bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-300 border border-yellow-500/30 transition flex items-center gap-1 text-xs px-2"
+                  title="Honk Keke NAPEP Horn (Peep-Peep!)"
                 >
-                  <Share2 className="w-4 h-4" />
+                  <span>🛺</span>
+                  <span className="hidden md:inline font-bold">Horn</span>
                 </button>
 
                 <button
@@ -139,7 +222,7 @@ export const GameHud: React.FC<GameHudProps> = ({
                     playClick();
                   }}
                   className="p-1.5 rounded-full hover:bg-white/10 text-white/80 transition"
-                  title="Toggle Sound"
+                  title="Toggle Sound FX"
                 >
                   {soundOn ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
                 </button>
@@ -177,8 +260,8 @@ export const GameHud: React.FC<GameHudProps> = ({
               <span>{viewMode === 'map' ? '🗺️' : '🌾'}</span>
               <span>
                 {viewMode === 'map'
-                  ? '3D Regional Map · Hover or click pins to inspect districts, market rates & travel'
-                  : 'Sahel Trade Season · Sesame & Rice wholesale demand surging in Dutse'}
+                  ? `Dutse City Diorama · Click streets to walk avatar · Hover pins for landmarks`
+                  : 'Sahel Living Room · Walk around your quarters or head out to Dutse'}
               </span>
             </div>
           </motion.div>
@@ -195,7 +278,30 @@ export const GameHud: React.FC<GameHudProps> = ({
               exit={{ opacity: 0, x: -20 }}
               className="space-y-2"
             >
-              {/* Action 1: Commodity Arbitrage Exchange */}
+              {/* Action 1: District Landmark Activities */}
+              {openDistrictActivity && (
+                <button
+                  onClick={() => {
+                    playClick();
+                    openDistrictActivity();
+                  }}
+                  className="flex items-center gap-2.5 bg-gradient-to-r from-emerald-950/90 to-amber-950/90 text-white backdrop-blur-md px-3.5 py-2 rounded-2xl border border-amber-500/40 hover:border-amber-400 shadow-xl text-left transition group"
+                >
+                  <div className="w-7 h-7 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="block text-xs font-bold text-amber-300 group-hover:underline">
+                      Explore Activities
+                    </span>
+                    <span className="block text-[10px] text-white/70">
+                      {currentLocObj?.name ? currentLocObj.name.slice(0, 22) + '...' : 'Local District'}
+                    </span>
+                  </div>
+                </button>
+              )}
+
+              {/* Action 2: Commodity Arbitrage Exchange */}
               <button
                 onClick={() => {
                   playClick();
@@ -214,7 +320,7 @@ export const GameHud: React.FC<GameHudProps> = ({
                 </div>
               </button>
 
-              {/* Action 2: Wardrobe & Styles */}
+              {/* Action 3: Wardrobe & Styles */}
               <button
                 onClick={() => {
                   playClick();
@@ -233,7 +339,7 @@ export const GameHud: React.FC<GameHudProps> = ({
                 </div>
               </button>
 
-              {/* Action 3: Status & Prestige Card */}
+              {/* Action 4: Status & Prestige Card */}
               <button
                 onClick={() => {
                   playClick();
@@ -284,14 +390,6 @@ export const GameHud: React.FC<GameHudProps> = ({
 
           {/* 4 Needs Bars */}
           <div className="flex flex-col gap-1.5 pr-2">
-            {/* Hunger */}
-            <div className="flex items-center gap-2" title="Hunger">
-              <span className="text-[10px]">🍲</span>
-              <div className="w-16 h-1.5 bg-white/20 rounded-full overflow-hidden">
-                <div className="h-full bg-amber-500 rounded-full" style={{ width: '85%' }} />
-              </div>
-            </div>
-
             {/* Energy */}
             <div className="flex items-center gap-2" title={`Energy: ${energy}%`}>
               <span className="text-[10px]">⚡</span>
@@ -345,6 +443,37 @@ export const GameHud: React.FC<GameHudProps> = ({
             <span className="text-[10px] mt-0.5">Home</span>
           </button>
 
+          {/* Map (Dutse City) */}
+          <button
+            onClick={() => {
+              playClick();
+              setViewMode('map');
+            }}
+            className={`flex flex-col items-center justify-center w-13 sm:w-14 h-12 rounded-full transition ${
+              viewMode === 'map'
+                ? 'bg-white/20 text-white font-bold'
+                : 'text-white/60 hover:text-white hover:bg-white/10'
+            }`}
+          >
+            <Map className="w-4 h-4" />
+            <span className="text-[10px] mt-0.5">Dutse</span>
+          </button>
+
+          {/* Activities Button */}
+          {openDistrictActivity && (
+            <button
+              onClick={() => {
+                playClick();
+                openDistrictActivity();
+              }}
+              className="flex flex-col items-center justify-center w-13 sm:w-14 h-12 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition"
+              title="District Activities"
+            >
+              <Compass className="w-4 h-4 text-amber-400" />
+              <span className="text-[10px] mt-0.5">Activities</span>
+            </button>
+          )}
+
           {/* Trade (Commodity Arbitrage) */}
           <button
             onClick={() => {
@@ -380,23 +509,7 @@ export const GameHud: React.FC<GameHudProps> = ({
             className="flex flex-col items-center justify-center w-13 sm:w-14 h-12 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition"
           >
             <ShoppingBag className="w-4 h-4" />
-            <span className="text-[10px] mt-0.5">Buy</span>
-          </button>
-
-          {/* Map */}
-          <button
-            onClick={() => {
-              playClick();
-              setViewMode('map');
-            }}
-            className={`flex flex-col items-center justify-center w-13 sm:w-14 h-12 rounded-full transition ${
-              viewMode === 'map'
-                ? 'bg-white/20 text-white font-bold'
-                : 'text-white/60 hover:text-white hover:bg-white/10'
-            }`}
-          >
-            <Map className="w-4 h-4" />
-            <span className="text-[10px] mt-0.5">Map</span>
+            <span className="text-[10px] mt-0.5">Shop</span>
           </button>
 
           {/* Phone */}

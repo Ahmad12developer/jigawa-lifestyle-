@@ -10,12 +10,14 @@ interface GameViewportProps {
   viewMode: 'home' | 'map';
   onPinClick?: (locationId: string) => void;
   onAvatarMove?: (coords: [number, number]) => void;
+  onAvatarGreet?: () => void;
 }
 
 export const GameViewport: React.FC<GameViewportProps> = ({
   viewMode,
   onPinClick,
   onAvatarMove,
+  onAvatarGreet,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const avatarPos = useRef(new THREE.Vector3(0, 0, 1.5));
@@ -28,18 +30,62 @@ export const GameViewport: React.FC<GameViewportProps> = ({
     ownedFurnishings,
     equippedVehicle,
     season,
+    hour,
+    currentLocation,
   } = useGameStore();
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // 1. Scene & Orthographic Camera (True Isometric Projection)
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(viewMode === 'home' ? 0x131a29 : 0x090f1a);
+    // 1. Dynamic Atmosphere & Sky Lighting based on Day / Night Cycle
+    // Dawn (5-7): rose gold sunrise over Dutse hills
+    // Day (8-16): bright warm savanna sunlight
+    // Sunset (17-19): golden amber twilight
+    // Night (20-4): deep starry indigo night with moonbeams
+    let skyColor = 0x090f1a;
+    let ambientIntensity = 1.25;
+    let dirIntensity = 2.4;
+    let dirColor = 0xfff7ed;
 
+    if (viewMode === 'map') {
+      if (hour >= 5 && hour < 8) {
+        // Dawn / Asuba
+        skyColor = 0x1e1b4b;
+        dirColor = 0xfb923c;
+        dirIntensity = 1.85;
+        ambientIntensity = 1.05;
+      } else if (hour >= 8 && hour < 17) {
+        // Day / Azahar
+        skyColor = season === 'Harmattan' ? 0x1e293b : 0x0c1e33;
+        dirColor = season === 'Harmattan' ? 0xfde047 : 0xfff7ed;
+        dirIntensity = 2.4;
+        ambientIntensity = 1.25;
+      } else if (hour >= 17 && hour < 20) {
+        // Sunset / Magariba
+        skyColor = 0x451a03;
+        dirColor = 0xf59e0b;
+        dirIntensity = 2.1;
+        ambientIntensity = 1.1;
+      } else {
+        // Night / Dare
+        skyColor = 0x030712;
+        dirColor = 0x38bdf8;
+        dirIntensity = 0.75;
+        ambientIntensity = 0.45;
+      }
+    } else {
+      skyColor = 0x131a29;
+      ambientIntensity = 1.45;
+      dirIntensity = 2.2;
+    }
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(skyColor);
+
+    // 2. Orthographic Camera (True Isometric Projection)
     const aspect = container.clientWidth / container.clientHeight;
-    const frustumSize = viewMode === 'home' ? 14 : 28;
+    const frustumSize = viewMode === 'home' ? 14 : 29;
 
     const camera = new THREE.OrthographicCamera(
       (-frustumSize * aspect) / 2,
@@ -50,12 +96,11 @@ export const GameViewport: React.FC<GameViewportProps> = ({
       1000
     );
 
-    // Initial 45° Isometric Camera View
     const cameraOffset = new THREE.Vector3(20, 20, 20);
     camera.position.copy(cameraOffset);
     camera.lookAt(0, 0, 0);
 
-    // 2. WebGL High-Performance Renderer
+    // 3. WebGL High-Performance Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -64,36 +109,29 @@ export const GameViewport: React.FC<GameViewportProps> = ({
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
-    // 3. Lighting Architecture (Calibrated Warmth & Atmosphere)
-    const ambientLight = new THREE.AmbientLight(
-      0xfffbeb,
-      viewMode === 'home' ? 1.45 : season === 'Harmattan' ? 1.3 : 1.15
-    );
+    // 4. Lighting Architecture
+    const ambientLight = new THREE.AmbientLight(0xfffbeb, ambientIntensity);
     scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(
-      season === 'Harmattan' ? 0xfcd34d : 0xfff7ed,
-      viewMode === 'home' ? 2.2 : 2.4
-    );
+    const dirLight = new THREE.DirectionalLight(dirColor, dirIntensity);
     dirLight.position.set(14, 24, 16);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 2048;
     dirLight.shadow.mapSize.height = 2048;
-    dirLight.shadow.camera.left = -20;
-    dirLight.shadow.camera.right = 20;
-    dirLight.shadow.camera.top = 20;
-    dirLight.shadow.camera.bottom = -20;
+    dirLight.shadow.camera.left = -22;
+    dirLight.shadow.camera.right = 22;
+    dirLight.shadow.camera.top = 22;
+    dirLight.shadow.camera.bottom = -22;
     dirLight.shadow.bias = -0.0004;
     scene.add(dirLight);
 
-    // Warm Room Lamp Light (Home mode)
     if (viewMode === 'home') {
       const roomLamp = new THREE.PointLight(0xf59e0b, 1.9, 14);
       roomLamp.position.set(0, 4.2, 0);
       scene.add(roomLamp);
     }
 
-    // 4. Build Active 3D World Scene
+    // 5. Build Active 3D World Scene (Room or Dutse City Diorama)
     let avatar: any = null;
     let mapData: ReturnType<typeof buildIsometricMap> | null = null;
 
@@ -104,13 +142,27 @@ export const GameViewport: React.FC<GameViewportProps> = ({
         vehicle: equippedVehicle,
       });
       avatar = createAvatar(avatarCustom);
+      avatarPos.current.set(0, 0, 1.5);
+      targetPos.current.set(0, 0, 1.5);
       avatar.position.copy(avatarPos.current);
       scene.add(avatar);
     } else {
-      mapData = buildIsometricMap(scene, season);
+      mapData = buildIsometricMap(scene, season, hour);
+
+      // Spawn Player's 3D Human Avatar on Dutse City Streets at Current Location
+      avatar = createAvatar(avatarCustom);
+      const currentPin = mapData.pins.find((p) => p.id === currentLocation);
+      const startX = currentPin ? currentPin.position[0] : 10;
+      const startZ = currentPin ? currentPin.position[2] + 1.2 : 8;
+
+      avatarPos.current.set(startX, 0.05, startZ);
+      targetPos.current.set(startX, 0.05, startZ);
+      cameraTarget.current.set(startX, 0, startZ);
+      avatar.position.copy(avatarPos.current);
+      scene.add(avatar);
     }
 
-    // 5. Click & Raycasting for Movement, Avatar Interaction & Pin Clicks
+    // 6. Raycasting & Interaction (Pin clicks, street walking, greeting gesture)
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
@@ -121,43 +173,65 @@ export const GameViewport: React.FC<GameViewportProps> = ({
 
       raycaster.setFromCamera(mouse, camera);
 
-      if (viewMode === 'home' && avatar) {
-        // Check if clicking directly on avatar for interactive greeting
+      if (avatar) {
+        // Check if user clicked directly on the avatar
         const avatarHits = raycaster.intersectObjects(avatar.children, true);
         if (avatarHits.length > 0) {
           avatar.userData?.triggerGreeting?.();
+          onAvatarGreet?.();
           return;
         }
+      }
 
-        // Floor plane raycast for movement
+      if (viewMode === 'home' && avatar) {
+        // Floor plane raycast for room movement
         const floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
         const intersectPoint = new THREE.Vector3();
         if (raycaster.ray.intersectPlane(floorPlane, intersectPoint)) {
-          // Clamp to room interior bounds
           intersectPoint.x = Math.max(-5.2, Math.min(5.2, intersectPoint.x));
           intersectPoint.z = Math.max(-5.2, Math.min(5.2, intersectPoint.z));
           targetPos.current.copy(intersectPoint);
           onAvatarMove?.([intersectPoint.x, intersectPoint.z]);
         }
       } else if (viewMode === 'map' && mapData) {
-        // Check pin clicks
+        // Check pin clicks first
         const intersects = raycaster.intersectObjects(mapData.group.children, true);
+        let clickedPinId: string | null = null;
+
         for (const hit of intersects) {
           let current: THREE.Object3D | null = hit.object;
           while (current && current !== mapData.group) {
             if (current.name.startsWith('pin_')) {
-              const locationId = current.name.replace('pin_', '');
-              onPinClick?.(locationId);
-
-              // Smoothly glide camera target towards clicked landmark
-              const foundPin = mapData.pins.find((p) => p.id === locationId);
-              if (foundPin) {
-                cameraTarget.current.set(foundPin.position[0], 0, foundPin.position[2]);
-              }
-              return;
+              clickedPinId = current.name.replace('pin_', '');
+              break;
             }
             current = current.parent;
           }
+          if (clickedPinId) break;
+        }
+
+        if (clickedPinId) {
+          onPinClick?.(clickedPinId);
+          const foundPin = mapData.pins.find((p) => p.id === clickedPinId);
+          if (foundPin) {
+            cameraTarget.current.set(foundPin.position[0], 0, foundPin.position[2]);
+            // Avatar walks toward the landmark!
+            if (avatar) {
+              targetPos.current.set(foundPin.position[0], 0.05, foundPin.position[2] + 1.2);
+            }
+          }
+          return;
+        }
+
+        // If no pin clicked, walk freely on Dutse city streets!
+        const floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+        const groundPoint = new THREE.Vector3();
+        if (raycaster.ray.intersectPlane(floorPlane, groundPoint)) {
+          groundPoint.x = Math.max(-19.0, Math.min(19.0, groundPoint.x));
+          groundPoint.z = Math.max(-19.0, Math.min(19.0, groundPoint.z));
+          groundPoint.y = 0.05;
+          targetPos.current.copy(groundPoint);
+          onAvatarMove?.([groundPoint.x, groundPoint.z]);
         }
       }
     };
@@ -192,7 +266,7 @@ export const GameViewport: React.FC<GameViewportProps> = ({
     renderer.domElement.addEventListener('click', handleClick);
     renderer.domElement.addEventListener('mousemove', handlePointerMove);
 
-    // 6. Camera Drag / Pan (Right Click or Shift+Drag)
+    // 7. Camera Drag / Pan (Right Click or Shift+Drag)
     let isDragging = false;
     let prevMouse = { x: 0, y: 0 };
 
@@ -221,7 +295,7 @@ export const GameViewport: React.FC<GameViewportProps> = ({
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
       const zoomFactor = e.deltaY * 0.001;
-      camera.zoom = Math.max(0.55, Math.min(2.8, camera.zoom - zoomFactor));
+      camera.zoom = Math.max(0.5, Math.min(3.0, camera.zoom - zoomFactor));
       camera.updateProjectionMatrix();
     };
 
@@ -230,7 +304,7 @@ export const GameViewport: React.FC<GameViewportProps> = ({
     window.addEventListener('mouseup', handleMouseUp);
     renderer.domElement.addEventListener('wheel', handleWheel, { passive: false });
 
-    // 7. High-Performance Render Loop with Real-Time Avatar & Map Animation
+    // 8. High-Performance Render Loop with Real-Time Avatar & Map Animation
     let animationId: number;
     const clock = new THREE.Clock();
 
@@ -239,36 +313,41 @@ export const GameViewport: React.FC<GameViewportProps> = ({
       const delta = Math.min(clock.getDelta(), 0.1);
       const elapsedTime = clock.getElapsedTime();
 
-      // (A) Smooth Avatar Walk & Humanoid Animation Loop
-      if (avatar && viewMode === 'home') {
+      // (A) Smooth Avatar Walk & Humanoid Animation Loop (in both Home and Map mode)
+      if (avatar) {
         const dist = avatar.position.distanceTo(targetPos.current);
-        const isMoving = dist > 0.05;
+        const isMoving = dist > 0.08;
 
         if (isMoving) {
+          const moveSpeed = viewMode === 'map' ? 5.8 : 3.6;
           const moveDir = targetPos.current.clone().sub(avatar.position).normalize();
-          avatar.position.addScaledVector(moveDir, Math.min(dist, delta * 3.6));
+          avatar.position.addScaledVector(moveDir, Math.min(dist, delta * moveSpeed));
 
           // Smoothly rotate avatar towards movement direction
           const targetAngle = Math.atan2(moveDir.x, moveDir.z);
           avatar.rotation.y = THREE.MathUtils.lerp(avatar.rotation.y, targetAngle, 0.25);
 
           // Natural walking vertical bounce
-          avatar.position.y = Math.abs(Math.sin(elapsedTime * 12)) * 0.08;
+          avatar.position.y = Math.abs(Math.sin(elapsedTime * (viewMode === 'map' ? 14 : 12))) * 0.08;
         } else {
-          avatar.position.y = 0;
+          avatar.position.y = viewMode === 'map' ? 0.05 : 0;
         }
 
         avatarPos.current.copy(avatar.position);
 
-        // Invoke modular humanoid animation (breathing, blinking, weight shift, greeting gesture)
+        // Modular humanoid animation (breathing, eye blinking, limb swings, greeting gesture)
         avatar.userData?.update?.(delta, elapsedTime, isMoving);
+
+        // Smooth camera follow avatar on city map when walking
+        if (viewMode === 'map' && isMoving) {
+          cameraTarget.current.lerp(avatar.position, 0.035);
+        }
       }
 
-      // (B) 3D Map Real-Time Animation Loop (Traffic, Weather Particles, Beacon, Boats)
+      // (B) 3D Map Real-Time Animation Loop (Traffic, Radar, Weather Particles, Beacon, Fountain)
       if (mapData && viewMode === 'map') {
         mapData.update(delta, elapsedTime);
 
-        // Smooth camera lerp to target position
         camera.position.x = THREE.MathUtils.lerp(camera.position.x, 20 + cameraTarget.current.x, 0.08);
         camera.position.z = THREE.MathUtils.lerp(camera.position.z, 20 + cameraTarget.current.z, 0.08);
         camera.lookAt(cameraTarget.current.x, 0, cameraTarget.current.z);
@@ -279,7 +358,6 @@ export const GameViewport: React.FC<GameViewportProps> = ({
 
     animate();
 
-    // Responsive Canvas Resize Handler
     const handleResize = () => {
       if (!container) return;
       const newAspect = container.clientWidth / container.clientHeight;
@@ -296,21 +374,30 @@ export const GameViewport: React.FC<GameViewportProps> = ({
     return () => {
       cancelAnimationFrame(animationId);
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
       renderer.domElement.removeEventListener('click', handleClick);
       renderer.domElement.removeEventListener('mousemove', handlePointerMove);
       renderer.domElement.removeEventListener('mousedown', handleMouseDown);
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
       renderer.domElement.removeEventListener('wheel', handleWheel);
+      if (container.contains(renderer.domElement)) {
+        container.removeChild(renderer.domElement);
+      }
       renderer.dispose();
-      container.innerHTML = '';
     };
-  }, [viewMode, onPinClick, onAvatarMove, avatarCustom, housingTier, ownedFurnishings, equippedVehicle, season]);
+  }, [
+    viewMode,
+    avatarCustom,
+    housingTier,
+    ownedFurnishings,
+    equippedVehicle,
+    season,
+    hour,
+    currentLocation,
+    onPinClick,
+    onAvatarMove,
+    onAvatarGreet,
+  ]);
 
-  return (
-    <div
-      ref={containerRef}
-      className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing overflow-hidden select-none"
-    />
-  );
+  return <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />;
 };

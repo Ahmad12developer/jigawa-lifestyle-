@@ -33,8 +33,11 @@ export interface IsometricMapResult {
  * 9. Sir Ahmadu Bello International Cargo Airport with runway markings, control tower & spinning radar
  * 10. Dynamic city traffic: Keke NAPEP tricycles, Peugeot 504 station wagon, Danfo minibus, Okadas & camels
  */
-export function buildIsometricMap(scene: THREE.Scene, season: string = 'Dry'): IsometricMapResult {
+export function buildIsometricMap(scene: THREE.Scene, season: string = 'Dry', hour: number = 12): IsometricMapResult {
   const group = new THREE.Group();
+
+  const isNight = hour >= 20 || hour < 5;
+  const isSunset = hour >= 17 && hour < 20;
 
   // --- 1. DIORAMA BASE & URBAN FOUNDATION (40 x 40) ---
   const mapSize = 40;
@@ -371,6 +374,53 @@ export function buildIsometricMap(scene: THREE.Scene, season: string = 'Dry'): I
     const stripe = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.09, 0.22), roadPaintMat);
     stripe.position.set(-4.5, 0.05, 2.5 + zc);
     group.add(stripe);
+  }
+
+  // Double-Arm Solar Streetlights along Kiyawa Road Median
+  const streetlightMat = new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.8 });
+  const bulbNightMat = new THREE.MeshBasicMaterial({ color: isNight ? 0xfffbeb : 0xd1d5db });
+  [-16, -11, -6, 6, 11, 16].forEach((lx) => {
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, 2.8), streetlightMat);
+    pole.position.set(lx, 1.4, 2.5);
+    group.add(pole);
+
+    const crossArm = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.05, 0.05), streetlightMat);
+    crossArm.position.set(lx, 2.8, 2.5);
+    group.add(crossArm);
+
+    [-0.65, 0.65].forEach((bx) => {
+      const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), bulbNightMat);
+      bulb.position.set(lx + bx, 2.7, 2.5);
+      group.add(bulb);
+    });
+
+    if (isNight) {
+      const lampLight = new THREE.PointLight(0xfef08a, 1.2, 7);
+      lampLight.position.set(lx, 2.6, 2.5);
+      group.add(lampLight);
+    }
+  });
+
+  if (isNight) {
+    // Mosque Emerald Night Glow
+    const mosqueLight = new THREE.PointLight(0x10b981, 2.4, 12);
+    mosqueLight.position.set(0.0, 3.5, -3.0);
+    group.add(mosqueLight);
+
+    // Emir's Palace Amber Lantern Glow
+    const palaceLight = new THREE.PointLight(0xf59e0b, 2.0, 10);
+    palaceLight.position.set(-11.0, 2.8, -8.0);
+    group.add(palaceLight);
+
+    // Secretariat Warm Office Glow
+    const secLight = new THREE.PointLight(0xfde047, 2.2, 12);
+    secLight.position.set(10.0, 2.4, 8.0);
+    group.add(secLight);
+
+    // Kasuwar Market Evening Lantern Glow
+    const marketLight = new THREE.PointLight(0xf59e0b, 1.8, 10);
+    marketLight.position.set(-10.5, 2.2, 8.0);
+    group.add(marketLight);
   }
 
   // (D) Takur Roundabout Island & Landmark Fountain
