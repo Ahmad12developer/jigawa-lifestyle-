@@ -421,6 +421,26 @@ export function buildIsometricMap(scene: THREE.Scene, season: string = 'Dry', ho
     const marketLight = new THREE.PointLight(0xf59e0b, 1.8, 10);
     marketLight.position.set(-10.5, 2.2, 8.0);
     group.add(marketLight);
+
+    // Rasheed Shekoni Teaching Hospital Emergency & Red Cross Night Glow
+    const hospitalNightLight = new THREE.PointLight(0xef4444, 2.2, 10);
+    hospitalNightLight.position.set(12.0, 2.6, -4.0);
+    group.add(hospitalNightLight);
+
+    // Takur Commercial Plaza & Banking Boulevard Glow
+    const plazaNightLight = new THREE.PointLight(0x38bdf8, 2.0, 10);
+    plazaNightLight.position.set(-4.5, 2.4, -2.5);
+    group.add(plazaNightLight);
+
+    // Jigawa MDI Job Center Innovation Foyer Glow
+    const jobCenterNightLight = new THREE.PointLight(0x60a5fa, 1.8, 9);
+    jobCenterNightLight.position.set(11.0, 2.2, 14.0);
+    group.add(jobCenterNightLight);
+
+    // Dutse Model College Quadrangle Amber Light
+    const schoolNightLight = new THREE.PointLight(0xfacc15, 1.6, 9);
+    schoolNightLight.position.set(-7.0, 2.2, 14.5);
+    group.add(schoolNightLight);
   }
 
   // (D) Takur Roundabout Island & Landmark Fountain
@@ -726,6 +746,373 @@ export function buildIsometricMap(scene: THREE.Scene, season: string = 'Dry', ho
   planeWings.position.set(-14.2, 0.46, -14.2);
   group.add(planeWings);
 
+  // --- 9B. RASHEED SHEKONI TEACHING HOSPITAL (RSFUTH - Northeast Healthcare Corridor: X: 8 to 17, Z: -7 to -1) ---
+  const hospitalWhiteMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.3 });
+  const hospitalTrimGreen = new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.45 });
+  const medicalRedMat = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.35 });
+  const medicalGlassMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.2, metalness: 0.6 });
+
+  // Main Hospital Inpatient & Surgical Block
+  const hospitalMain = new THREE.Mesh(new THREE.BoxGeometry(6.2, 3.2, 4.0), hospitalWhiteMat);
+  hospitalMain.position.set(12.5, 1.6, -4.8);
+  hospitalMain.castShadow = true;
+  group.add(hospitalMain);
+
+  const hospitalMainRoof = new THREE.Mesh(new THREE.BoxGeometry(6.6, 0.4, 4.4), hospitalTrimGreen);
+  hospitalMainRoof.position.set(12.5, 3.4, -4.8);
+  group.add(hospitalMainRoof);
+
+  // Diagnostic & Pharmacy Wing (East)
+  const hospitalEastWing = new THREE.Mesh(new THREE.BoxGeometry(3.6, 2.4, 3.2), hospitalWhiteMat);
+  hospitalEastWing.position.set(16.5, 1.2, -4.2);
+  hospitalEastWing.castShadow = true;
+  group.add(hospitalEastWing);
+
+  const hospitalEastRoof = new THREE.Mesh(new THREE.BoxGeometry(3.8, 0.3, 3.4), hospitalTrimGreen);
+  hospitalEastRoof.position.set(16.5, 2.55, -4.2);
+  group.add(hospitalEastRoof);
+
+  // Emergency Casualty Ward & Covered Ambulance Bay
+  const emergencyBay = new THREE.Mesh(new THREE.BoxGeometry(3.6, 2.2, 2.6), hospitalWhiteMat);
+  emergencyBay.position.set(8.5, 1.1, -4.5);
+  emergencyBay.castShadow = true;
+  group.add(emergencyBay);
+
+  // Cantilevered Red Emergency Drive-Through Canopy
+  const erCanopy = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.22, 2.4), medicalRedMat);
+  erCanopy.position.set(8.5, 2.3, -2.4);
+  erCanopy.castShadow = true;
+  group.add(erCanopy);
+
+  // Canopy support pillars
+  [7.0, 10.0].forEach((px) => {
+    const col = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 2.2), streetlightMat);
+    col.position.set(px, 1.1, -1.4);
+    group.add(col);
+  });
+
+  // 3D Red Medical Cross on Hospital Main Facade
+  const crossGroup = new THREE.Group();
+  const crossV = new THREE.Mesh(new THREE.BoxGeometry(0.32, 1.2, 0.12), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
+  const crossH = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.32, 0.12), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
+  crossGroup.add(crossV);
+  crossGroup.add(crossH);
+  crossGroup.position.set(12.5, 3.8, -2.6);
+  group.add(crossGroup);
+
+  // Parked Emergency Ambulance
+  const ambulanceGroup = new THREE.Group();
+  const ambBody = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.88, 1.0), hospitalWhiteMat);
+  ambBody.position.y = 0.44;
+  ambBody.castShadow = true;
+  ambulanceGroup.add(ambBody);
+
+  // Red Side Stripe
+  const ambStripe = new THREE.Mesh(new THREE.BoxGeometry(2.02, 0.16, 1.02), medicalRedMat);
+  ambStripe.position.y = 0.46;
+  ambulanceGroup.add(ambStripe);
+
+  // Windshield
+  const ambGlass = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.45, 0.95), medicalGlassMat);
+  ambGlass.position.set(0.45, 0.82, 0);
+  ambulanceGroup.add(ambGlass);
+
+  // Siren Base and Flashing Beacon
+  const sirenBase = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.08, 0.5), streetlightMat);
+  sirenBase.position.set(0.3, 1.15, 0);
+  ambulanceGroup.add(sirenBase);
+
+  const ambulanceSiren = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.1, 0.1, 0.16, 8),
+    new THREE.MeshBasicMaterial({ color: 0x38bdf8 })
+  );
+  ambulanceSiren.position.set(0.3, 1.28, 0);
+  ambulanceGroup.add(ambulanceSiren);
+
+  const ambulanceLight = new THREE.PointLight(0x38bdf8, 2.2, 6);
+  ambulanceLight.position.set(0.3, 1.35, 0);
+  ambulanceGroup.add(ambulanceLight);
+
+  // Ambulance Wheels
+  [[-0.6, -0.45], [0.6, -0.45], [-0.6, 0.45], [0.6, 0.45]].forEach(([wx, wz]) => {
+    const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.12, 8), wheelMat);
+    wheel.rotation.x = Math.PI / 2;
+    wheel.position.set(wx, 0.18, wz);
+    ambulanceGroup.add(wheel);
+  });
+  ambulanceGroup.position.set(8.5, 0, -2.4);
+  ambulanceGroup.rotation.y = Math.PI / 2; // Facing road
+  group.add(ambulanceGroup);
+
+  // Paved Ambulance Driveway to Kiyawa Road
+  const ambDriveway = new THREE.Mesh(new THREE.BoxGeometry(5.0, 0.06, 2.5), asphaltMat);
+  ambDriveway.position.set(8.5, 0.03, -1.2);
+  group.add(ambDriveway);
+
+  // --- 9C. DUTSE MODEL INTERNATIONAL COLLEGE & ACADEMY (Southwest Academic Sector: X: -12 to -3, Z: 11 to 19) ---
+  const schoolOchreMat = new THREE.MeshStandardMaterial({ color: 0xca8a04, roughness: 0.8 });
+  const schoolGreenRoofMat = new THREE.MeshStandardMaterial({ color: 0x166534, roughness: 0.55 });
+  const schoolCreamMat = new THREE.MeshStandardMaterial({ color: 0xfef3c7, roughness: 0.6 });
+
+  // Main 2-Story Classroom Quadrangle Block
+  const schoolBlock = new THREE.Mesh(new THREE.BoxGeometry(6.6, 2.7, 3.2), schoolOchreMat);
+  schoolBlock.position.set(-7.5, 1.35, 15.5);
+  schoolBlock.castShadow = true;
+  group.add(schoolBlock);
+
+  // Dark Green Pitched Gabled Roof
+  const schoolRoof = new THREE.Mesh(new THREE.BoxGeometry(7.0, 0.45, 3.6), schoolGreenRoofMat);
+  schoolRoof.position.set(-7.5, 2.9, 15.5);
+  group.add(schoolRoof);
+
+  // Covered Veranda Balcony Corridor (Upper Floor Walkway)
+  const schoolBalcony = new THREE.Mesh(new THREE.BoxGeometry(6.4, 0.2, 0.6), schoolCreamMat);
+  schoolBalcony.position.set(-7.5, 1.35, 13.6);
+  group.add(schoolBalcony);
+
+  // Balcony Columns
+  for (let bx = -10.2; bx <= -4.8; bx += 1.35) {
+    const col = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 2.5), schoolCreamMat);
+    col.position.set(bx, 1.25, 13.6);
+    group.add(col);
+  }
+
+  // Science & Computer Laboratory Wing
+  const labWing = new THREE.Mesh(new THREE.BoxGeometry(3.6, 2.2, 2.6), schoolOchreMat);
+  labWing.position.set(-11.8, 1.1, 15.8);
+  labWing.castShadow = true;
+  group.add(labWing);
+
+  const labRoof = new THREE.Mesh(new THREE.BoxGeometry(3.8, 0.35, 2.8), schoolGreenRoofMat);
+  labRoof.position.set(-11.8, 2.35, 15.8);
+  group.add(labRoof);
+
+  // Assembly Quadrangle Paved Ground
+  const quadGround = new THREE.Mesh(new THREE.BoxGeometry(4.8, 0.04, 3.8), sidewalkMat);
+  quadGround.position.set(-7.5, 0.02, 12.0);
+  group.add(quadGround);
+
+  // School Assembly Flagpole flying Nigerian Colors
+  const schoolPole = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 4.2), poleMat);
+  schoolPole.position.set(-7.5, 2.1, 12.0);
+  group.add(schoolPole);
+
+  const sFlagG1 = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.45, 0.02), new THREE.MeshStandardMaterial({ color: 0x16a34a }));
+  sFlagG1.position.set(-7.32, 3.8, 12.0);
+  group.add(sFlagG1);
+  const sFlagW = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.45, 0.02), new THREE.MeshStandardMaterial({ color: 0xf8fafc }));
+  sFlagW.position.set(-7.04, 3.8, 12.0);
+  group.add(sFlagW);
+  const sFlagG2 = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.45, 0.02), new THREE.MeshStandardMaterial({ color: 0x16a34a }));
+  sFlagG2.position.set(-6.76, 3.8, 12.0);
+  group.add(sFlagG2);
+
+  // School Football Pitch (Turf + White Line Markings)
+  const pitchGrass = new THREE.Mesh(new THREE.BoxGeometry(5.6, 0.04, 4.2), greenLawnMat);
+  pitchGrass.position.set(-3.5, 0.02, 16.5);
+  group.add(pitchGrass);
+
+  const chalkLineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const touchlineN = new THREE.Mesh(new THREE.BoxGeometry(5.4, 0.05, 0.06), chalkLineMat);
+  touchlineN.position.set(-3.5, 0.04, 14.5);
+  group.add(touchlineN);
+  const touchlineS = new THREE.Mesh(new THREE.BoxGeometry(5.4, 0.05, 0.06), chalkLineMat);
+  touchlineS.position.set(-3.5, 0.04, 18.5);
+  group.add(touchlineS);
+  const touchlineCenter = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.05, 4.0), chalkLineMat);
+  touchlineCenter.position.set(-3.5, 0.04, 16.5);
+  group.add(touchlineCenter);
+
+  // 3D White Goalpost
+  const goalPostMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 });
+  const crossbar = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.4), goalPostMat);
+  crossbar.rotation.x = Math.PI / 2;
+  crossbar.position.set(-0.9, 0.8, 16.5);
+  group.add(crossbar);
+
+  [-0.65, 0.65].forEach((offsetZ) => {
+    const upright = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.8), goalPostMat);
+    upright.position.set(-0.9, 0.4, 16.5 + offsetZ);
+    group.add(upright);
+  });
+
+  // Authentic Nigerian Yellow School Bus ("Dutse Model College")
+  const schoolBusGroup = new THREE.Group();
+  const busBody = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.0, 1.1), new THREE.MeshStandardMaterial({ color: 0xfacc15, roughness: 0.35 }));
+  busBody.position.y = 0.58;
+  busBody.castShadow = true;
+  schoolBusGroup.add(busBody);
+
+  const busBlackStripe = new THREE.Mesh(new THREE.BoxGeometry(2.42, 0.12, 1.12), new THREE.MeshStandardMaterial({ color: 0x0f172a }));
+  busBlackStripe.position.y = 0.55;
+  schoolBusGroup.add(busBlackStripe);
+
+  const busGlass = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.45, 1.05), windowGlassMat);
+  busGlass.position.set(-0.1, 0.85, 0);
+  schoolBusGroup.add(busGlass);
+
+  [[-0.75, -0.52], [0.75, -0.52], [-0.75, 0.52], [0.75, 0.52]].forEach(([wx, wz]) => {
+    const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.12, 8), wheelMat);
+    wheel.rotation.x = Math.PI / 2;
+    wheel.position.set(wx, 0.2, wz);
+    schoolBusGroup.add(wheel);
+  });
+  schoolBusGroup.position.set(-10.2, 0, 12.4);
+  schoolBusGroup.rotation.y = -0.2;
+  group.add(schoolBusGroup);
+
+  // --- 9D. JIGAWA STATE MANPOWER DEVELOPMENT INSTITUTE (MDI) & JOB CENTER (Southeast Innovation Sector: X: 8 to 17, Z: 12 to 18) ---
+  const mdiSilverMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.3, metalness: 0.4 });
+  const mdiBlueGlass = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.15, metalness: 0.7 });
+  const mdiDarkRoof = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.6 });
+
+  // Main MDI Administrative & Career Guidance Pavilion
+  const mdiMainBuilding = new THREE.Mesh(new THREE.BoxGeometry(5.4, 2.7, 3.4), mdiSilverMat);
+  mdiMainBuilding.position.set(11.5, 1.35, 14.5);
+  mdiMainBuilding.castShadow = true;
+  group.add(mdiMainBuilding);
+
+  // Modern Reflective Blue Glass Curtain Wall
+  const mdiCurtainGlass = new THREE.Mesh(new THREE.BoxGeometry(4.8, 1.8, 0.15), mdiBlueGlass);
+  mdiCurtainGlass.position.set(11.5, 1.45, 12.75);
+  group.add(mdiCurtainGlass);
+
+  const mdiRoofCanopy = new THREE.Mesh(new THREE.BoxGeometry(5.8, 0.3, 3.8), mdiDarkRoof);
+  mdiRoofCanopy.position.set(11.5, 2.85, 14.5);
+  group.add(mdiRoofCanopy);
+
+  // Vocational & Technical Skills Workshop Hangar (Automotive, Solar & Electrical)
+  const workshopHangar = new THREE.Mesh(new THREE.BoxGeometry(4.4, 2.3, 3.2), new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.7 }));
+  workshopHangar.position.set(16.0, 1.15, 15.0);
+  workshopHangar.castShadow = true;
+  group.add(workshopHangar);
+
+  const workshopRoof = new THREE.Mesh(new THREE.ConeGeometry(3.0, 0.8, 4), new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.6 }));
+  workshopRoof.position.set(16.0, 2.7, 15.0);
+  workshopRoof.rotation.y = Math.PI / 4;
+  group.add(workshopRoof);
+
+  // Workshop Rollup Shutter Bay Doors
+  const shutterMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.6, roughness: 0.4 });
+  [14.6, 17.2].forEach((sx) => {
+    const shutter = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.6, 0.1), shutterMat);
+    shutter.position.set(sx, 0.8, 13.35);
+    group.add(shutter);
+
+    const hazardStripe = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.15, 0.12), new THREE.MeshBasicMaterial({ color: 0xfacc15 }));
+    hazardStripe.position.set(sx, 1.65, 13.35);
+    group.add(hazardStripe);
+  });
+
+  // Rooftop Photovoltaic Solar Training Arrays (Hands-on renewable energy workshops)
+  for (let sp = 0; sp < 3; sp++) {
+    const pPanel = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.05, 0.8), solarMat);
+    pPanel.position.set(10.2 + sp * 1.3, 3.1, 14.5);
+    pPanel.rotation.x = -0.3;
+    group.add(pPanel);
+  }
+
+  // Public Job Recruitment Marquee / Digital Bulletin Billboard
+  const billboardPillar = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 2.6), streetlightMat);
+  billboardPillar.position.set(8.2, 1.3, 12.2);
+  group.add(billboardPillar);
+
+  const billboardFrame = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.3, 0.15), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
+  billboardFrame.position.set(8.2, 2.2, 12.2);
+  group.add(billboardFrame);
+
+  const billboardScreen = new THREE.Mesh(
+    new THREE.BoxGeometry(2.2, 1.1, 0.16),
+    new THREE.MeshBasicMaterial({ color: 0x0284c7 })
+  );
+  billboardScreen.position.set(8.2, 2.2, 12.2);
+  group.add(billboardScreen);
+
+  const jobCenterLight = new THREE.PointLight(0x38bdf8, 1.4, 5);
+  jobCenterLight.position.set(8.2, 2.2, 12.0);
+  group.add(jobCenterLight);
+
+  // --- 9E. TAKUR COMMERCIAL PLAZA & BANKING BOULEVARD (Takur North Quarter: X: -7 to -1, Z: -5 to 0) ---
+  const plazaDarkMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.3, metalness: 0.3 });
+  const plazaWhiteMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.35 });
+  const atmGreenMat = new THREE.MeshStandardMaterial({ color: 0x16a34a, roughness: 0.4 });
+  const atmScreenMat = new THREE.MeshBasicMaterial({ color: 0x22c55e });
+
+  // 3-Story Modern Commercial Shopping & Office Plaza
+  const plazaMain = new THREE.Mesh(new THREE.BoxGeometry(5.2, 3.5, 3.2), plazaDarkMat);
+  plazaMain.position.set(-4.5, 1.75, -2.8);
+  plazaMain.castShadow = true;
+  group.add(plazaMain);
+
+  // White Architectural Framing & Floor Ribbons
+  const plazaFrame = new THREE.Mesh(new THREE.BoxGeometry(5.4, 0.25, 3.3), plazaWhiteMat);
+  plazaFrame.position.set(-4.5, 3.55, -2.8);
+  group.add(plazaFrame);
+
+  const plazaMidRibbon = new THREE.Mesh(new THREE.BoxGeometry(5.3, 0.18, 3.25), plazaWhiteMat);
+  plazaMidRibbon.position.set(-4.5, 1.9, -2.8);
+  group.add(plazaMidRibbon);
+
+  // Ground Floor Azure Display Showrooms
+  const groundGlass = new THREE.Mesh(new THREE.BoxGeometry(5.1, 1.5, 0.2), windowGlassMat);
+  groundGlass.position.set(-4.5, 0.85, -1.15);
+  group.add(groundGlass);
+
+  // Standalone 24/7 Automated ATM Gallery Booth
+  const atmKiosk = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.7, 1.4), atmGreenMat);
+  atmKiosk.position.set(-1.8, 0.85, -1.6);
+  atmKiosk.castShadow = true;
+  group.add(atmKiosk);
+
+  const atmHeader = new THREE.Mesh(new THREE.BoxGeometry(1.85, 0.3, 1.45), new THREE.MeshStandardMaterial({ color: 0x064e3b }));
+  atmHeader.position.set(-1.8, 1.6, -1.6);
+  group.add(atmHeader);
+
+  // Illuminated ATM Terminal Dispenser Screen
+  const atmDispenser = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.8, 0.15), atmScreenMat);
+  atmDispenser.position.set(-1.8, 0.85, -0.85);
+  group.add(atmDispenser);
+
+  const atmGlowLight = new THREE.PointLight(0x22c55e, 1.6, 4.5);
+  atmGlowLight.position.set(-1.8, 1.0, -0.6);
+  group.add(atmGlowLight);
+
+  // Bureau de Change (Forex) & Telecom Kiosk
+  const bdcKiosk = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.4, 1.2), new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.5 }));
+  bdcKiosk.position.set(-7.4, 0.7, -1.8);
+  bdcKiosk.castShadow = true;
+  group.add(bdcKiosk);
+
+  const bdcRoof = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.15, 1.4), new THREE.MeshStandardMaterial({ color: 0xfacc15 }));
+  bdcRoof.position.set(-7.4, 1.45, -1.8);
+  group.add(bdcRoof);
+
+  // Digital FX Rate Screen
+  const bdcScreen = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.45, 0.08), new THREE.MeshBasicMaterial({ color: 0x10b981 }));
+  bdcScreen.position.set(-7.4, 1.0, -1.15);
+  group.add(bdcScreen);
+
+  // Executive Sedan parked in Plaza Bay
+  const execSedan = new THREE.Group();
+  const sedanBody = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.65, 0.95), new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.7, roughness: 0.25 }));
+  sedanBody.position.y = 0.4;
+  sedanBody.castShadow = true;
+  execSedan.add(sedanBody);
+
+  const sedanCabin = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.45, 0.9), windowGlassMat);
+  sedanCabin.position.set(-0.1, 0.75, 0);
+  execSedan.add(sedanCabin);
+
+  [[-0.6, -0.42], [0.6, -0.42], [-0.6, 0.42], [0.6, 0.42]].forEach(([wx, wz]) => {
+    const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.1, 8), wheelMat);
+    wheel.rotation.x = Math.PI / 2;
+    wheel.position.set(wx, 0.18, wz);
+    execSedan.add(wheel);
+  });
+  execSedan.position.set(-4.5, 0, -0.8);
+  execSedan.rotation.y = Math.PI / 2;
+  group.add(execSedan);
+
   // --- 10. SAHELIAN FLORA: UMBRELLA ACACIA, NEEM & DATE PALM TREES ---
   const acaciaTrunkMat = new THREE.MeshStandardMaterial({ color: 0x5c4033, roughness: 0.9 });
   const acaciaFoliageMat = new THREE.MeshStandardMaterial({ color: 0x65a30d, roughness: 0.72 });
@@ -734,8 +1121,8 @@ export function buildIsometricMap(scene: THREE.Scene, season: string = 'Dry', ho
 
   // Flat-topped Umbrella Acacia Trees
   const acaciaCoords: [number, number][] = [
-    [-3.5, 0.5], [6.2, 0.5], [-16.0, 4.5], [16.5, 3.5], [-4.5, -4.5],
-    [8.0, 14.5], [-15.5, 14.5], [14.0, 14.0], [-1.5, -9.5], [14.5, -5.5],
+    [-3.5, 0.5], [6.2, 0.5], [-16.0, 4.5], [16.5, 3.5], [-5.5, -5.5],
+    [7.8, 14.5], [-15.5, 14.5], [18.0, 12.5], [-1.5, -9.5], [17.5, -5.5],
   ];
 
   acaciaCoords.forEach(([ax, az]) => {
@@ -989,6 +1376,46 @@ export function buildIsometricMap(scene: THREE.Scene, season: string = 'Dry', ho
       color: 0x16a34a, // Innovation Green
       iconText: '💡',
     },
+    {
+      id: 'dutse_hospital',
+      name: 'Rasheed Shekoni Teaching Hospital',
+      hausaName: 'Babban Asibitin Koyarwa na Rasheed Shekoni',
+      zone: 'Kiyawa Road Healthcare Corridor',
+      specialty: 'Emergency Trauma, Specialist Consultations & Dispensary',
+      position: [12, 4.2, -4],
+      color: 0xef4444, // Emergency Red
+      iconText: '🏥',
+    },
+    {
+      id: 'dutse_school',
+      name: 'Dutse Model International College',
+      hausaName: 'Kwalejin Koyarwa ta Model Dutse',
+      zone: 'Takur Academic Sector',
+      specialty: 'STEM Workshops, Youth Mentorship & Football League',
+      position: [-7, 4.2, 15],
+      color: 0xeab308, // School Gold
+      iconText: '🏫',
+    },
+    {
+      id: 'dutse_job_center',
+      name: 'Jigawa Manpower Development Institute (MDI)',
+      hausaName: 'Cibiyar Horar da Matasa da Ayyukan Yi (MDI)',
+      zone: 'Secretariat Innovation Corridor',
+      specialty: 'Vocational Apprenticeships, CV Clinic & State Jobs',
+      position: [11, 4.2, 14],
+      color: 0x2563eb, // Professional Blue
+      iconText: '💼',
+    },
+    {
+      id: 'takur_commercial',
+      name: 'Takur Commercial Plaza & Banking Boulevard',
+      hausaName: 'Kantin Takur da Layin Bankuna',
+      zone: 'Takur Central Commercial District',
+      specialty: '24/7 ATM Gallery, Forex Bureau & Retail Shopping',
+      position: [-4.5, 4.2, -2.5],
+      color: 0x0d9488, // Teal Commerce
+      iconText: '🏬',
+    },
   ];
 
   const pinObjects: Record<string, { group: THREE.Group; ring: THREE.Mesh; baseColor: number }> = {};
@@ -1082,6 +1509,14 @@ export function buildIsometricMap(scene: THREE.Scene, season: string = 'Dry', ho
       const beaconFlash = (Math.sin(time * 6) + 1) / 2 > 0.6;
       beaconLight.intensity = beaconFlash ? 3.5 : 0.2;
       (beaconSphere.material as THREE.MeshBasicMaterial).color.setHex(beaconFlash ? 0xff2222 : 0x440000);
+
+      // 4b. Flashing Ambulance Blue Siren Beacon at Hospital Emergency Bay
+      const ambFlash = (Math.sin(time * 9) + 1) / 2 > 0.5;
+      ambulanceLight.intensity = ambFlash ? 2.8 : 0.2;
+      (ambulanceSiren.material as THREE.MeshBasicMaterial).color.setHex(ambFlash ? 0x60a5fa : 0x1e3a8a);
+
+      // 4c. Pulsing ATM Gallery Screen Glow on Banking Boulevard
+      atmScreenMat.color.setHex((Math.sin(time * 3.5) + 1) / 2 > 0.4 ? 0x22c55e : 0x15803d);
 
       // 5. Animate Weather Particles
       const positions = particleGeo.attributes.position.array as Float32Array;

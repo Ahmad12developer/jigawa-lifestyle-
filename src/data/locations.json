@@ -58,5 +58,53 @@
     "availableJobIds": ["irrigation_tech", "solar_installer"],
     "economicSpecialty": "Dam Irrigation Engineering, Solar Power Maintenance & Date Farming",
     "coordinates": [2, 6.2, -12]
+  },
+  {
+    "id": "dutse_hospital",
+    "name": "Rasheed Shekoni Teaching Hospital",
+    "hausaName": "Asibitin Koyarwa na Rasheed Shekoni",
+    "zone": "Kiyawa Road Healthcare Corridor",
+    "description": "Premier tertiary medical and referral center in Dutse. Equipped with 24/7 trauma emergency, intensive care units, clinical pathology labs, and pharmacy dispensaries.",
+    "travelCost": 1200,
+    "unlockedByDefault": true,
+    "availableJobIds": ["hospital_records", "pharmacy_assistant"],
+    "economicSpecialty": "Tertiary Healthcare, Pharmacy Supply & Medical Laboratory Science",
+    "coordinates": [12, 4.2, -4]
+  },
+  {
+    "id": "dutse_school",
+    "name": "Dutse Model College & Academy",
+    "hausaName": "Kwalejin Kwamared da Fasaha ta Dutse",
+    "zone": "Takur Academic Sector",
+    "description": "Exemplary secondary school and vocational education complex. Complete with tiered science labs, digital ICT classrooms, sports grounds, and assembly pavilion.",
+    "travelCost": 800,
+    "unlockedByDefault": true,
+    "availableJobIds": ["school_tutor", "sports_coach"],
+    "economicSpecialty": "Secondary Education, STEM Tutoring & Vocational Training",
+    "coordinates": [-7, 4.2, 15]
+  },
+  {
+    "id": "dutse_job_center",
+    "name": "Jigawa Manpower Institute & Job Center",
+    "hausaName": "Cibiyar Horar da Matasa da Aikin Yi (MDI)",
+    "zone": "Secretariat Innovation Corridor",
+    "description": "State career bureau and vocational training academy coordinating civil service recruitment, youth entrepreneurship grants, apprenticeships, and trade skills.",
+    "travelCost": 1000,
+    "unlockedByDefault": true,
+    "availableJobIds": ["vocational_instructor", "job_placement_agent"],
+    "economicSpecialty": "Vocational Skills Training, Civil Service Recruitment & SME Grants",
+    "coordinates": [11, 4.2, 14]
+  },
+  {
+    "id": "takur_commercial",
+    "name": "Takur Commercial Plaza & Banking Boulevard",
+    "hausaName": "Dandalin Kasuwanci da Bankuna na Takur",
+    "zone": "Takur Central Commercial District",
+    "description": "Vibrant multi-story commercial plaza featuring commercial banks, ATMs, Bureau de Change, luxury textile merchants (Shadda / Atamfa), and electronics retail.",
+    "travelCost": 1200,
+    "unlockedByDefault": true,
+    "availableJobIds": ["atm_custodian", "textile_broker"],
+    "economicSpecialty": "Retail Banking, Foreign Currency Exchange & Luxury Hausa Shadda Trade",
+    "coordinates": [-4.5, 4.2, -2.5]
   }
 ]

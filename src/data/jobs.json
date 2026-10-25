@@ -118,5 +118,85 @@
     "payoutNaira": 55000,
     "mutunciChange": 2,
     "description": "Set up solar inverter systems for local cold-storage facilities and shops."
+  },
+  {
+    "id": "hospital_records",
+    "title": "Medical Records & Triage Assistant",
+    "locationId": "dutse_hospital",
+    "energyCost": 25,
+    "timeHours": 4,
+    "payoutNaira": 38000,
+    "mutunciChange": 3,
+    "description": "Manage outpatient digital records and assist clinical admissions in the emergency wing."
+  },
+  {
+    "id": "pharmacy_assistant",
+    "title": "Hospital Pharmacy Dispensary Assistant",
+    "locationId": "dutse_hospital",
+    "energyCost": 30,
+    "timeHours": 5,
+    "payoutNaira": 46000,
+    "mutunciChange": 2,
+    "description": "Verify medical prescriptions and dispense essential pharmaceuticals to patients."
+  },
+  {
+    "id": "school_tutor",
+    "title": "Afternoon STEM & Mathematics Tutor",
+    "locationId": "dutse_school",
+    "energyCost": 25,
+    "timeHours": 4,
+    "payoutNaira": 32000,
+    "mutunciChange": 4,
+    "description": "Coach secondary school candidates in science, mathematics, and computer literacy."
+  },
+  {
+    "id": "sports_coach",
+    "title": "Youth Football & Athletics Coach",
+    "locationId": "dutse_school",
+    "energyCost": 35,
+    "timeHours": 4,
+    "payoutNaira": 28000,
+    "mutunciChange": 5,
+    "description": "Organize tactical drills and mentor student athletes on the school sports pitch."
+  },
+  {
+    "id": "vocational_instructor",
+    "title": "Vocational Skills Training Assistant",
+    "locationId": "dutse_job_center",
+    "energyCost": 30,
+    "timeHours": 5,
+    "payoutNaira": 42000,
+    "mutunciChange": 4,
+    "description": "Demonstrate practical electronics, smartphone repair, and tailoring techniques to youth cohorts."
+  },
+  {
+    "id": "job_placement_agent",
+    "title": "Community Apprenticeship Coordinator",
+    "locationId": "dutse_job_center",
+    "energyCost": 25,
+    "timeHours": 4,
+    "payoutNaira": 36000,
+    "mutunciChange": 3,
+    "description": "Match qualified trainees with local private enterprises and government ministries."
+  },
+  {
+    "id": "atm_custodian",
+    "title": "Banking & ATM Security Attendant",
+    "locationId": "takur_commercial",
+    "energyCost": 25,
+    "timeHours": 5,
+    "payoutNaira": 34000,
+    "mutunciChange": 2,
+    "description": "Monitor ATM gallery cash dispensers and guide customers with POS transactions."
+  },
+  {
+    "id": "textile_broker",
+    "title": "Luxury Hausa Shadda & Fabric Broker",
+    "locationId": "takur_commercial",
+    "energyCost": 35,
+    "timeHours": 6,
+    "payoutNaira": 52000,
+    "mutunciChange": 3,
+    "description": "Curate bespoke brocade, Austrian lace, and traditional hand-woven textiles for VIP clients."
   }
 ]

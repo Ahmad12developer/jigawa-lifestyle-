@@ -36,6 +36,7 @@ interface ActivityItem {
   rewardNaira?: number;
   energyChange: number;
   mutunciChange: number;
+  healthChange?: number;
   actionText: string;
   cooldownKey: string;
 }
@@ -202,6 +203,161 @@ const DISTRICT_ACTIVITIES: Record<string, ActivityItem[]> = {
       cooldownKey: 'tender',
     },
   ],
+  dutse_hospital: [
+    {
+      id: 'hospital_checkup',
+      title: 'Full Medical Triage & Clinical Checkup',
+      hausaTitle: 'Duba Lafiya a Asibitin Rasheed Shekoni',
+      description: 'Consult with specialist doctors, run clinical vitals, and receive prescription medications.',
+      icon: '🩺',
+      costNaira: 3000,
+      energyChange: 15,
+      mutunciChange: 6,
+      healthChange: 45,
+      actionText: 'Medical Checkup (₦3,000)',
+      cooldownKey: 'checkup',
+    },
+    {
+      id: 'hospital_moringa',
+      title: 'Herbal Moringa & Ginger Tonic (Shayin Zogale)',
+      hausaTitle: 'Shayin Zogale da Citta na Asibiti',
+      description: 'Traditional wholesome nutrient infusion prepared by the hospital wellness dispensary.',
+      icon: '🍵',
+      costNaira: 1200,
+      energyChange: 25,
+      mutunciChange: 3,
+      healthChange: 20,
+      actionText: 'Drink Tonic (₦1,200)',
+      cooldownKey: 'moringa',
+    },
+    {
+      id: 'hospital_blood_drive',
+      title: 'Volunteer Community Blood Bank Donation',
+      hausaTitle: 'Bayar da Jini don Cetar Rai',
+      description: 'Donate blood to replenish the hospital emergency blood bank for regional accident victims.',
+      icon: '🩸',
+      costNaira: 0,
+      energyChange: -22,
+      mutunciChange: 26,
+      healthChange: -5,
+      actionText: 'Donate Blood (+26 Mutunci)',
+      cooldownKey: 'blood_donation',
+    },
+  ],
+  dutse_school: [
+    {
+      id: 'school_workshop',
+      title: 'Science & Computer Literacy Seminar',
+      hausaTitle: 'Karatun Kwamfuta da Kimiyya',
+      description: 'Attend a weekend masterclass on digital skills and basic programming in the school ICT lab.',
+      icon: '💻',
+      costNaira: 1500,
+      energyChange: -10,
+      mutunciChange: 18,
+      actionText: 'Join Seminar (₦1,500)',
+      cooldownKey: 'school_workshop',
+    },
+    {
+      id: 'school_football',
+      title: 'Inter-House Football Championship Match',
+      hausaTitle: 'Wasan Kwallon Kafa a Filin Makarantar',
+      description: 'Lace up your boots and captain the Takur Lions in an energetic community football derby.',
+      icon: '⚽',
+      rewardNaira: 6000,
+      energyChange: -18,
+      mutunciChange: 15,
+      healthChange: 10,
+      actionText: 'Play Match (+₦6,000 & Mutunci)',
+      cooldownKey: 'football',
+    },
+    {
+      id: 'school_library',
+      title: 'Volunteer Reading & Mentorship',
+      hausaTitle: 'Koyar da Yara Karatu a Dakin Karatu',
+      description: 'Mentor junior secondary school students with English reading and homework in the library.',
+      icon: '📚',
+      energyChange: -8,
+      mutunciChange: 16,
+      actionText: 'Mentor Students (+16 Mutunci)',
+      cooldownKey: 'mentorship',
+    },
+  ],
+  dutse_job_center: [
+    {
+      id: 'job_cv_coaching',
+      title: 'Civil Service Interview & Career Coaching',
+      hausaTitle: 'Horon Neman Aiki a MDI',
+      description: 'Professional career counseling on government civil service interviews and private sector CVs.',
+      icon: '💼',
+      costNaira: 2000,
+      energyChange: -10,
+      mutunciChange: 20,
+      actionText: 'Career Coaching (₦2,000)',
+      cooldownKey: 'cv_coaching',
+    },
+    {
+      id: 'job_vocational',
+      title: 'Hands-on Solar & Inverter Apprenticeship',
+      hausaTitle: 'Koyan Sana\'ar Inverter da Solar',
+      description: 'Practical training on testing lithium cells, solar charge controllers, and wiring household arrays.',
+      icon: '🔧',
+      rewardNaira: 14000,
+      energyChange: -16,
+      mutunciChange: 14,
+      actionText: 'Complete Training (+₦14,000)',
+      cooldownKey: 'vocational',
+    },
+    {
+      id: 'job_sme_grant',
+      title: 'Jigawa Youth Enterprise Seed Grant Pitch',
+      hausaTitle: 'Neman Tallafin Matasa na Jihar Jigawa',
+      description: 'Present your business growth plan before the state entrepreneurship micro-grant panel.',
+      icon: '🚀',
+      rewardNaira: 28000,
+      energyChange: -20,
+      mutunciChange: 18,
+      actionText: 'Pitch for Grant (+₦28,000)',
+      cooldownKey: 'sme_grant',
+    },
+  ],
+  takur_commercial: [
+    {
+      id: 'commercial_bureau',
+      title: 'Bureau de Change FX Currency Arbitrage',
+      hausaTitle: 'Canjin Kudin Waje a Takur',
+      description: 'Exchange foreign currencies and cash vouchers at optimal banking corridor rates.',
+      icon: '💱',
+      rewardNaira: 10500,
+      energyChange: -12,
+      mutunciChange: 6,
+      actionText: 'Execute Swap (+₦10,500)',
+      cooldownKey: 'bdc',
+    },
+    {
+      id: 'commercial_tailor',
+      title: 'Bespoke Royal Babban Riga Tailoring Fitting',
+      hausaTitle: 'Dinkin Babban Riga Mai Daraja',
+      description: 'Commission a luxury hand-embroidered Hausa gown from master tailors on Banking Boulevard.',
+      icon: '👗',
+      costNaira: 5000,
+      energyChange: 5,
+      mutunciChange: 28,
+      actionText: 'Commission Robe (₦5,000)',
+      cooldownKey: 'tailor',
+    },
+    {
+      id: 'commercial_powerbank',
+      title: 'Acquire High-Capacity Solar Power Bank',
+      hausaTitle: 'Siyan Power Bank Mai Karfi',
+      description: 'Equip yourself with a fast-charging, rugged solar power bank from the modern electronics plaza.',
+      icon: '🔋',
+      costNaira: 3500,
+      energyChange: 35,
+      mutunciChange: 4,
+      actionText: 'Buy Power Bank (₦3,500)',
+      cooldownKey: 'powerbank',
+    },
+  ],
 };
 
 export const DistrictActivityModal: React.FC<DistrictActivityModalProps> = ({
@@ -235,25 +391,22 @@ export const DistrictActivityModal: React.FC<DistrictActivityModalProps> = ({
     }
 
     // Execute state changes
+    useGameStore.setState((s) => ({
+      naira: act.costNaira
+        ? Math.max(0, s.naira - act.costNaira)
+        : act.rewardNaira
+        ? s.naira + act.rewardNaira
+        : s.naira,
+      energy: Math.min(100, Math.max(0, s.energy + act.energyChange)),
+      mutunci: Math.min(100, Math.max(0, s.mutunci + act.mutunciChange)),
+      health: act.healthChange
+        ? Math.min(100, Math.max(0, s.health + act.healthChange))
+        : s.health,
+    }));
+
     if (act.costNaira) {
-      useGameStore.setState((s) => ({
-        naira: Math.max(0, s.naira - act.costNaira!),
-        energy: Math.min(100, Math.max(0, s.energy + act.energyChange)),
-        mutunci: Math.min(100, Math.max(0, s.mutunci + act.mutunciChange)),
-      }));
       playCash();
-    } else if (act.rewardNaira) {
-      useGameStore.setState((s) => ({
-        naira: s.naira + act.rewardNaira!,
-        energy: Math.min(100, Math.max(0, s.energy + act.energyChange)),
-        mutunci: Math.min(100, Math.max(0, s.mutunci + act.mutunciChange)),
-      }));
-      playSuccess();
     } else {
-      useGameStore.setState((s) => ({
-        energy: Math.min(100, Math.max(0, s.energy + act.energyChange)),
-        mutunci: Math.min(100, Math.max(0, s.mutunci + act.mutunciChange)),
-      }));
       playSuccess();
     }
 

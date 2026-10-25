@@ -32,7 +32,11 @@ export type LocationId =
   | 'hadejia_market'
   | 'fud_campus'
   | 'ringim_palace'
-  | 'kazaure_agro_tech';
+  | 'kazaure_agro_tech'
+  | 'dutse_hospital'
+  | 'dutse_school'
+  | 'dutse_job_center'
+  | 'takur_commercial';
 
 export interface GameLocation {
   id: LocationId;

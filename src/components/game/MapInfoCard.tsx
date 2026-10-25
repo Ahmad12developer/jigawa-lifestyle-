@@ -16,6 +16,10 @@ import {
   Crown,
   Lightbulb,
   Sparkles,
+  HeartPulse,
+  School,
+  Target,
+  Store,
 } from 'lucide-react';
 import type { GameLocation, Job } from '@/types/game';
 
@@ -32,6 +36,10 @@ const LOCATION_ICONS: Record<string, React.ReactNode> = {
   hadejia_market: <Wheat className="w-5 h-5 text-sky-400" />,
   ringim_palace: <Crown className="w-5 h-5 text-rose-400" />,
   kazaure_agro_tech: <Lightbulb className="w-5 h-5 text-emerald-300" />,
+  dutse_hospital: <HeartPulse className="w-5 h-5 text-rose-400" />,
+  dutse_school: <School className="w-5 h-5 text-yellow-400" />,
+  dutse_job_center: <Target className="w-5 h-5 text-sky-400" />,
+  takur_commercial: <Store className="w-5 h-5 text-purple-400" />,
 };
 
 export const MapInfoCard: React.FC<MapInfoCardProps> = ({

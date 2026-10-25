@@ -95,6 +95,38 @@ export const REGIONAL_DEMAND_FACTORS: Record<LocationId, Record<CommodityId, num
     sahel_livestock: 1.25,
     kazaure_dates: 1.0,
   },
+  // Teaching Hospital: Medical staff & patients needing nourishing rice, fish, dates
+  dutse_hospital: {
+    sesame_grain: 1.25,
+    sorted_rice: 1.3,
+    smoked_fish: 1.35,
+    sahel_livestock: 1.3,
+    kazaure_dates: 1.4,
+  },
+  // School & Academy: Boarding house food supply & student canteen demands
+  dutse_school: {
+    sesame_grain: 1.15,
+    sorted_rice: 1.2,
+    smoked_fish: 1.25,
+    sahel_livestock: 1.2,
+    kazaure_dates: 1.25,
+  },
+  // Job Center & MDI: Trainee catering & youth cooperative wholesale
+  dutse_job_center: {
+    sesame_grain: 1.2,
+    sorted_rice: 1.25,
+    smoked_fish: 1.3,
+    sahel_livestock: 1.25,
+    kazaure_dates: 1.3,
+  },
+  // Takur Commercial Plaza: Affluent merchants, bankers & retail consumers
+  takur_commercial: {
+    sesame_grain: 1.4,
+    sorted_rice: 1.35,
+    smoked_fish: 1.5,
+    sahel_livestock: 1.45,
+    kazaure_dates: 1.4,
+  },
 };
 
 export const VEHICLES: Record<VehicleId, Vehicle> = {
