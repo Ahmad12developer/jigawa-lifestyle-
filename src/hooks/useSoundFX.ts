@@ -86,6 +86,18 @@ export function useSoundFX() {
     setTimeout(() => playTone(880.0, 'triangle', 0.25, 0.14), 240);
   }, [playTone]);
 
+  const playMessageChime = useCallback(() => {
+    // Crisp modern smartphone incoming message chime
+    playTone(587.33, 'sine', 0.08, 0.1);
+    setTimeout(() => playTone(880.0, 'sine', 0.15, 0.12), 70);
+  }, [playTone]);
+
+  const playPhoneDial = useCallback(() => {
+    // Dual-tone USSD / dialpad tap beep
+    playTone(697, 'sine', 0.06, 0.08);
+    playTone(1209, 'sine', 0.06, 0.06);
+  }, [playTone]);
+
   return {
     playClick,
     playCash,
@@ -95,5 +107,7 @@ export function useSoundFX() {
     playEventPopup,
     playWarning,
     playSuccess,
+    playMessageChime,
+    playPhoneDial,
   };
 }
