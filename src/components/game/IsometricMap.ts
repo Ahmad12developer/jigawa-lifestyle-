@@ -320,6 +320,7 @@ export function buildIsometricMap(scene: THREE.Scene, season: string = 'Dry', ho
 
   // --- 5. KIYAWA ROAD, SANI ABACHA WAY & TAKUR ROUNDABOUT (The Arterial Spine) ---
   const asphaltMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.88 }); // Smooth asphalt
+  const wheelMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.85 });
 
   // (A) Kiyawa Road (Main Divided East-West Dual Carriageway)
   const kiyawaRoad = new THREE.Mesh(new THREE.BoxGeometry(mapSize, 0.08, 4.2), asphaltMat);
@@ -1372,7 +1373,6 @@ export function buildIsometricMap(scene: THREE.Scene, season: string = 'Dry', ho
   // --- 11. DYNAMIC CITY TRAFFIC & SIMULATION ASSETS ---
   const kekeGreenMat = new THREE.MeshStandardMaterial({ color: 0x16a34a, roughness: 0.45 });
   const kekeYellowMat = new THREE.MeshStandardMaterial({ color: 0xfacc15, roughness: 0.4 });
-  const wheelMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.85 });
   const danfoYellowMat = new THREE.MeshStandardMaterial({ color: 0xeab308, roughness: 0.35 });
   const peugeotBlueMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.4 });
   const camelFurMat = new THREE.MeshStandardMaterial({ color: 0xb45309, roughness: 0.9 });
