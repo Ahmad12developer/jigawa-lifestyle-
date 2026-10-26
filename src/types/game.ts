@@ -36,7 +36,12 @@ export type LocationId =
   | 'dutse_hospital'
   | 'dutse_school'
   | 'dutse_job_center'
-  | 'takur_commercial';
+  | 'takur_commercial'
+  | 'dutse_mosque'
+  | 'dutse_airport'
+  | 'aminu_kano_triangle'
+  | 'dutse_stadium'
+  | 'takur_estate';
 
 export interface GameLocation {
   id: LocationId;

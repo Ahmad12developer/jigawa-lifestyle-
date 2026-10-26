@@ -20,6 +20,11 @@ import {
   School,
   Target,
   Store,
+  Plane,
+  Trophy,
+  Home,
+  Flag,
+  Moon,
 } from 'lucide-react';
 import type { GameLocation, Job } from '@/types/game';
 
@@ -40,6 +45,11 @@ const LOCATION_ICONS: Record<string, React.ReactNode> = {
   dutse_school: <School className="w-5 h-5 text-yellow-400" />,
   dutse_job_center: <Target className="w-5 h-5 text-sky-400" />,
   takur_commercial: <Store className="w-5 h-5 text-purple-400" />,
+  dutse_mosque: <Moon className="w-5 h-5 text-emerald-400" />,
+  dutse_airport: <Plane className="w-5 h-5 text-sky-400" />,
+  aminu_kano_triangle: <Flag className="w-5 h-5 text-amber-400" />,
+  dutse_stadium: <Trophy className="w-5 h-5 text-yellow-400" />,
+  takur_estate: <Home className="w-5 h-5 text-emerald-300" />,
 };
 
 export const MapInfoCard: React.FC<MapInfoCardProps> = ({

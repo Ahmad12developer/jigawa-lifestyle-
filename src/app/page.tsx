@@ -14,6 +14,7 @@ import { MarketExchangeModal } from '@/components/game/MarketExchangeModal';
 import { StatusCardModal } from '@/components/game/StatusCardModal';
 import { DataProtectionModal } from '@/components/game/DataProtectionModal';
 import { DistrictActivityModal } from '@/components/game/DistrictActivityModal';
+import { DistrictNavigatorBar } from '@/components/game/DistrictNavigatorBar';
 import { EventModal } from '@/components/EventModal';
 import { CharacterCard } from '@/components/CharacterCard';
 import { Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
@@ -93,6 +94,7 @@ export default function Home() {
       {/* 3D Isometric Viewport (Room / City Map) */}
       <GameViewport
         viewMode={viewMode}
+        selectedPinId={selectedPinId}
         onPinClick={(locationId) => {
           setSelectedPinId(locationId);
           playClick();
@@ -119,18 +121,27 @@ export default function Home() {
         openDistrictActivity={() => setIsDistrictActivityOpen(true)}
       />
 
-      {/* Interactive 3D Map Pin Details Card */}
+      {/* Interactive 3D Map Pin Details Card & District Navigator */}
       {viewMode === 'map' && (
-        <MapInfoCard
-          selectedPinId={selectedPinId}
-          onClose={() => setSelectedPinId(null)}
-          onOpenJobsForLocation={() => {
-            setIsPhoneOpen(true);
-          }}
-          onOpenActivities={() => {
-            setIsDistrictActivityOpen(true);
-          }}
-        />
+        <>
+          <MapInfoCard
+            selectedPinId={selectedPinId}
+            onClose={() => setSelectedPinId(null)}
+            onOpenJobsForLocation={() => {
+              setIsPhoneOpen(true);
+            }}
+            onOpenActivities={() => {
+              setIsDistrictActivityOpen(true);
+            }}
+          />
+
+          <DistrictNavigatorBar
+            selectedPinId={selectedPinId}
+            onSelectLocation={(locId) => {
+              setSelectedPinId(locId);
+            }}
+          />
+        </>
       )}
 
       {/* Floating Notices / Micro-Interactions */}

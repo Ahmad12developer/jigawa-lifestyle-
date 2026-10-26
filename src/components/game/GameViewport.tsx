@@ -8,6 +8,7 @@ import { buildIsometricMap } from './IsometricMap';
 
 interface GameViewportProps {
   viewMode: 'home' | 'map';
+  selectedPinId?: string | null;
   onPinClick?: (locationId: string) => void;
   onAvatarMove?: (coords: [number, number]) => void;
   onAvatarGreet?: () => void;
@@ -15,6 +16,7 @@ interface GameViewportProps {
 
 export const GameViewport: React.FC<GameViewportProps> = ({
   viewMode,
+  selectedPinId,
   onPinClick,
   onAvatarMove,
   onAvatarGreet,
@@ -23,6 +25,8 @@ export const GameViewport: React.FC<GameViewportProps> = ({
   const avatarPos = useRef(new THREE.Vector3(0, 0, 1.5));
   const targetPos = useRef(new THREE.Vector3(0, 0, 1.5));
   const cameraTarget = useRef(new THREE.Vector3(0, 0, 0));
+  const mapDataRef = useRef<ReturnType<typeof buildIsometricMap> | null>(null);
+  const avatarObjRef = useRef<any>(null);
 
   const {
     avatar: avatarCustom,
@@ -161,6 +165,9 @@ export const GameViewport: React.FC<GameViewportProps> = ({
       avatar.position.copy(avatarPos.current);
       scene.add(avatar);
     }
+
+    mapDataRef.current = mapData;
+    avatarObjRef.current = avatar;
 
     // 6. Raycasting & Interaction (Pin clicks, street walking, greeting gesture)
     const raycaster = new THREE.Raycaster();
@@ -384,6 +391,8 @@ export const GameViewport: React.FC<GameViewportProps> = ({
         container.removeChild(renderer.domElement);
       }
       renderer.dispose();
+      mapDataRef.current = null;
+      avatarObjRef.current = null;
     };
   }, [
     viewMode,
@@ -398,6 +407,19 @@ export const GameViewport: React.FC<GameViewportProps> = ({
     onAvatarMove,
     onAvatarGreet,
   ]);
+
+  // Smooth camera pan and avatar walk to selected landmark pin
+  useEffect(() => {
+    if (viewMode === 'map' && selectedPinId && mapDataRef.current) {
+      const foundPin = mapDataRef.current.pins.find((p) => p.id === selectedPinId);
+      if (foundPin) {
+        cameraTarget.current.set(foundPin.position[0], 0, foundPin.position[2]);
+        if (avatarObjRef.current) {
+          targetPos.current.set(foundPin.position[0], 0.05, foundPin.position[2] + 1.2);
+        }
+      }
+    }
+  }, [selectedPinId, viewMode]);
 
   return <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />;
 };

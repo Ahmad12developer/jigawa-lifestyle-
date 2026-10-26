@@ -127,6 +127,46 @@ export const REGIONAL_DEMAND_FACTORS: Record<LocationId, Record<CommodityId, num
     sahel_livestock: 1.45,
     kazaure_dates: 1.4,
   },
+  // Grand Central Mosque: Community Zakat, Iftar feasts, Friday congregations & dates
+  dutse_mosque: {
+    sesame_grain: 1.1,
+    sorted_rice: 1.3,
+    smoked_fish: 1.2,
+    sahel_livestock: 1.35,
+    kazaure_dates: 1.6,
+  },
+  // International Cargo Airport: Export airfreight bulk pallets
+  dutse_airport: {
+    sesame_grain: 1.65,
+    sorted_rice: 1.4,
+    smoked_fish: 1.45,
+    sahel_livestock: 1.5,
+    kazaure_dates: 1.55,
+  },
+  // Aminu Kano Triangle: Civic festival gatherings & street food pavilions
+  aminu_kano_triangle: {
+    sesame_grain: 1.15,
+    sorted_rice: 1.35,
+    smoked_fish: 1.4,
+    sahel_livestock: 1.35,
+    kazaure_dates: 1.25,
+  },
+  // Township Stadium: Match-day fan concessions & athletic nutrition
+  dutse_stadium: {
+    sesame_grain: 1.1,
+    sorted_rice: 1.25,
+    smoked_fish: 1.3,
+    sahel_livestock: 1.4,
+    kazaure_dates: 1.3,
+  },
+  // Takur Amana Estate: Modern residential family pantry stocking & wholesale boxes
+  takur_estate: {
+    sesame_grain: 1.25,
+    sorted_rice: 1.45,
+    smoked_fish: 1.4,
+    sahel_livestock: 1.35,
+    kazaure_dates: 1.35,
+  },
 };
 
 export const VEHICLES: Record<VehicleId, Vehicle> = {

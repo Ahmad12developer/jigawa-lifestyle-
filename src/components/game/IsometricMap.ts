@@ -441,6 +441,26 @@ export function buildIsometricMap(scene: THREE.Scene, season: string = 'Dry', ho
     const schoolNightLight = new THREE.PointLight(0xfacc15, 1.6, 9);
     schoolNightLight.position.set(-7.0, 2.2, 14.5);
     group.add(schoolNightLight);
+
+    // Dutse Township Stadium High-Intensity Match Floodlights
+    const stadiumNightLight = new THREE.PointLight(0xfef08a, 2.4, 14);
+    stadiumNightLight.position.set(-12.0, 4.5, 16.5);
+    group.add(stadiumNightLight);
+
+    // Aminu Kano Triangle Civic Amphitheater Amber Glow
+    const triangleNightLight = new THREE.PointLight(0xf59e0b, 2.0, 10);
+    triangleNightLight.position.set(5.5, 2.4, 5.0);
+    group.add(triangleNightLight);
+
+    // Sir Ahmadu Bello Airport Runway Blue Edge Beacon
+    const airportNightLight = new THREE.PointLight(0x38bdf8, 2.2, 12);
+    airportNightLight.position.set(-12.5, 2.6, -15.0);
+    group.add(airportNightLight);
+
+    // Takur Amana Gated Estate Warm Residential Lantern Glow
+    const estateNightLight = new THREE.PointLight(0xffedd5, 1.8, 9);
+    estateNightLight.position.set(-14.5, 2.0, 3.5);
+    group.add(estateNightLight);
   }
 
   // (D) Takur Roundabout Island & Landmark Fountain
@@ -1113,7 +1133,183 @@ export function buildIsometricMap(scene: THREE.Scene, season: string = 'Dry', ho
   execSedan.rotation.y = Math.PI / 2;
   group.add(execSedan);
 
-  // --- 10. SAHELIAN FLORA: UMBRELLA ACACIA, NEEM & DATE PALM TREES ---
+  // --- 9F. AMINU KANO TRIANGLE & CIVIC AMPHITHEATER (Central Civic Sector: X: 3 to 8, Z: 3 to 7) ---
+  const trianglePlazaMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.75 });
+  const triangleGreenMat = new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.8 });
+  const rostrunStoneMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.45 });
+
+  // Triangular Elevated Paved Ground
+  const triangleGround = new THREE.Mesh(new THREE.CylinderGeometry(4.2, 4.4, 0.16, 3), trianglePlazaMat);
+  triangleGround.position.set(5.5, 0.08, 5.0);
+  triangleGround.rotation.y = Math.PI / 6;
+  group.add(triangleGround);
+
+  const triangleLawn = new THREE.Mesh(new THREE.CylinderGeometry(3.6, 3.8, 0.18, 3), triangleGreenMat);
+  triangleLawn.position.set(5.5, 0.1, 5.0);
+  triangleLawn.rotation.y = Math.PI / 6;
+  group.add(triangleLawn);
+
+  // Tiered Semicircular Civic Amphitheater Rostrum
+  const rostrumStage = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 1.9, 0.4, 12, 1, false, 0, Math.PI), rostrunStoneMat);
+  rostrumStage.position.set(5.5, 0.3, 4.2);
+  rostrumStage.rotation.y = Math.PI;
+  group.add(rostrumStage);
+
+  // Ceremonial Dignitary Canopy
+  const canopyRoof = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.2, 1.8), new THREE.MeshStandardMaterial({ color: 0x166534 }));
+  canopyRoof.position.set(5.5, 2.2, 4.2);
+  group.add(canopyRoof);
+
+  // Canopy Pillars
+  [[-1.4, 3.5], [1.4, 3.5], [-1.4, 4.9], [1.4, 4.9]].forEach(([cx, cz]) => {
+    const col = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 2.0), rostrunStoneMat);
+    col.position.set(5.5 + cx, 1.1, cz);
+    group.add(col);
+  });
+
+  // Mallam Aminu Kano Democratic Struggle Commemorative Obelisk
+  const aminuObelisk = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.4, 2.8, 4), new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.6 }));
+  aminuObelisk.position.set(5.5, 1.5, 6.2);
+  aminuObelisk.rotation.y = Math.PI / 4;
+  group.add(aminuObelisk);
+
+  // Golden Emblem atop Obelisk
+  const obeliskGold = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 12), new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.8 }));
+  obeliskGold.position.set(5.5, 3.0, 6.2);
+  group.add(obeliskGold);
+
+  // Suya & Street Food Festival Kiosk in Triangle
+  const suyaGrill = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.7, 0.8), new THREE.MeshStandardMaterial({ color: 0x334155 }));
+  suyaGrill.position.set(3.5, 0.35, 6.5);
+  group.add(suyaGrill);
+
+  const suyaCanopy = new THREE.Mesh(new THREE.ConeGeometry(0.9, 0.4, 6), new THREE.MeshStandardMaterial({ color: 0xef4444 }));
+  suyaCanopy.position.set(3.5, 1.25, 6.5);
+  group.add(suyaCanopy);
+
+  // --- 9G. DUTSE TOWNSHIP STADIUM & SPORTS COMPLEX (Southwest Athletics Sector: X: -16 to -9, Z: 13 to 19) ---
+  const stadiumConcreteMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.7 });
+  const runningTrackMat = new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.85 }); // Red clay athletics track
+  const stadiumRoofMat = new THREE.MeshStandardMaterial({ color: 0x166534, roughness: 0.5 }); // Jigawa Golden Stars green
+
+  // Red Clay Running Track Oval Base
+  const runningTrack = new THREE.Mesh(new THREE.BoxGeometry(7.2, 0.05, 5.4), runningTrackMat);
+  runningTrack.position.set(-12.5, 0.03, 16.5);
+  group.add(runningTrack);
+
+  // Lush Green Football Pitch inside track
+  const stadiumPitch = new THREE.Mesh(new THREE.BoxGeometry(5.8, 0.06, 4.0), new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.8 }));
+  stadiumPitch.position.set(-12.5, 0.04, 16.5);
+  group.add(stadiumPitch);
+
+  // Pitch Boundary & Center Lines
+  const whitePaint = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const centerLine = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.07, 3.8), whitePaint);
+  centerLine.position.set(-12.5, 0.05, 16.5);
+  group.add(centerLine);
+
+  const centerCircle = new THREE.Mesh(new THREE.RingGeometry(0.65, 0.72, 16), whitePaint);
+  centerCircle.position.set(-12.5, 0.06, 16.5);
+  centerCircle.rotation.x = -Math.PI / 2;
+  group.add(centerCircle);
+
+  // 3D White Goalposts (East and West ends)
+  [-15.2, -9.8].forEach((gx) => {
+    const crossbar = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.3), whitePaint);
+    crossbar.rotation.x = Math.PI / 2;
+    crossbar.position.set(gx, 0.75, 16.5);
+    group.add(crossbar);
+
+    [-0.6, 0.6].forEach((gz) => {
+      const upright = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.75), whitePaint);
+      upright.position.set(gx, 0.38, 16.5 + gz);
+      group.add(upright);
+    });
+  });
+
+  // Main Covered Spectator Grandstand (North side of stadium)
+  const grandstandBase = new THREE.Mesh(new THREE.BoxGeometry(6.4, 1.2, 1.6), stadiumConcreteMat);
+  grandstandBase.position.set(-12.5, 0.6, 13.5);
+  grandstandBase.castShadow = true;
+  group.add(grandstandBase);
+
+  // Stepped Spectator Seating (Green & Gold tiers)
+  const grandstandRoof = new THREE.Mesh(new THREE.BoxGeometry(6.8, 0.25, 2.2), stadiumRoofMat);
+  grandstandRoof.position.set(-12.5, 1.9, 13.7);
+  grandstandRoof.rotation.x = 0.15;
+  group.add(grandstandRoof);
+
+  // 4 Corner Stadium Floodlight Pylons
+  [[-15.6, 13.6], [-9.4, 13.6], [-15.6, 19.2], [-9.4, 19.2]].forEach(([fx, fz]) => {
+    const pylon = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.08, 4.4, 6), streetlightMat);
+    pylon.position.set(fx, 2.2, fz);
+    group.add(pylon);
+
+    // Floodlight Head Cluster
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.25, 0.25), new THREE.MeshStandardMaterial({ color: 0x334155 }));
+    head.position.set(fx, 4.4, fz);
+    group.add(head);
+
+    const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 8), new THREE.MeshBasicMaterial({ color: 0xfef08a }));
+    bulb.position.set(fx, 4.4, fz);
+    group.add(bulb);
+  });
+
+  // --- 9H. TAKUR AMANA RESIDENTIAL HOUSING ESTATE (West Sector: X: -17 to -12, Z: 1 to 6) ---
+  const villaWallMat = new THREE.MeshStandardMaterial({ color: 0xfef3c7, roughness: 0.6 });
+  const villaRoofMat = new THREE.MeshStandardMaterial({ color: 0xb45309, roughness: 0.55 });
+  const compoundWallMat = new THREE.MeshStandardMaterial({ color: 0xd1d5db, roughness: 0.8 });
+
+  // Luxury Villa 1
+  const villa1 = new THREE.Mesh(new THREE.BoxGeometry(3.6, 2.0, 2.8), villaWallMat);
+  villa1.position.set(-14.5, 1.0, 4.8);
+  villa1.castShadow = true;
+  group.add(villa1);
+
+  const villa1Roof = new THREE.Mesh(new THREE.ConeGeometry(2.6, 0.9, 4), villaRoofMat);
+  villa1Roof.position.set(-14.5, 2.45, 4.8);
+  villa1Roof.rotation.y = Math.PI / 4;
+  group.add(villa1Roof);
+
+  // Modern Villa 2
+  const villa2 = new THREE.Mesh(new THREE.BoxGeometry(3.2, 1.8, 2.4), villaWallMat);
+  villa2.position.set(-15.8, 0.9, 1.8);
+  villa2.castShadow = true;
+  group.add(villa2);
+
+  const villa2Roof = new THREE.Mesh(new THREE.ConeGeometry(2.3, 0.8, 4), villaRoofMat);
+  villa2Roof.position.set(-15.8, 2.2, 1.8);
+  villa2Roof.rotation.y = Math.PI / 4;
+  group.add(villa2Roof);
+
+  // Estate Perimeter Compound Walls
+  const perimeterWall = new THREE.Mesh(new THREE.BoxGeometry(0.18, 1.2, 6.2), compoundWallMat);
+  perimeterWall.position.set(-12.8, 0.6, 3.5);
+  group.add(perimeterWall);
+
+  // Community Solar Borehole Water Tower (Overhead Tank)
+  const tankLegs = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.22, 3.4, 4), streetlightMat);
+  tankLegs.position.set(-13.5, 1.7, 1.2);
+  group.add(tankLegs);
+
+  const waterTank = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.65, 1.1, 12), new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.3 }));
+  waterTank.position.set(-13.5, 3.8, 1.2);
+  group.add(waterTank);
+
+  const tankSolar = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.04, 0.6), solarMat);
+  tankSolar.position.set(-13.5, 4.45, 1.2);
+  tankSolar.rotation.x = -0.3;
+  group.add(tankSolar);
+
+  // Estate Security Gatehouse
+  const gatehouse = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.4, 1.2), new THREE.MeshStandardMaterial({ color: 0xf8fafc }));
+  gatehouse.position.set(-12.8, 0.7, 5.5);
+  group.add(gatehouse);
+
+  // Striped Security Barrier Arm
+  const barrierArm = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 1.6), new THREE.MeshBasicMaterial({ color: 0xfacc15 }));
+  barrierArm.position.set(-12.8, 0.8, 6.3);
+  group.add(barrierArm);
   const acaciaTrunkMat = new THREE.MeshStandardMaterial({ color: 0x5c4033, roughness: 0.9 });
   const acaciaFoliageMat = new THREE.MeshStandardMaterial({ color: 0x65a30d, roughness: 0.72 });
   const neemFoliageMat = new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.65 });
@@ -1415,6 +1611,56 @@ export function buildIsometricMap(scene: THREE.Scene, season: string = 'Dry', ho
       position: [-4.5, 4.2, -2.5],
       color: 0x0d9488, // Teal Commerce
       iconText: '🏬',
+    },
+    {
+      id: 'dutse_mosque',
+      name: 'Dutse Grand Central Friday Mosque',
+      hausaName: 'Babban Masallacin Juma\'a na Dutse',
+      zone: 'Central Spiritual Quarter',
+      specialty: 'Juma\'at Prayers, Qur\'anic Tafsir & Islamic Calligraphy',
+      position: [0, 4.4, -3.0],
+      color: 0x059669, // Emerald Green
+      iconText: '🕌',
+    },
+    {
+      id: 'dutse_airport',
+      name: 'Sir Ahmadu Bello International Cargo Airport',
+      hausaName: 'Filin Jirgin Sama na Kasa da Kasa na Dutse',
+      zone: 'Northwest Aviation & Logistics Sector',
+      specialty: 'Air Cargo Freight, Hajj Flights & Perishables Logistics',
+      position: [-12.5, 4.2, -15.0],
+      color: 0x0284c7, // Aviation Blue
+      iconText: '✈️',
+    },
+    {
+      id: 'aminu_kano_triangle',
+      name: 'Aminu Kano Triangle & Civic Arena',
+      hausaName: 'Dandalin Aminu Kano da Filin Biki',
+      zone: 'Kiyawa Road Civic Esplanade',
+      specialty: 'Civic Amphitheater, Cultural Durbars & Street Food Festival',
+      position: [5.5, 4.2, 5.0],
+      color: 0xd97706, // Amber Civic
+      iconText: '🏛️',
+    },
+    {
+      id: 'dutse_stadium',
+      name: 'Dutse Township Stadium & Sports Complex',
+      hausaName: 'Filin Wasan Kwallon Kafa na Dutse',
+      zone: 'Southwest Athletics Sector',
+      specialty: 'Jigawa Golden Stars Football, Athletics Track & Fitness',
+      position: [-12.0, 4.2, 16.5],
+      color: 0xeab308, // Gold Athletics
+      iconText: '⚽',
+    },
+    {
+      id: 'takur_estate',
+      name: 'Takur Amana Residential Housing Estate',
+      hausaName: 'Unguwar Gidajen Takur Amana',
+      zone: 'Takur West Residential Oasis',
+      specialty: 'Luxury Savanna Villas, Solar Water Co-op & Shaded Avenues',
+      position: [-14.5, 4.2, 3.5],
+      color: 0x10b981, // Residential Emerald
+      iconText: '🏘️',
     },
   ];
 

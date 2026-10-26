@@ -106,5 +106,65 @@
     "availableJobIds": ["atm_custodian", "textile_broker"],
     "economicSpecialty": "Retail Banking, Foreign Currency Exchange & Luxury Hausa Shadda Trade",
     "coordinates": [-4.5, 4.2, -2.5]
+  },
+  {
+    "id": "dutse_mosque",
+    "name": "Dutse Grand Central Friday Mosque",
+    "hausaName": "Babban Masallacin Juma'a na Dutse",
+    "zone": "Central Spiritual Quarter",
+    "description": "The spiritual crown of Dutse. An architectural marvel with soaring twin minarets, emerald green dome, grand prayer hall, ablution courtyard, and Islamic jurisprudence center.",
+    "travelCost": 500,
+    "unlockedByDefault": true,
+    "availableJobIds": ["mosque_custodian", "islamic_calligrapher"],
+    "economicSpecialty": "Islamic Scholarship, Zakat Welfare Distribution & Calligraphy Arts",
+    "coordinates": [0, 4.4, -3.0]
+  },
+  {
+    "id": "dutse_airport",
+    "name": "Sir Ahmadu Bello International Cargo Airport",
+    "hausaName": "Filin Jirgin Sama na Kasa da Kasa na Dutse",
+    "zone": "Northwest Aviation & Logistics Sector",
+    "description": "Jigawa's international aviation gateway. Features a full 3.1km jet runway, cargo logistics terminals, Air Traffic Control radar tower, Hajj pilgrimage passenger lounge, and perishables freight.",
+    "travelCost": 3500,
+    "unlockedByDefault": true,
+    "availableJobIds": ["cargo_handler", "avionics_marshall"],
+    "economicSpecialty": "International Air Freight, Agro-Perishables Export & Pilgrimage Logistics",
+    "coordinates": [-12.5, 4.2, -15.0]
+  },
+  {
+    "id": "aminu_kano_triangle",
+    "name": "Aminu Kano Triangle & Civic Arena",
+    "hausaName": "Dandalin Aminu Kano da Filin Biki",
+    "zone": "Kiyawa Road Civic Esplanade",
+    "description": "Dutse's celebrated central public square and open-air festival amphitheater. The venue for state political symposiums, cultural durbars, civil rallies, and national celebrations.",
+    "travelCost": 1000,
+    "unlockedByDefault": true,
+    "availableJobIds": ["event_coordinator", "public_relations_officer"],
+    "economicSpecialty": "Civic Staging Logistics, Public Relations & Cultural Festival Productions",
+    "coordinates": [5.5, 4.2, 5.0]
+  },
+  {
+    "id": "dutse_stadium",
+    "name": "Dutse Township Stadium & Sports Complex",
+    "hausaName": "Filin Wasan Kwallon Kafa na Dutse",
+    "zone": "Southwest Athletics Sector",
+    "description": "Home ground of Jigawa Golden Stars FC. Features covered spectator grandstands, championship grass pitch, clay running track, high-intensity floodlight towers, and youth sports academy.",
+    "travelCost": 1200,
+    "unlockedByDefault": true,
+    "availableJobIds": ["stadium_groundsman", "fitness_trainer"],
+    "economicSpecialty": "Professional Football Operations, Youth Athletics & Fitness Conditioning",
+    "coordinates": [-12.0, 4.2, 16.5]
+  },
+  {
+    "id": "takur_estate",
+    "name": "Takur Amana Residential Housing Estate",
+    "hausaName": "Unguwar Gidajen Takur Amana",
+    "zone": "Takur West Residential Oasis",
+    "description": "Premier planned modern residential community in Dutse. Shaded neem tree avenues, duplex villas, solar borehole water towers, security gates, and quiet family compounds.",
+    "travelCost": 1000,
+    "unlockedByDefault": true,
+    "availableJobIds": ["estate_facility_manager", "neighborhood_security"],
+    "economicSpecialty": "Residential Facilities Management, Real Estate Leasing & Solar Water Co-ops",
+    "coordinates": [-14.5, 4.2, 3.5]
   }
 ]

@@ -198,5 +198,105 @@
     "payoutNaira": 52000,
     "mutunciChange": 3,
     "description": "Curate bespoke brocade, Austrian lace, and traditional hand-woven textiles for VIP clients."
+  },
+  {
+    "id": "mosque_custodian",
+    "title": "Central Mosque Facility & Ablution Attendant",
+    "locationId": "dutse_mosque",
+    "energyCost": 20,
+    "timeHours": 4,
+    "payoutNaira": 25000,
+    "mutunciChange": 6,
+    "description": "Maintain the ablution pools, prayer carpets, and audio public address systems for worshippers."
+  },
+  {
+    "id": "islamic_calligrapher",
+    "title": "Qur'anic Manuscript & Architectural Calligrapher",
+    "locationId": "dutse_mosque",
+    "energyCost": 25,
+    "timeHours": 5,
+    "payoutNaira": 38000,
+    "mutunciChange": 7,
+    "description": "Inscribe classical Arabic and Hausa Ajami script calligraphy on mosque friezes and ceremonial tablets."
+  },
+  {
+    "id": "cargo_handler",
+    "title": "Air Cargo Freight & Perishables Specialist",
+    "locationId": "dutse_airport",
+    "energyCost": 35,
+    "timeHours": 5,
+    "payoutNaira": 45000,
+    "mutunciChange": 3,
+    "description": "Supervise palletized sesame seed and cold-chain cargo pallet loading onto outbound air freighters."
+  },
+  {
+    "id": "avionics_marshall",
+    "title": "Apron Ramp & Aircraft Ground Marshall",
+    "locationId": "dutse_airport",
+    "energyCost": 30,
+    "timeHours": 4,
+    "payoutNaira": 48000,
+    "mutunciChange": 4,
+    "description": "Guide incoming turboprop aircraft and chartered executive jets to the terminal apron parking bays."
+  },
+  {
+    "id": "event_coordinator",
+    "title": "Civic Amphitheater & Festival Stage Manager",
+    "locationId": "aminu_kano_triangle",
+    "energyCost": 30,
+    "timeHours": 5,
+    "payoutNaira": 40000,
+    "mutunciChange": 5,
+    "description": "Coordinate stage acoustics, VIP canopy seating, and media press risers for public civic symposia."
+  },
+  {
+    "id": "public_relations_officer",
+    "title": "Radio & Civic Broadcasting Liaison",
+    "locationId": "aminu_kano_triangle",
+    "energyCost": 25,
+    "timeHours": 4,
+    "payoutNaira": 35000,
+    "mutunciChange": 6,
+    "description": "Broadcast live civic announcements, interview community elders, and publish festival bulletins."
+  },
+  {
+    "id": "stadium_groundsman",
+    "title": "Stadium Pitch Turf & Athletics Groundskeeper",
+    "locationId": "dutse_stadium",
+    "energyCost": 35,
+    "timeHours": 5,
+    "payoutNaira": 32000,
+    "mutunciChange": 3,
+    "description": "Mow, roll, and chalk the championship football turf and maintain athletics track lanes."
+  },
+  {
+    "id": "fitness_trainer",
+    "title": "Jigawa Golden Stars Youth Fitness Coach",
+    "locationId": "dutse_stadium",
+    "energyCost": 40,
+    "timeHours": 4,
+    "payoutNaira": 38000,
+    "mutunciChange": 4,
+    "description": "Lead cardiovascular conditioning drills and athletic strength workouts for aspiring league players."
+  },
+  {
+    "id": "estate_facility_manager",
+    "title": "Residential Solar Borehole & Utility Supervisor",
+    "locationId": "takur_estate",
+    "energyCost": 25,
+    "timeHours": 4,
+    "payoutNaira": 36000,
+    "mutunciChange": 4,
+    "description": "Inspect community solar water pumping stations, streetlights, and residential electrical reticulation."
+  },
+  {
+    "id": "neighborhood_security",
+    "title": "Takur Amana Gated Estate Patrol Officer",
+    "locationId": "takur_estate",
+    "energyCost": 30,
+    "timeHours": 6,
+    "payoutNaira": 34000,
+    "mutunciChange": 5,
+    "description": "Coordinate security access barriers, visitor passes, and night patrols for residential compounds."
   }
 ]

@@ -1222,7 +1222,7 @@ export const PhoneModal: React.FC<PhoneModalProps> = ({
                     <p className="text-[10px] text-white/50">Current Station: {curLoc.name}</p>
                   </div>
                   <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                    9 Hubs
+                    {locations.length} Hubs
                   </span>
                 </div>
 
