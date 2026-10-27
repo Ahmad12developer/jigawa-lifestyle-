@@ -14,6 +14,45 @@ interface GameViewportProps {
   onAvatarGreet?: () => void;
 }
 
+// Rigid Body Solid Obstacles
+interface ObstacleBox {
+  minX: number;
+  maxX: number;
+  minZ: number;
+  maxZ: number;
+}
+
+const ROOM_OBSTACLES: ObstacleBox[] = [
+  // Perimeter Walls
+  { minX: -6.2, maxX: -5.4, minZ: -6.2, maxZ: 6.2 },
+  { minX: -6.2, maxX: 6.2, minZ: -6.2, maxZ: -5.4 },
+  // Bed (Back-Left corner)
+  { minX: -2.3, maxX: 0.3, minZ: -5.6, maxZ: -2.0 },
+  // Bedside Nightstand
+  { minX: 0.5, maxX: 1.7, minZ: -5.2, maxZ: -4.0 },
+  // Wooden Work Table
+  { minX: 1.9, maxX: 4.5, minZ: -5.3, maxZ: -3.9 },
+  // Center Red Modern Armchair
+  { minX: -1.3, maxX: -0.3, minZ: -0.9, maxZ: 0.1 },
+  // Wardrobe / Bookshelf
+  { minX: -5.6, maxX: -4.4, minZ: 0.2, maxZ: 2.2 },
+];
+
+const MAP_OBSTACLES: ObstacleBox[] = [
+  // Dutse Granite Inselberg Rocks
+  { minX: -4.0, maxX: 4.0, minZ: -4.0, maxZ: 4.0 },
+  // Emir's Palace
+  { minX: -13.0, maxX: -7.0, minZ: 4.0, maxZ: 10.0 },
+  // State Secretariat
+  { minX: 6.0, maxX: 12.0, minZ: -10.0, maxZ: -4.0 },
+  // Dutse Ultra-Modern Market
+  { minX: 6.0, maxX: 12.0, minZ: 5.0, maxZ: 11.0 },
+  // Rasheed Shekoni Specialist Hospital
+  { minX: -14.0, maxX: -8.0, minZ: -11.0, maxZ: -5.0 },
+  // Federal University Dutse (FUD)
+  { minX: -15.0, maxX: -9.0, minZ: 11.0, maxZ: 17.0 },
+];
+
 export const GameViewport: React.FC<GameViewportProps> = ({
   viewMode,
   selectedPinId,
@@ -315,29 +354,108 @@ export const GameViewport: React.FC<GameViewportProps> = ({
     let animationId: number;
     const clock = new THREE.Clock();
 
+    const avatarVel = new THREE.Vector2(0, 0);
+    const obstacles = viewMode === 'home' ? ROOM_OBSTACLES : MAP_OBSTACLES;
+    const charRadius = 0.32;
+    const bounds =
+      viewMode === 'home'
+        ? { minX: -5.2, maxX: 5.2, minZ: -5.2, maxZ: 5.2 }
+        : { minX: -19.0, maxX: 19.0, minZ: -19.0, maxZ: 19.0 };
+
     const animate = () => {
       animationId = requestAnimationFrame(animate);
       const delta = Math.min(clock.getDelta(), 0.1);
       const elapsedTime = clock.getElapsedTime();
 
-      // (A) Smooth Avatar Walk & Humanoid Animation Loop (in both Home and Map mode)
+      // (A) Newtonian Avatar Locomotion with Obstacle Collisions & Biomechanics
       if (avatar) {
-        const dist = avatar.position.distanceTo(targetPos.current);
-        const isMoving = dist > 0.08;
+        const dx = targetPos.current.x - avatar.position.x;
+        const dz = targetPos.current.z - avatar.position.z;
+        const dist = Math.hypot(dx, dz);
+        const wantsToMove = dist > 0.08;
+
+        const maxSpeed = viewMode === 'map' ? 5.2 : 3.2;
+        const accel = 4.5;
+        const brake = 7.0;
+
+        let targetVx = 0;
+        let targetVz = 0;
+
+        if (wantsToMove) {
+          const stoppingDist = (maxSpeed * maxSpeed) / (2 * brake);
+          const speedFactor = dist < stoppingDist ? Math.max(0.15, dist / stoppingDist) : 1.0;
+          const desiredSpeed = maxSpeed * speedFactor;
+          targetVx = (dx / dist) * desiredSpeed;
+          targetVz = (dz / dist) * desiredSpeed;
+        }
+
+        // Newtonian velocity acceleration and friction braking
+        avatarVel.x = THREE.MathUtils.damp(avatarVel.x, targetVx, wantsToMove ? accel : brake, delta);
+        avatarVel.y = THREE.MathUtils.damp(avatarVel.y, targetVz, wantsToMove ? accel : brake, delta);
+
+        const currentSpeed = avatarVel.length();
+        const isMoving = currentSpeed > 0.05;
 
         if (isMoving) {
-          const moveSpeed = viewMode === 'map' ? 5.8 : 3.6;
-          const moveDir = targetPos.current.clone().sub(avatar.position).normalize();
-          avatar.position.addScaledVector(moveDir, Math.min(dist, delta * moveSpeed));
+          let moveX = avatarVel.x * delta;
+          let moveZ = avatarVel.y * delta;
 
-          // Smoothly rotate avatar towards movement direction
-          const targetAngle = Math.atan2(moveDir.x, moveDir.z);
-          avatar.rotation.y = THREE.MathUtils.lerp(avatar.rotation.y, targetAngle, 0.25);
+          // 1. Collision Check - X Axis (Slide along Z if blocked)
+          const nextX = THREE.MathUtils.clamp(
+            avatar.position.x + moveX,
+            bounds.minX + charRadius,
+            bounds.maxX - charRadius
+          );
+          const blockedX = obstacles.some(
+            (obs) =>
+              nextX + charRadius > obs.minX &&
+              nextX - charRadius < obs.maxX &&
+              avatar.position.z + charRadius > obs.minZ &&
+              avatar.position.z - charRadius < obs.maxZ
+          );
+          if (!blockedX) {
+            avatar.position.x = nextX;
+          } else {
+            avatarVel.x = 0;
+            moveX = 0;
+          }
 
-          // Natural walking vertical bounce
-          avatar.position.y = Math.abs(Math.sin(elapsedTime * (viewMode === 'map' ? 14 : 12))) * 0.08;
+          // 2. Collision Check - Z Axis (Slide along X if blocked)
+          const nextZ = THREE.MathUtils.clamp(
+            avatar.position.z + moveZ,
+            bounds.minZ + charRadius,
+            bounds.maxZ - charRadius
+          );
+          const blockedZ = obstacles.some(
+            (obs) =>
+              avatar.position.x + charRadius > obs.minX &&
+              avatar.position.x - charRadius < obs.maxZ &&
+              nextZ + charRadius > obs.minZ &&
+              nextZ - charRadius < obs.maxZ
+          );
+          if (!blockedZ) {
+            avatar.position.z = nextZ;
+          } else {
+            avatarVel.y = 0;
+            moveZ = 0;
+          }
+
+          // Smoothly rotate avatar towards physical velocity vector
+          const targetAngle = Math.atan2(avatarVel.x, avatarVel.y);
+          avatar.rotation.y = THREE.MathUtils.lerp(avatar.rotation.y, targetAngle, 0.18);
+
+          // Centripetal banking tilt when turning while moving
+          const turnDelta = THREE.MathUtils.clamp(targetAngle - avatar.rotation.y, -0.15, 0.15);
+          avatar.rotation.z = THREE.MathUtils.lerp(avatar.rotation.z, -turnDelta * 0.35, 0.15);
+
+          // Natural walking vertical bounce (2x step frequency)
+          const stepFrequency = viewMode === 'map' ? 14 : 11;
+          const baseHeight = viewMode === 'map' ? 0.05 : 0;
+          avatar.position.y = baseHeight + Math.abs(Math.sin(elapsedTime * stepFrequency)) * 0.07;
         } else {
-          avatar.position.y = viewMode === 'map' ? 0.05 : 0;
+          avatar.rotation.z = THREE.MathUtils.lerp(avatar.rotation.z, 0, 0.15);
+          const baseHeight = viewMode === 'map' ? 0.05 : 0;
+          avatar.position.y = baseHeight + Math.sin(elapsedTime * 2.2) * 0.012;
         }
 
         avatarPos.current.copy(avatar.position);
