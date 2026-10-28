@@ -96,10 +96,9 @@ export function createModularAvatar(custom: AvatarCustomization): ModularAvatarG
 
   // --- 1. LEGS & LOWER BODY ---
   const legWidth = isFemale ? 0.13 : 0.15;
-  const legLength = 0.75;
   const legSpacing = isFemale ? 0.11 : 0.13;
 
-  // Left Leg Pivot
+  // Left Leg Pivot (Hip Joint)
   const leftLegPivot = new THREE.Group();
   leftLegPivot.position.set(-legSpacing, 0.78, 0);
   pelvisGroup.add(leftLegPivot);
@@ -110,12 +109,17 @@ export function createModularAvatar(custom: AvatarCustomization): ModularAvatarG
   leftThigh.castShadow = true;
   leftLegPivot.add(leftThigh);
 
-  const leftShin = new THREE.Mesh(new THREE.CylinderGeometry(legWidth * 0.8, legWidth * 0.68, 0.38, 10), darkPantsMat);
-  leftShin.position.y = -0.56;
-  leftShin.castShadow = true;
-  leftLegPivot.add(leftShin);
+  // Left Knee Joint & Lower Leg
+  const leftKneePivot = new THREE.Group();
+  leftKneePivot.position.set(0, -0.38, 0);
+  leftLegPivot.add(leftKneePivot);
 
-  // Right Leg Pivot
+  const leftShin = new THREE.Mesh(new THREE.CylinderGeometry(legWidth * 0.8, legWidth * 0.68, 0.38, 10), darkPantsMat);
+  leftShin.position.y = -0.18;
+  leftShin.castShadow = true;
+  leftKneePivot.add(leftShin);
+
+  // Right Leg Pivot (Hip Joint)
   const rightLegPivot = new THREE.Group();
   rightLegPivot.position.set(legSpacing, 0.78, 0);
   pelvisGroup.add(rightLegPivot);
@@ -125,48 +129,48 @@ export function createModularAvatar(custom: AvatarCustomization): ModularAvatarG
   rightThigh.castShadow = true;
   rightLegPivot.add(rightThigh);
 
+  // Right Knee Joint & Lower Leg
+  const rightKneePivot = new THREE.Group();
+  rightKneePivot.position.set(0, -0.38, 0);
+  rightLegPivot.add(rightKneePivot);
+
   const rightShin = new THREE.Mesh(new THREE.CylinderGeometry(legWidth * 0.8, legWidth * 0.68, 0.38, 10), darkPantsMat);
-  rightShin.position.y = -0.56;
+  rightShin.position.y = -0.18;
   rightShin.castShadow = true;
-  rightLegPivot.add(rightShin);
+  rightKneePivot.add(rightShin);
 
   // --- 2. FOOTWEAR ---
   const createFoot = (parent: THREE.Group) => {
     if (custom.footwear === 'kano_sandals') {
-      // Leather sole
       const sole = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.04, 0.34), leatherMat);
-      sole.position.set(0, -0.76, 0.05);
+      sole.position.set(0, -0.38, 0.05);
       parent.add(sole);
 
-      // Crisscross leather straps
       const strap1 = new THREE.Mesh(new THREE.BoxGeometry(0.19, 0.03, 0.07), leatherMat);
-      strap1.position.set(0, -0.73, 0.07);
+      strap1.position.set(0, -0.35, 0.07);
       parent.add(strap1);
 
       const strap2 = new THREE.Mesh(new THREE.BoxGeometry(0.19, 0.03, 0.04), leatherMat);
-      strap2.position.set(0, -0.72, -0.04);
+      strap2.position.set(0, -0.34, -0.04);
       parent.add(strap2);
     } else if (custom.footwear === 'babouche') {
-      // Pointed Royal Babouche slippers
       const babouche = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.34, 10), attireMat);
       babouche.rotation.x = -Math.PI / 2;
-      babouche.position.set(0, -0.74, 0.08);
+      babouche.position.set(0, -0.36, 0.08);
       parent.add(babouche);
     } else {
-      // Modern Clean Sneakers
       const sneaker = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.12, 0.34), whiteAccentMat);
-      sneaker.position.set(0, -0.73, 0.05);
+      sneaker.position.set(0, -0.35, 0.05);
       parent.add(sneaker);
 
-      // Sneaker sole
       const sole = new THREE.Mesh(new THREE.BoxGeometry(0.19, 0.04, 0.35), darkPantsMat);
-      sole.position.set(0, -0.77, 0.05);
+      sole.position.set(0, -0.39, 0.05);
       parent.add(sole);
     }
   };
 
-  createFoot(leftLegPivot);
-  createFoot(rightLegPivot);
+  createFoot(leftKneePivot);
+  createFoot(rightKneePivot);
 
   // --- 3. ATTIRE & TORSO ---
   if (custom.attire === 'babban_riga') {
@@ -526,6 +530,10 @@ export function createModularAvatar(custom: AvatarCustomization): ModularAvatarG
         leftLegPivot.rotation.x = Math.sin(walkFreq) * 0.65;
         rightLegPivot.rotation.x = -Math.sin(walkFreq) * 0.65;
 
+        // Knee articulation (knees flex backwards during swing phase)
+        leftKneePivot.rotation.x = Math.max(0, -Math.sin(walkFreq)) * 0.75;
+        rightKneePivot.rotation.x = Math.max(0, Math.sin(walkFreq)) * 0.75;
+
         // Arms swing naturally opposite to legs
         leftArmPivot.rotation.x = -Math.sin(walkFreq) * 0.55;
         rightArmPivot.rotation.x = Math.sin(walkFreq) * 0.55;
@@ -540,9 +548,11 @@ export function createModularAvatar(custom: AvatarCustomization): ModularAvatarG
         headGroup.rotation.z = -idleSway * 0.02;
         headGroup.rotation.x = Math.sin(time * 0.8) * 0.03;
 
-        // Reset legs
+        // Reset legs & knees
         leftLegPivot.rotation.x = 0;
         rightLegPivot.rotation.x = 0;
+        leftKneePivot.rotation.x = 0;
+        rightKneePivot.rotation.x = 0;
 
         // (D) Hausa Traditional Greeting Gesture (hand over heart)
         if (greetingTimer > 0) {

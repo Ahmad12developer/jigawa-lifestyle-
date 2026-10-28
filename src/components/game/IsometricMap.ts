@@ -1,4 +1,12 @@
 import * as THREE from 'three';
+import {
+  createSahelSoilTexture,
+  createGraniteRockTexture,
+  createHausaMudWallTexture,
+  createCorrugatedRoofTexture,
+  createAsphaltRoadTexture,
+  createMarketAwningTexture,
+} from './proceduralTextures';
 
 export interface MapPinData {
   id: string;
@@ -39,6 +47,14 @@ export function buildIsometricMap(scene: THREE.Scene, season: string = 'Dry', ho
   const isNight = hour >= 20 || hour < 5;
   const isSunset = hour >= 17 && hour < 20;
 
+  // --- PROCEDURAL PBR TEXTURES ---
+  const sahelSoilTex = createSahelSoilTexture();
+  const graniteRockTex = createGraniteRockTexture();
+  const mudWallTex = createHausaMudWallTexture();
+  const asphaltRoadTex = createAsphaltRoadTexture();
+  const corrugatedRoofTex = createCorrugatedRoofTexture();
+  const marketAwningTex = createMarketAwningTexture();
+
   // --- 1. DIORAMA BASE & URBAN FOUNDATION (40 x 40) ---
   const mapSize = 40;
   const terrainGeo = new THREE.BoxGeometry(mapSize, 0.75, mapSize);
@@ -47,6 +63,7 @@ export function buildIsometricMap(scene: THREE.Scene, season: string = 'Dry', ho
   const groundColor = season === 'Rainy' ? 0x827745 : season === 'Harmattan' ? 0xd4a373 : 0xc29360;
   const terrainMat = new THREE.MeshStandardMaterial({
     color: groundColor,
+    map: sahelSoilTex,
     roughness: 0.92,
     metalness: 0.04,
   });
@@ -69,9 +86,9 @@ export function buildIsometricMap(scene: THREE.Scene, season: string = 'Dry', ho
 
   // --- 2. DUTSE GRANITE INSELBERGS & ROCK FORMATIONS (North-Center / Summit) ---
   // "Dutse" means "Rock" in Hausa — the iconic towering granite inselbergs define the city skyline
-  const rockMatSlate = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.84 });
-  const rockMatDark = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.88 });
-  const rockMatWarm = new THREE.MeshStandardMaterial({ color: 0x78716c, roughness: 0.85 });
+  const rockMatSlate = new THREE.MeshStandardMaterial({ color: 0x64748b, map: graniteRockTex, roughness: 0.84 });
+  const rockMatDark = new THREE.MeshStandardMaterial({ color: 0x475569, map: graniteRockTex, roughness: 0.88 });
+  const rockMatWarm = new THREE.MeshStandardMaterial({ color: 0x78716c, map: graniteRockTex, roughness: 0.85 });
 
   const graniteBoulders: [number, number, number, number, number, number][] = [
     // [x, y, z, radius, height, materialIdx]
@@ -173,7 +190,7 @@ export function buildIsometricMap(scene: THREE.Scene, season: string = 'Dry', ho
 
   // --- 3. FADAR SARKIN DUTSE (EMIR OF DUTSE'S PALACE & GARU HISTORIC CITADEL - Northwest) ---
   // Traditional Northern Hausa royal architecture with Tubali clay walls, Zankwaye horns & grand arch
-  const tubaliMat = new THREE.MeshStandardMaterial({ color: 0xbf7a47, roughness: 0.85 }); // Clay mud brick
+  const tubaliMat = new THREE.MeshStandardMaterial({ color: 0xbf7a47, map: mudWallTex, roughness: 0.85 }); // Clay mud brick
   const hornMat = new THREE.MeshStandardMaterial({ color: 0x8c431d, roughness: 0.9 });
   const royalEmeraldMat = new THREE.MeshStandardMaterial({ color: 0x064e3b, roughness: 0.45 });
   const royalGoldMat = new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.5, roughness: 0.35 });
@@ -319,7 +336,7 @@ export function buildIsometricMap(scene: THREE.Scene, season: string = 'Dry', ho
   group.add(pool);
 
   // --- 5. KIYAWA ROAD, SANI ABACHA WAY & TAKUR ROUNDABOUT (The Arterial Spine) ---
-  const asphaltMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.88 }); // Smooth asphalt
+  const asphaltMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, map: asphaltRoadTex, roughness: 0.88 }); // Smooth asphalt
   const wheelMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.85 });
 
   // (A) Kiyawa Road (Main Divided East-West Dual Carriageway)
